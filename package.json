@@ -1,0 +1,159 @@
+{
+  "name": "cursor-rules-assistant",
+  "displayName": "Cursor Rules Assistant",
+  "description": "自动检查和配置Cursor Rules的VSCode插件",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "cursor-rules-assistant.openConfig",
+        "title": "打开配置面板"
+      },
+      {
+        "command": "cursor-rules-assistant.createCursorRules",
+        "title": "创建Cursor Rules"
+      },
+      {
+        "command": "cursor-rules-assistant.detectTechStack",
+        "title": "检测项目技术栈"
+      },
+      {
+        "command": "cursor-rules-assistant.generateCode",
+        "title": "使用Cursor AI生成代码"
+      },
+      {
+        "command": "cursor-rules-assistant.streamConversation",
+        "title": "使用Cursor AI进行流式对话"
+      },
+      {
+        "command": "cursor-rules-assistant.advancedConversation",
+        "title": "使用Cursor AI进行高级对话"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cursor-rules-assistant-view",
+          "title": "Cursor Rules助手",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "cursor-rules-assistant-view": [
+        {
+          "type": "webview",
+          "id": "cursor-rules-assistant.configView",
+          "name": "配置面板"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "when": "view == cursor-rules-assistant.configView",
+          "group": "navigation"
+        },
+        {
+          "command": "cursor-rules-assistant.detectTechStack",
+          "when": "view == cursor-rules-assistant.configView",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "cursor-rules-assistant.detectTechStack",
+          "group": "2_workspace"
+        },
+        {
+          "command": "cursor-rules-assistant.createCursorRules",
+          "group": "2_workspace"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cursor-rules-assistant.generateCode",
+          "group": "Cursor AI"
+        },
+        {
+          "command": "cursor-rules-assistant.streamConversation",
+          "group": "Cursor AI"
+        },
+        {
+          "command": "cursor-rules-assistant.advancedConversation",
+          "group": "Cursor AI"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Cursor Rules Assistant",
+      "properties": {
+        "cursor-rules-assistant.enableAutoCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "启动时自动检查Cursor Rules"
+        },
+        "cursor-rules-assistant.defaultTemplate": {
+          "type": "string",
+          "default": "basic",
+          "enum": [
+            "basic",
+            "typescript",
+            "react"
+          ],
+          "description": "默认模板"
+        },
+        "cursor-rules-assistant.enableTechStackDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用技术栈检测以选择合适的模板"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "css-loader": "^7.1.2",
+    "eslint": "^9.25.1",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "axios": "^1.9.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
