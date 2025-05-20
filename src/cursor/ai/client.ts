@@ -1,80 +1,11 @@
+/**
+ * AI客户端实现文件
+ * 提供与Cursor API交互的客户端类
+ */
 import axios from 'axios';
-import { getCursorToken, TokenData, CursorCredentialErrors } from './cursorCredentials';
-
-/**
- * Cursor AI请求接口
- */
-export interface CursorAIRequest {
-    prompt: string;           // 提示词
-    language?: string;        // 目标语言
-    context?: string;         // 上下文代码
-    maxTokens?: number;       // 最大生成令牌数
-    temperature?: number;     // 温度值(创造性)
-    stop?: string[];          // 停止词
-    stream?: boolean;         // 是否使用流式响应
-    model?: string;           // 使用的模型
-    messages?: Message[];     // 消息数组，用于对话格式
-}
-
-/**
- * 对话消息接口
- */
-export interface Message {
-    role: string;             // 角色(system/user/assistant)
-    content: string;          // 消息内容
-}
-
-/**
- * Cursor AI响应接口
- */
-export interface CursorAIResponse {
-    code?: string;            // 生成的代码
-    error?: string;           // 错误信息
-    errorType?: string;       // 错误类型
-    raw?: any;                // 原始响应数据
-    response?: string;        // 文本响应
-    usage?: {                 // Token使用统计
-        input: number;        // 输入token数
-        output: number;       // 输出token数
-    };
-}
-
-/**
- * 流式响应数据块
- */
-export interface StreamChunk {
-    choices: Array<{
-        delta: {
-            content: string;
-        };
-        index: number;
-    }>;
-    id: string;
-    object: string;
-    created: number;
-}
-
-/**
- * API路径常量
- */
-export const APIConstants = {
-    CONVERSATION_API_PATH: '/api/conversation',
-    ORIGINAL_CONVERSATION_PATH: '/conversation',
-    DEFAULT_TIMEOUT: 300  // 默认超时时间(秒)
-};
-
-/**
- * 错误类型
- */
-export const CursorAIErrors = {
-    TOKEN_ERROR: new Error('获取Cursor凭证失败'),
-    API_ERROR: new Error('调用Cursor API失败'),
-    RATE_LIMIT_ERROR: new Error('超过API调用限制'),
-    NETWORK_ERROR: new Error('网络连接错误'),
-    INVALID_RESPONSE: new Error('无效的API响应'),
-    INVALID_REQUEST: new Error('无效的请求参数'),
-    ORIGINAL_API_UNSUPPORTED: new Error('原生API不支持该功能')
-};
+import { getCursorToken, TokenData } from '../credentials/index';
+import { CursorAIRequest, CursorAIResponse, ClientOptions } from './models';
+import { APIConstants, CursorAIErrors } from './constants';
 
 /**
  * Cursor AI客户端类
@@ -492,47 +423,4 @@ export class CursorAIClient {
         
         return response;
     }
-}
-
-/**
- * 客户端配置选项
- */
-export interface ClientOptions {
-    useOriginalAPI?: boolean;  // 是否使用原始API
-    timeout?: number;          // 超时时间(秒)
-    baseURL?: string;          // 基础URL
-}
-
-/**
- * 创建Cursor AI客户端
- * @param token 认证令牌
- * @param baseURL 基础URL
- * @returns AI客户端实例
- */
-export function createCursorAIClient(token?: string, baseURL?: string): CursorAIClient {
-    return new CursorAIClient(token, {
-        baseURL: baseURL
-    });
-}
-
-/**
- * 使用自定义选项创建Cursor AI客户端
- * @param token 认证令牌
- * @param options 客户端选项
- * @returns AI客户端实例
- */
-export function createCursorAIClientWithOptions(token: string, options: ClientOptions): CursorAIClient {
-    return new CursorAIClient(token, options);
-}
-
-/**
- * 获取单例AI客户端
- */
-let defaultClient: CursorAIClient | null = null;
-
-export function getDefaultAIClient(): CursorAIClient {
-    if (!defaultClient) {
-        defaultClient = new CursorAIClient();
-    }
-    return defaultClient;
 } 

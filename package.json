@@ -28,6 +28,10 @@
         "title": "检测项目技术栈"
       },
       {
+        "command": "cursor-rules-assistant.openWelcomePage",
+        "title": "查看Cursor Rules助手入门指南"
+      },
+      {
         "command": "cursor-rules-assistant.generateCode",
         "title": "使用Cursor AI生成代码"
       },

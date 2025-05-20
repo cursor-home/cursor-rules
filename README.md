@@ -1,71 +1,74 @@
-# vscode-react-config README
+# Cursor Rules 助手
 
-This is the README for your extension "vscode-react-config". After writing up a brief description, we recommend including the following sections.
+这是一个VSCode扩展，帮助你管理和使用Cursor Rules，提升AI辅助编程效率。
 
-## Features
+## 功能特点
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- 🔍 **自动检测项目技术栈**：智能识别项目使用的编程语言和框架
+- 📝 **规则模板管理**：提供多种预定义规则模板，满足不同类型项目需求
+- 🤖 **AI辅助功能**：集成Cursor AI功能，支持代码生成和高级对话
+- 💬 **流式对话**：实时流式响应，提供更自然的交互体验
+- 🔄 **自动配置**：检测到缺少Cursor Rules时自动配置建议
 
-For example if there is an image subfolder under your extension project workspace:
+## 使用指南
 
-\!\[feature X\]\(images/feature-x.png\)
+### 安装后首次使用
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+扩展会自动检测项目是否配置了Cursor Rules。如果没有，会提示你选择以下选项：
 
-## Requirements
+- **自动配置**：根据项目技术栈自动选择最适合的规则模板
+- **手动配置**：打开配置面板手动选择规则模板
+- **暂不配置**：跳过此次配置
+- **此项目不再提示**：针对当前项目禁用自动检测提示
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### 命令列表
 
-## Extension Settings
+在命令面板中 (`Ctrl+Shift+P` 或 `Cmd+Shift+P`)，可以找到以下命令：
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- `Cursor Rules: 打开配置面板` - 打开Cursor Rules配置界面
+- `Cursor Rules: 创建规则` - 为当前项目创建新的规则文件
+- `Cursor Rules: 检测技术栈` - 分析并显示当前项目使用的技术
+- `Cursor Rules: 生成代码` - 使用AI生成代码片段
+- `Cursor Rules: 流式对话` - 开始一个实时流式AI对话
+- `Cursor Rules: 高级对话` - 开始一个多轮高级AI对话
 
-For example:
+## 配置选项
 
-This extension contributes the following settings:
+在设置中可以配置以下选项：
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `cursor-rules-assistant.enableAutoCheck`: 启动时自动检查Cursor Rules
+- `cursor-rules-assistant.defaultTemplate`: 默认使用的规则模板
+  
+## AI功能
 
-## Known Issues
+本扩展集成了Cursor AI的强大功能：
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- **代码生成**：根据自然语言描述生成代码
+- **流式对话**：实时交互式响应，提供流畅的对话体验
+- **多轮对话**：支持上下文感知的多轮对话
 
-## Release Notes
+## 技术栈检测
 
-Users appreciate release notes as you update your extension.
+支持检测多种编程语言和框架，包括但不限于：
 
-### 1.0.0
+- 编程语言：TypeScript、JavaScript、Python、Java、Go等
+- 前端框架：React、Vue、Angular等
+- 后端框架：Express、Django、Spring Boot等
+- 数据库技术：MongoDB、MySQL、PostgreSQL等
 
-Initial release of ...
+## 问题反馈
 
-### 1.0.1
+如发现任何问题或有功能建议，请提交到GitHub仓库的Issues区。
 
-Fixed issue #.
+## 版本记录
 
-### 1.1.0
+### 0.0.1
 
-Added features X, Y, and Z.
+- 首次发布
+- 支持基本的Cursor Rules管理功能
+- 集成Cursor AI代码生成和对话功能
+- 添加技术栈检测能力
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**开发者：Cursor团队**
