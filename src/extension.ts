@@ -87,12 +87,16 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 		// 确定是首次安装还是更新
 		if (!previousVersion) {
 			// 首次安装情况：显示入门指南选项
-			info('检测到首次安装，显示欢迎信息');
+			info('检测到首次安装，准备显示欢迎信息');
 			
 			// 使用setTimeout确保欢迎信息在其他UI元素加载后显示
 			setTimeout(() => {
+				info('正在显示欢迎对话框...');
+				
+				// 使用模态对话框代替通知，确保用户能看到
 				vscode.window.showInformationMessage(
 					'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
+					{ modal: true }, // 使用模态对话框，强制用户关注
 					'查看指南', '以后再说'
 				).then(selection => {
 					if (selection === '查看指南') {
@@ -104,15 +108,27 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 					
 					// 在用户做出选择后再更新版本信息
 					context.globalState.update('extensionVersion', extensionVersion);
+				}, err => {
+					// 处理可能的错误
+					error(`显示欢迎对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
+					// 出错时也更新版本信息，避免反复提示
+					context.globalState.update('extensionVersion', extensionVersion);
 				});
-			}, 1000); // 延迟1秒显示，避免与其他通知冲突
+				
+				// 记录日志以便调试
+				info('欢迎对话框显示请求已发送');
+			}, 500); // 减少延迟到500毫秒，减少用户等待时间
 		} else if (previousVersion !== extensionVersion) {
 			// 版本更新情况：显示更新通知
 			info(`检测到版本更新：${previousVersion} -> ${extensionVersion}`);
 			
 			setTimeout(() => {
+				info('正在显示版本更新对话框...');
+				
+				// 同样使用模态对话框
 				vscode.window.showInformationMessage(
 					`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
+					{ modal: true }, // 使用模态对话框
 					'查看更新', '忽略'
 				).then(selection => {
 					if (selection === '查看更新') {
@@ -124,8 +140,15 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 					
 					// 在用户做出选择后再更新版本信息
 					context.globalState.update('extensionVersion', extensionVersion);
+				}, err => {
+					// 处理可能的错误
+					error(`显示更新对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
+					// 出错时也更新版本信息
+					context.globalState.update('extensionVersion', extensionVersion);
 				});
-			}, 1000);
+				
+				info('版本更新对话框显示请求已发送');
+			}, 500);
 		} else {
 			// 相同版本，直接更新状态
 			context.globalState.update('extensionVersion', extensionVersion);
