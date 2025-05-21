@@ -36,41 +36,74 @@ import {
  * @returns {Promise<void>} 无返回值的Promise
  */
 async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<void> {
-	// 检查扩展版本，用于判断是首次安装还是更新
-	// 示例：extensionVersion = "0.0.1"
-	const extensionVersion = vscode.extensions.getExtension('cursor-rules-assistant')?.packageJSON.version;
-	// 从全局状态获取之前存储的版本号，首次安装时为undefined
-	const previousVersion = context.globalState.get<string>('extensionVersion');
-	
-	// 首次安装或版本更新时显示相应的欢迎信息
-	if (!previousVersion) {
-		// 首次安装情况：显示入门指南选项
-		info('首次安装扩展，显示欢迎信息');
-		vscode.window.showInformationMessage(
-			'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
-			'查看指南', '以后再说'
-		).then(selection => {
-			// 用户选择"查看指南"时，打开欢迎页面
-			if (selection === '查看指南') {
-				showWelcomePage(context);
-			}
-		});
-	} else if (previousVersion !== extensionVersion) {
-		// 版本更新情况：显示更新通知
-		info(`扩展已更新：${previousVersion} -> ${extensionVersion}`);
-		vscode.window.showInformationMessage(
-			`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
-			'查看更新', '忽略'
-		).then(selection => {
-			// 用户选择"查看更新"时，打开欢迎页面
-			if (selection === '查看更新') {
-				showWelcomePage(context);
-			}
-		});
+	try {
+		// 获取当前扩展
+		const extension = vscode.extensions.getExtension('cursor-rules-assistant');
+		
+		// 如果找不到扩展，记录错误并返回
+		if (!extension) {
+			error('无法获取扩展信息，跳过欢迎信息检查');
+			return;
+		}
+		
+		// 获取当前版本
+		const extensionVersion = extension.packageJSON.version;
+		
+		// 从全局状态获取之前存储的版本号
+		const previousVersion = context.globalState.get<string>('extensionVersion');
+		
+		info(`扩展版本检查: 当前=${extensionVersion}, 先前=${previousVersion || '未安装'}`);
+		
+		// 确定是首次安装还是更新
+		if (!previousVersion) {
+			// 首次安装情况：显示入门指南选项
+			info('检测到首次安装，显示欢迎信息');
+			
+			// 使用setTimeout确保欢迎信息在其他UI元素加载后显示
+			setTimeout(() => {
+				vscode.window.showInformationMessage(
+					'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
+					'查看指南', '以后再说'
+				).then(selection => {
+					if (selection === '查看指南') {
+						info('用户选择查看入门指南');
+						showWelcomePage(context);
+					} else {
+						info('用户选择跳过入门指南');
+					}
+					
+					// 在用户做出选择后再更新版本信息
+					context.globalState.update('extensionVersion', extensionVersion);
+				});
+			}, 1000); // 延迟1秒显示，避免与其他通知冲突
+		} else if (previousVersion !== extensionVersion) {
+			// 版本更新情况：显示更新通知
+			info(`检测到版本更新：${previousVersion} -> ${extensionVersion}`);
+			
+			setTimeout(() => {
+				vscode.window.showInformationMessage(
+					`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
+					'查看更新', '忽略'
+				).then(selection => {
+					if (selection === '查看更新') {
+						info('用户选择查看更新内容');
+						showWelcomePage(context);
+					} else {
+						info('用户选择忽略更新内容');
+					}
+					
+					// 在用户做出选择后再更新版本信息
+					context.globalState.update('extensionVersion', extensionVersion);
+				});
+			}, 1000);
+		} else {
+			// 相同版本，直接更新状态
+			context.globalState.update('extensionVersion', extensionVersion);
+		}
+	} catch (err) {
+		// 捕获并记录任何错误
+		error(`检查扩展版本时出错: ${err instanceof Error ? err.message : String(err)}`);
 	}
-	
-	// 更新全局状态中的版本号，用于下次比较
-	context.globalState.update('extensionVersion', extensionVersion);
 }
 
 /**
