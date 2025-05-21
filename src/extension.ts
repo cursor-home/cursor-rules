@@ -39,6 +39,7 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 	try {
 		const extensionId = 'CC11001100.cursor-rules-assistant';
 		info(`尝试获取扩展信息，扩展ID: ${extensionId}`);
+		info(`当前活动的扩展数量: ${vscode.extensions.all.length}`);
 		
 		// 获取当前扩展
 		const extension = vscode.extensions.getExtension(extensionId);
@@ -75,6 +76,13 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 		}
 		
 		info(`成功获取扩展信息，扩展ID: ${extension.id}, 扩展路径: ${extension.extensionPath}`);
+		info(`扩展详细信息: isActive=${extension.isActive}, exports=${Object.keys(extension.exports || {}).join(',')}`);
+		info(`packageJSON: ${JSON.stringify({
+			name: extension.packageJSON.name,
+			version: extension.packageJSON.version,
+			publisher: extension.packageJSON.publisher,
+			engines: extension.packageJSON.engines
+		})}`);
 		
 		// 获取当前版本
 		const extensionVersion = extension.packageJSON.version;
@@ -88,26 +96,36 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 		if (!previousVersion) {
 			// 首次安装情况：显示入门指南选项
 			info('检测到首次安装，准备显示欢迎信息');
+			info(`全局状态 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
 			
 			// 使用setTimeout确保欢迎信息在其他UI元素加载后显示
+			info(`设置定时器，将在500ms后触发显示欢迎对话框...`);
 			setTimeout(() => {
-				info('正在显示欢迎对话框...');
+				info('定时器触发，正在显示欢迎对话框...');
 				
 				// 使用模态对话框代替通知，确保用户能看到
+				info('调用vscode.window.showInformationMessage显示模态对话框...');
 				vscode.window.showInformationMessage(
 					'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
 					{ modal: true }, // 使用模态对话框，强制用户关注
 					'查看指南', '以后再说'
 				).then(selection => {
+					info(`欢迎对话框用户选择: ${selection || '未选择(对话框可能被关闭)'}`);
 					if (selection === '查看指南') {
-						info('用户选择查看入门指南');
+						info('用户选择查看入门指南，打开欢迎页面...');
 						showWelcomePage(context);
+						info('欢迎页面打开请求已发送');
 					} else {
-						info('用户选择跳过入门指南');
+						info('用户选择跳过入门指南或关闭了对话框');
 					}
 					
 					// 在用户做出选择后再更新版本信息
-					context.globalState.update('extensionVersion', extensionVersion);
+					info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
+					context.globalState.update('extensionVersion', extensionVersion).then(() => {
+						info(`全局状态更新成功，当前 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
+					}, err => {
+						error(`更新全局状态失败: ${err instanceof Error ? err.message : String(err)}`);
+					});
 				}, err => {
 					// 处理可能的错误
 					error(`显示欢迎对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
@@ -118,6 +136,7 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 				// 记录日志以便调试
 				info('欢迎对话框显示请求已发送');
 			}, 500); // 减少延迟到500毫秒，减少用户等待时间
+			info('定时器已设置，将在500ms后触发');
 		} else if (previousVersion !== extensionVersion) {
 			// 版本更新情况：显示更新通知
 			info(`检测到版本更新：${previousVersion} -> ${extensionVersion}`);
@@ -131,6 +150,7 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 					{ modal: true }, // 使用模态对话框
 					'查看更新', '忽略'
 				).then(selection => {
+					info(`更新对话框用户选择: ${selection || '未选择'}`);
 					if (selection === '查看更新') {
 						info('用户选择查看更新内容');
 						showWelcomePage(context);
@@ -139,6 +159,7 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 					}
 					
 					// 在用户做出选择后再更新版本信息
+					info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
 					context.globalState.update('extensionVersion', extensionVersion);
 				}, err => {
 					// 处理可能的错误
@@ -151,6 +172,7 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 			}, 500);
 		} else {
 			// 相同版本，直接更新状态
+			info(`版本相同 (${extensionVersion})，跳过显示欢迎/更新信息`);
 			context.globalState.update('extensionVersion', extensionVersion);
 		}
 	} catch (err) {
@@ -377,33 +399,73 @@ function registerWorkspaceChangeListener(
  * @returns 无显式返回值。隐式返回一个Promise，表示激活过程的完成
  */
 export async function activate(context: vscode.ExtensionContext) {
+	info('========== 开始激活 Cursor Rules Assistant 扩展 ==========');
+	info(`扩展路径: ${context.extensionPath}`);
+	
 	// 获取插件配置
 	const config = vscode.workspace.getConfiguration('cursor-rules-assistant');
 	const logLevel = config.get<string>('logLevel', 'info');
+	info(`当前日志级别: ${logLevel}`);
 	
 	// 1. 初始化日志系统
 	initializeLogging(logLevel);
+	info('日志系统初始化完成');
+	
+	// 记录全局状态信息
+	// 尝试打印全局状态中的键
+	try {
+		// 用inspect方法检查globalState，避免直接访问私有属性
+		info('检查全局状态...');
+		// 列出已知的特定键的值
+		const knownKeys = ['extensionVersion', 'disabledPrompts', 'lastCheck'];
+		for (const key of knownKeys) {
+			const value = context.globalState.get(key);
+			info(`全局状态键 '${key}': ${value !== undefined ? JSON.stringify(value) : '未设置'}`);
+		}
+	} catch (err) {
+		warn(`无法读取全局状态信息: ${err instanceof Error ? err.message : String(err)}`);
+	}
+	
+	// 记录环境信息
+	info(`VSCode版本: ${vscode.version}`);
+	info(`操作系统: ${process.platform}-${process.arch}`);
+	info(`Node.js版本: ${process.version}`);
 	
 	// 3. 检查扩展版本并处理欢迎信息
+	info('开始检查扩展版本...');
 	await checkExtensionVersion(context);
+	info('扩展版本检查完成');
 	
 	// 4. 注册UI组件
+	info('开始注册UI组件...');
 	registerUIComponents(context);
+	info('UI组件注册完成');
 	
 	// 5. 注册扩展命令
+	info('开始注册扩展命令...');
 	registerCommands(context);
+	info('扩展命令注册完成');
 	
 	// 获取更多插件配置
 	const enableAutoCheck = config.get<boolean>('enableAutoCheck', true);
+	info(`自动检查工作区规则设置: ${enableAutoCheck ? '已启用' : '已禁用'}`);
 	
 	// 7. 检查工作区规则
+	info('开始检查工作区规则...');
 	await checkWorkspaceRules(context, enableAutoCheck);
+	info('工作区规则检查完成');
 	
 	// 8. 注册工作区变化监听器
+	info('开始注册工作区变化监听器...');
 	registerWorkspaceChangeListener(context, enableAutoCheck);
+	info('工作区变化监听器注册完成');
+	
+	// 再次检查全局状态，确认是否正确更新
+	const updatedExtensionVersion = context.globalState.get<string>('extensionVersion');
+	info(`激活后全局状态中的扩展版本: ${updatedExtensionVersion || '未设置'}`);
 	
 	// 记录扩展激活完成
-	info('扩展激活完成');
+	info('========== 扩展激活完成 ==========');
 }
 
 /**
