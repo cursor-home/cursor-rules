@@ -64,6 +64,10 @@
       {
         "command": "cursor-rules-assistant.setLogLevel",
         "title": "设置日志级别"
+      },
+      {
+        "command": "cursor-rules-assistant.resetExtensionState",
+        "title": "[开发] 重置扩展状态 (模拟首次安装)"
       }
     ],
     "menus": {
@@ -109,6 +113,10 @@
         {
           "command": "cursor-rules-assistant.setLogLevel",
           "group": "Cursor 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.resetExtensionState",
+          "group": "Cursor 开发"
         }
       ],
       "menuBar/edit": [

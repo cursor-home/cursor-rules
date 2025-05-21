@@ -151,6 +151,18 @@ function registerCommands(context: vscode.ExtensionContext): void {
 		vscode.commands.registerCommand('cursor-rules-assistant.openWelcomePage', () => {
 			// 执行打开欢迎页面命令时传递context参数
 			vscode.commands.executeCommand('_cursor-rules-assistant.openWelcomePageWithContext', context);
+		}),
+		// 添加开发测试命令，用于重置扩展状态，模拟首次安装
+		vscode.commands.registerCommand('cursor-rules-assistant.resetExtensionState', () => {
+			// 清除版本记录
+			context.globalState.update('extensionVersion', undefined).then(() => {
+				info('已重置扩展状态，下次激活时将模拟首次安装');
+				vscode.window.showInformationMessage('扩展状态已重置！重启VSCode或重新加载窗口以模拟首次安装体验。', '重新加载窗口').then(selection => {
+					if (selection === '重新加载窗口') {
+						vscode.commands.executeCommand('workbench.action.reloadWindow');
+					}
+				});
+			});
 		})
 	);
 }
