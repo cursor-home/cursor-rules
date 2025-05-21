@@ -39,16 +39,18 @@ interface TechStackInfo {
   confidence: number;
 }
 
-// 预定义的规则模板
+// 预定义的规则模板，这个模板应该和manager.ts中的保持一致
+// 由于webview与扩展主进程运行在不同的上下文中，所以需要在这里重新定义
+// 而不是直接导入，确保两边的模板数据一致
 const ruleTemplates: RuleTemplate[] = [
   {
     id: 'basic',
     name: '基础规则',
-    description: '包含基本代码风格和安全规则',
+    description: '适用于所有项目的通用规则',
     content: `---
-description: 基本项目规则
+description: 通用项目规则
 ---
-# 项目规范
+# 通用编码规范
 
 ## 代码风格
 - 使用一致的缩进和格式
