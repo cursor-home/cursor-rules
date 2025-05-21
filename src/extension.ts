@@ -76,7 +76,6 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 		}
 		
 		info(`成功获取扩展信息，扩展ID: ${extension.id}, 扩展路径: ${extension.extensionPath}`);
-		info(`扩展详细信息: isActive=${extension.isActive}, exports=${Object.keys(extension.exports || {}).join(',')}`);
 		info(`packageJSON: ${JSON.stringify({
 			name: extension.packageJSON.name,
 			version: extension.packageJSON.version,
@@ -98,78 +97,73 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 			info('检测到首次安装，准备显示欢迎信息');
 			info(`全局状态 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
 			
-			// 使用setTimeout确保欢迎信息在其他UI元素加载后显示
-			info(`设置定时器，将在500ms后触发显示欢迎对话框...`);
-			setTimeout(() => {
-				info('定时器触发，正在显示欢迎对话框...');
+			// 直接显示欢迎信息，不使用setTimeout
+			info('直接显示欢迎对话框...');
+			
+			// 使用模态对话框代替通知，确保用户能看到
+			info('调用vscode.window.showInformationMessage显示模态对话框...');
+			vscode.window.showInformationMessage(
+				'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
+				{ modal: true }, // 使用模态对话框，强制用户关注
+				'查看指南', '以后再说'
+			).then(selection => {
+				info(`欢迎对话框用户选择: ${selection || '未选择(对话框可能被关闭)'}`);
+				if (selection === '查看指南') {
+					info('用户选择查看入门指南，打开欢迎页面...');
+					showWelcomePage(context);
+					info('欢迎页面打开请求已发送');
+				} else {
+					info('用户选择跳过入门指南或关闭了对话框');
+				}
 				
-				// 使用模态对话框代替通知，确保用户能看到
-				info('调用vscode.window.showInformationMessage显示模态对话框...');
-				vscode.window.showInformationMessage(
-					'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
-					{ modal: true }, // 使用模态对话框，强制用户关注
-					'查看指南', '以后再说'
-				).then(selection => {
-					info(`欢迎对话框用户选择: ${selection || '未选择(对话框可能被关闭)'}`);
-					if (selection === '查看指南') {
-						info('用户选择查看入门指南，打开欢迎页面...');
-						showWelcomePage(context);
-						info('欢迎页面打开请求已发送');
-					} else {
-						info('用户选择跳过入门指南或关闭了对话框');
-					}
-					
-					// 在用户做出选择后再更新版本信息
-					info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
-					context.globalState.update('extensionVersion', extensionVersion).then(() => {
-						info(`全局状态更新成功，当前 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
-					}, err => {
-						error(`更新全局状态失败: ${err instanceof Error ? err.message : String(err)}`);
-					});
+				// 在用户做出选择后再更新版本信息
+				info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
+				context.globalState.update('extensionVersion', extensionVersion).then(() => {
+					info(`全局状态更新成功，当前 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
 				}, err => {
-					// 处理可能的错误
-					error(`显示欢迎对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
-					// 出错时也更新版本信息，避免反复提示
-					context.globalState.update('extensionVersion', extensionVersion);
+					error(`更新全局状态失败: ${err instanceof Error ? err.message : String(err)}`);
 				});
-				
-				// 记录日志以便调试
-				info('欢迎对话框显示请求已发送');
-			}, 500); // 减少延迟到500毫秒，减少用户等待时间
-			info('定时器已设置，将在500ms后触发');
+			}, err => {
+				// 处理可能的错误
+				error(`显示欢迎对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
+				// 出错时也更新版本信息，避免反复提示
+				context.globalState.update('extensionVersion', extensionVersion);
+			});
+			
+			// 记录日志以便调试
+			info('欢迎对话框显示请求已发送');
 		} else if (previousVersion !== extensionVersion) {
 			// 版本更新情况：显示更新通知
 			info(`检测到版本更新：${previousVersion} -> ${extensionVersion}`);
 			
-			setTimeout(() => {
-				info('正在显示版本更新对话框...');
+			// 直接显示更新通知，不使用setTimeout
+			info('直接显示版本更新对话框...');
+			
+			// 同样使用模态对话框
+			vscode.window.showInformationMessage(
+				`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
+				{ modal: true }, // 使用模态对话框
+				'查看更新', '忽略'
+			).then(selection => {
+				info(`更新对话框用户选择: ${selection || '未选择'}`);
+				if (selection === '查看更新') {
+					info('用户选择查看更新内容');
+					showWelcomePage(context);
+				} else {
+					info('用户选择忽略更新内容');
+				}
 				
-				// 同样使用模态对话框
-				vscode.window.showInformationMessage(
-					`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
-					{ modal: true }, // 使用模态对话框
-					'查看更新', '忽略'
-				).then(selection => {
-					info(`更新对话框用户选择: ${selection || '未选择'}`);
-					if (selection === '查看更新') {
-						info('用户选择查看更新内容');
-						showWelcomePage(context);
-					} else {
-						info('用户选择忽略更新内容');
-					}
-					
-					// 在用户做出选择后再更新版本信息
-					info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
-					context.globalState.update('extensionVersion', extensionVersion);
-				}, err => {
-					// 处理可能的错误
-					error(`显示更新对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
-					// 出错时也更新版本信息
-					context.globalState.update('extensionVersion', extensionVersion);
-				});
-				
-				info('版本更新对话框显示请求已发送');
-			}, 500);
+				// 在用户做出选择后再更新版本信息
+				info(`更新全局状态 'extensionVersion' 为 ${extensionVersion}`);
+				context.globalState.update('extensionVersion', extensionVersion);
+			}, err => {
+				// 处理可能的错误
+				error(`显示更新对话框时出错: ${err instanceof Error ? err.message : String(err)}`);
+				// 出错时也更新版本信息
+				context.globalState.update('extensionVersion', extensionVersion);
+			});
+			
+			info('版本更新对话框显示请求已发送');
 		} else {
 			// 相同版本，直接更新状态
 			info(`版本相同 (${extensionVersion})，跳过显示欢迎/更新信息`);
@@ -258,16 +252,22 @@ function registerCommands(context: vscode.ExtensionContext): void {
 			vscode.commands.executeCommand('_cursor-rules-assistant.openWelcomePageWithContext', context);
 		}),
 		// 添加开发测试命令，用于重置扩展状态，模拟首次安装
-		vscode.commands.registerCommand('cursor-rules-assistant.resetExtensionState', () => {
+		vscode.commands.registerCommand('cursor-rules-assistant.resetExtensionState', async () => {
 			// 清除版本记录
-			context.globalState.update('extensionVersion', undefined).then(() => {
-				info('已重置扩展状态，下次激活时将模拟首次安装');
-				vscode.window.showInformationMessage('扩展状态已重置！重启VSCode或重新加载窗口以模拟首次安装体验。', '重新加载窗口').then(selection => {
-					if (selection === '重新加载窗口') {
-						vscode.commands.executeCommand('workbench.action.reloadWindow');
-					}
-				});
-			});
+			try {
+				await context.globalState.update('extensionVersion', undefined);
+				info('已重置扩展状态，即将显示首次安装体验');
+				
+				// 立即显示欢迎页面，不需要重启
+				info('正在显示欢迎页面...');
+				const panel = showWelcomePage(context);
+				info('欢迎页面显示成功');
+				
+				vscode.window.showInformationMessage('扩展状态已重置！欢迎页面已打开。您可以关闭页面后随时从命令面板重新打开。');
+			} catch (err) {
+				error(`重置扩展状态时出错: ${err instanceof Error ? err.message : String(err)}`);
+				vscode.window.showErrorMessage(`重置扩展状态失败: ${err instanceof Error ? err.message : String(err)}`);
+			}
 		})
 	);
 }
@@ -463,6 +463,24 @@ export async function activate(context: vscode.ExtensionContext) {
 	// 再次检查全局状态，确认是否正确更新
 	const updatedExtensionVersion = context.globalState.get<string>('extensionVersion');
 	info(`激活后全局状态中的扩展版本: ${updatedExtensionVersion || '未设置'}`);
+	
+	// 备用方案：如果扩展版本仍未设置，那么直接显示欢迎页面
+	if (!updatedExtensionVersion) {
+		info(`备用方案：直接显示欢迎页面...`);
+		// 对于首次安装的用户，还是应该看到欢迎页面
+		try {
+			const welcomePanel = showWelcomePage(context);
+			info(`备用方案：欢迎页面已显示`);
+			
+			// 更新版本信息
+			const thisVersion = vscode.extensions.getExtension('CC11001100.cursor-rules-assistant')?.packageJSON.version || '0.0.1';
+			context.globalState.update('extensionVersion', thisVersion).then(() => {
+				info(`全局状态更新成功，当前 'extensionVersion': ${context.globalState.get('extensionVersion')}`);
+			});
+		} catch (err) {
+			error(`备用方案显示欢迎页面失败: ${err instanceof Error ? err.message : String(err)}`);
+		}
+	}
 	
 	// 记录扩展激活完成
 	info('========== 扩展激活完成 ==========');
