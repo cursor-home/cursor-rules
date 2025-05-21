@@ -1,0 +1,123 @@
+/**
+ * styles/AddRulePage.css
+ * 
+ * Styles for the AddRulePage component
+ */
+
+.rule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px;
+  border: 1px solid var(--vscode-input-border, #ccc);
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border-radius: 2px;
+  font-family: var(--vscode-font-family);
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.tech-stack-fieldset {
+  border: 1px solid var(--vscode-panel-border, #ccc);
+  border-radius: 4px;
+  padding: 16px;
+  margin: 8px 0;
+}
+
+.tech-stack-fieldset legend {
+  padding: 0 8px;
+  font-weight: 500;
+}
+
+.fieldset-description {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.cancel-button {
+  background: transparent;
+  border: 1px solid var(--vscode-button-secondaryBorder, #ccc);
+  color: var(--vscode-button-secondaryForeground);
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.submit-button {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground);
+}
+
+.form-error {
+  margin-bottom: 16px;
+}
+
+/* Badge styles for rule cards */
+.rule-badge {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.badge-builtin {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.badge-custom {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+.badge-local {
+  background-color: #fff3e0;
+  color: #e65100;
+} 

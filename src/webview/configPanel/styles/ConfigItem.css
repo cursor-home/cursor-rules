@@ -1,0 +1,51 @@
+/**
+ * 配置项样式
+ */
+.config-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.config-item:last-child {
+  border-bottom: none;
+}
+
+.config-label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--vscode-foreground);
+}
+
+.config-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  font-size: 14px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.config-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  font-size: 14px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.config-input:focus, 
+.config-select:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* 复选框样式 */
+input[type="checkbox"] {
+  margin-right: 8px;
+  vertical-align: middle;
+} 

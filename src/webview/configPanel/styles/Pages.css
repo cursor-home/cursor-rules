@@ -1,0 +1,308 @@
+/**
+ * Pages.css
+ * 页面样式
+ */
+
+/* 共享页面样式 */
+.page-content {
+  padding: 15px 20px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.page-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  padding-bottom: 15px;
+}
+
+.page-header.with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.page-header h2 {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--vscode-foreground);
+}
+
+.page-description {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.refresh-button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+.settings-section {
+  margin-bottom: 25px;
+}
+
+.settings-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.section-description {
+  margin: 0 0 15px 0;
+  opacity: 0.8;
+  font-size: 13px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+/* 规则列表页面样式 */
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.rule-count {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.rule-card {
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--vscode-editor-background);
+}
+
+.rule-card:hover {
+  background-color: var(--vscode-list-hoverBackground);
+  border-color: var(--vscode-focusBorder);
+}
+
+.rule-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.rule-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.rule-glob {
+  font-size: 11px;
+  background-color: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.rule-description {
+  margin-bottom: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.rule-path {
+  font-size: 11px;
+  opacity: 0.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.open-file-button {
+  background: none;
+  border: none;
+  color: var(--vscode-textLink-foreground);
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 2px;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.open-file-button:hover {
+  opacity: 1;
+  background-color: var(--vscode-textLink-activeForeground);
+  color: var(--vscode-editor-background);
+}
+
+/* 加载、错误和空状态样式 */
+.loading-indicator, .error-message, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  background-color: var(--vscode-editor-background);
+  border-radius: 4px;
+  border: 1px solid var(--vscode-panel-border);
+  margin: 20px 0;
+  gap: 15px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--vscode-panelTitle-activeBorder);
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon, .empty-icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.error-title, .empty-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.error-detail, .empty-description {
+  font-size: 13px;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* 插件页面样式 */
+.info-box {
+  background-color: var(--vscode-inputValidation-infoBorder);
+  border-left: 3px solid var(--vscode-inputValidation-infoBorder);
+  padding: 12px;
+  border-radius: 3px;
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.info-icon {
+  margin-top: 2px;
+}
+
+.info-content {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.info-content p {
+  margin: 5px 0;
+}
+
+.github-info-panel {
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.github-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.github-project {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.github-project a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.github-project a:hover {
+  text-decoration: underline;
+}
+
+.github-star-link {
+  padding: 4px 8px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.github-star-link:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.github-description {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.github-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.github-links a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.github-links a:hover {
+  text-decoration: underline;
+} 

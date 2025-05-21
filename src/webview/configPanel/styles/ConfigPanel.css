@@ -1,0 +1,225 @@
+/**
+ * ConfigPanel.css
+ * 配置面板主样式文件
+ */
+.config-panel {
+  display: flex;
+  height: 100vh;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  overflow: hidden;
+}
+
+.config-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.config-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.config-subtitle {
+  font-size: 16px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.config-description {
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.config-section {
+  margin-bottom: 20px;
+}
+
+.config-button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 8px 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.config-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.preview-button {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+
+.preview-button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.create-button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.config-footer {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vscode-panel-border);
+}
+
+/* 配置项样式 */
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.config-item-header {
+  flex: 1;
+}
+
+.config-item-label {
+  font-size: 14px;
+}
+
+.config-item-content {
+  min-width: 120px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 模板部分样式 */
+.template-section {
+  margin-top: 15px;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 3px;
+  padding: 15px;
+  background-color: var(--vscode-editor-background);
+}
+
+.template-select {
+  margin-bottom: 15px;
+}
+
+.template-select select {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 6px;
+  background-color: var(--vscode-dropdown-background);
+  color: var(--vscode-dropdown-foreground);
+  border: 1px solid var(--vscode-dropdown-border);
+  border-radius: 2px;
+}
+
+.template-description {
+  margin: 8px 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.template-actions {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.template-preview {
+  margin-top: 15px;
+  border-top: 1px solid var(--vscode-panel-border);
+  padding-top: 15px;
+}
+
+.template-preview h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.template-preview pre {
+  background-color: var(--vscode-editor-background);
+  padding: 10px;
+  border-radius: 3px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 12px;
+  line-height: 1.5;
+  max-height: 300px;
+  border: 1px solid var(--vscode-panel-border);
+}
+
+/* 开关样式 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--vscode-checkbox-background);
+  border: 1px solid var(--vscode-checkbox-border);
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--vscode-checkbox-foreground);
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--vscode-inputOption-activeBackground);
+  border-color: var(--vscode-inputOption-activeBorder);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* 输入框样式 */
+.text-input,
+.number-input,
+.select-input {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  padding: 4px 8px;
+  border-radius: 2px;
+  width: 100%;
+} 
