@@ -1,119 +1,321 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import { ConfigPanelViewProvider } from './config/configProvider';
-import { showWelcomePage } from './webview/welcome';
-import { allCommands } from './commands';
-import { checkCursorRules, shouldShowPrompt, showCursorRulesPrompt } from './cursorRules/checker';
-import { handleCursorRulesChoice } from './cursorRules/manager';
+/**
+ * Cursor Rules Assistant 扩展主入口文件
+ * 
+ * 该文件负责扩展的激活、初始化和注册功能，是整个扩展的入口点。
+ * 包含扩展激活时（activate函数）和停用时（deactivate函数）执行的代码。
+ */
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
-	console.log('Cursor Rules Assistant 已激活！');
-	
-	// 检查是否首次安装或更新
+// VSCode扩展API，提供了与VSCode编辑器交互的功能
+import * as vscode from 'vscode';
+// 配置面板视图提供者，负责展示扩展配置UI
+import { ConfigPanelViewProvider } from './config/configProvider';
+// 欢迎页面显示函数，用于向用户展示入门指南
+import { showWelcomePage } from './webview/welcome';
+// 所有注册的命令集合，包括规则相关、AI相关和工具相关命令
+import { allCommands } from './commands';
+// Cursor Rules检查相关函数，用于检测工作区是否存在规则和显示提示
+import { checkCursorRules, shouldShowPrompt, showCursorRulesPrompt } from './cursorRules/checker';
+// 处理用户对Cursor Rules提示的选择
+import { handleCursorRulesChoice } from './cursorRules/manager';
+// 日志功能从logger模块导入
+import { 
+	LogLevel, 
+	initializeLogging, 
+	info, 
+	warn, 
+	error 
+} from './logger/logger';
+
+
+/**
+ * 检查扩展版本并处理欢迎信息
+ * 
+ * 检测是首次安装还是版本更新，并显示相应的欢迎信息
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @returns {Promise<void>} 无返回值的Promise
+ */
+async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<void> {
+	// 检查扩展版本，用于判断是首次安装还是更新
+	// 示例：extensionVersion = "0.0.1"
 	const extensionVersion = vscode.extensions.getExtension('cursor-rules-assistant')?.packageJSON.version;
+	// 从全局状态获取之前存储的版本号，首次安装时为undefined
 	const previousVersion = context.globalState.get<string>('extensionVersion');
 	
-	// 首次安装时或版本变更时显示欢迎信息
+	// 首次安装或版本更新时显示相应的欢迎信息
 	if (!previousVersion) {
-		// 首次安装
+		// 首次安装情况：显示入门指南选项
+		info('首次安装扩展，显示欢迎信息');
 		vscode.window.showInformationMessage(
 			'Cursor Rules Assistant 安装成功！是否要查看入门指南？',
 			'查看指南', '以后再说'
 		).then(selection => {
+			// 用户选择"查看指南"时，打开欢迎页面
 			if (selection === '查看指南') {
-				// 显示欢迎页面
 				showWelcomePage(context);
 			}
 		});
 	} else if (previousVersion !== extensionVersion) {
-		// 版本更新
+		// 版本更新情况：显示更新通知
+		info(`扩展已更新：${previousVersion} -> ${extensionVersion}`);
 		vscode.window.showInformationMessage(
 			`Cursor Rules Assistant 已更新到 v${extensionVersion}！查看新特性？`,
 			'查看更新', '忽略'
 		).then(selection => {
+			// 用户选择"查看更新"时，打开欢迎页面
 			if (selection === '查看更新') {
-				// 显示欢迎页面，但聚焦于更新内容
 				showWelcomePage(context);
 			}
 		});
 	}
 	
-	// 保存当前版本号
+	// 更新全局状态中的版本号，用于下次比较
 	context.globalState.update('extensionVersion', extensionVersion);
-	
-	// 注册配置面板提供者
+}
+
+/**
+ * 注册UI组件
+ * 
+ * 注册配置面板视图提供者，使配置面板在活动栏中可见
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @returns {void} 无返回值
+ */
+function registerUIComponents(context: vscode.ExtensionContext): void {
+	// 注册配置面板视图提供者
+	// 这将在活动栏中显示扩展的配置面板
+	info('注册配置面板提供者');
 	const configPanelProvider = new ConfigPanelViewProvider(context.extensionUri, context);
+	// 将视图提供者添加到订阅数组，以便扩展停用时自动释放资源
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(
-			ConfigPanelViewProvider.viewType,
+			ConfigPanelViewProvider.viewType, // 视图类型ID，固定为'cursor-rules-assistant.configView'
 			configPanelProvider
 		)
 	);
-	
+}
+
+/**
+ * 注册扩展命令
+ * 
+ * 注册所有扩展命令，包括规则相关、AI相关和工具相关命令
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @returns {void} 无返回值
+ */
+function registerCommands(context: vscode.ExtensionContext): void {
 	// 注册所有命令
+	// allCommands包含了规则相关、AI相关和工具相关的所有命令
+	info('注册扩展命令');
 	context.subscriptions.push(...allCommands);
 	
-	// 启动时检查Cursor Rules
+	// 注册带context参数的特殊命令
+	context.subscriptions.push(
+		vscode.commands.registerCommand('cursor-rules-assistant.openConfig', () => {
+			// 执行打开配置面板命令时传递context参数
+			vscode.commands.executeCommand('_cursor-rules-assistant.openConfigWithContext', context);
+		}),
+		vscode.commands.registerCommand('cursor-rules-assistant.openWelcomePage', () => {
+			// 执行打开欢迎页面命令时传递context参数
+			vscode.commands.executeCommand('_cursor-rules-assistant.openWelcomePageWithContext', context);
+		})
+	);
+}
+
+/**
+ * 设置规则预加载
+ * 
+ * 根据用户配置决定是否预加载所有规则
+ * 
+ * @param {boolean} preloadRules - 是否预加载规则的配置选项
+ * @returns {void} 无返回值
+ */
+function setupRulePreloading(preloadRules: boolean): void {
+	// TODO: 规则预加载功能尚未实现
+	if (preloadRules) {
+		info('规则预加载功能正在开发中...');
+	} else {
+		info('规则预加载已禁用');
+	}
+}
+
+/**
+ * 检查工作区规则
+ * 
+ * 为所有打开的工作区检查Cursor Rules状态，并根据需要显示配置提示
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @param {boolean} enableAutoCheck - 是否启用自动检查的配置选项
+ * @returns {Promise<void>} 无返回值的Promise
+ */
+async function checkWorkspaceRules(
+	context: vscode.ExtensionContext, 
+	enableAutoCheck: boolean
+): Promise<void> {
+	// 获取当前打开的所有工作区
+	// 示例：workspaceFolders = [{name: "project1", uri: {...}}, {name: "project2", uri: {...}}]
 	const workspaceFolders = vscode.workspace.workspaceFolders;
+	// 如果没有打开的工作区，则跳过规则检查
 	if (!workspaceFolders || workspaceFolders.length === 0) {
+		warn('未检测到工作区，跳过规则检查');
 		return;
 	}
 	
-	// 获取插件配置
-	const config = vscode.workspace.getConfiguration('cursor-rules-assistant');
-	const enableAutoCheck = config.get<boolean>('enableAutoCheck', true);
-	
-	// 如果启用了自动检查，则检查每个工作区
-	if (enableAutoCheck) {
-		// 为每个工作区检查Cursor Rules
-		for (const workspaceFolder of workspaceFolders) {
-			// 检查是否应该显示提示
-			if (!shouldShowPrompt(context, workspaceFolder)) {
-				continue;
-			}
-			
-			// 检查是否存在Cursor Rules
-			const checkResult = await checkCursorRules(workspaceFolder);
-			if (checkResult.exists) {
-				continue;
-			}
-			
-			// 显示提示
-			const choice = await showCursorRulesPrompt(workspaceFolder);
-			await handleCursorRulesChoice(choice, context, workspaceFolder);
-		}
+	// 如果启用了自动检查选项，则为每个工作区检查Cursor Rules
+	if (!enableAutoCheck) {
+		info('自动检查已禁用，跳过规则检查');
+		return;
 	}
 	
-	// 监听工作区变化
+	info('自动检查工作区中的规则');
+	// 遍历所有工作区
+	for (const workspaceFolder of workspaceFolders) {
+		await checkSingleWorkspace(context, workspaceFolder);
+	}
+}
+
+/**
+ * 检查单个工作区的规则
+ * 
+ * 检查指定工作区的Cursor Rules状态，如果需要则显示配置提示
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @param {vscode.WorkspaceFolder} workspaceFolder - 要检查的工作区文件夹对象
+ * @returns {Promise<void>} 无返回值的Promise
+ */
+async function checkSingleWorkspace(
+	context: vscode.ExtensionContext,
+	workspaceFolder: vscode.WorkspaceFolder
+): Promise<void> {
+	info(`检查工作区: ${workspaceFolder.name}`);
+	// 检查是否应该为该工作区显示提示
+	// 如果用户之前选择了"不再提示"，则shouldShowPrompt返回false
+	if (!shouldShowPrompt(context, workspaceFolder)) {
+		info(`跳过工作区 ${workspaceFolder.name}，提示已被禁用或已显示`);
+		return;
+	}
+	
+	// 检查工作区是否已存在Cursor Rules
+	// 返回结果示例：{exists: true, paths: ['/path/to/.cursor/rules']}
+	const checkResult = await checkCursorRules(workspaceFolder);
+	if (checkResult.exists) {
+		info(`工作区 ${workspaceFolder.name} 已存在规则文件`);
+		return;
+	}
+	
+	// 如果工作区不存在规则，显示提示并处理用户选择
+	info(`向工作区 ${workspaceFolder.name} 显示规则提示`);
+	// 可能的选择：'自动配置'、'手动配置'、'本次跳过'或'不再提示'
+	const choice = await showCursorRulesPrompt(workspaceFolder);
+	await handleCursorRulesChoice(choice, context, workspaceFolder);
+}
+
+/**
+ * 注册工作区变化监听器
+ * 
+ * 监听工作区变化事件，当新工作区添加时检查规则状态
+ * 
+ * @param {vscode.ExtensionContext} context - 扩展上下文对象
+ * @param {boolean} enableAutoCheck - 是否启用自动检查的配置选项
+ * @returns {void} 无返回值
+ */
+function registerWorkspaceChangeListener(
+	context: vscode.ExtensionContext, 
+	enableAutoCheck: boolean
+): void {
+	// 监听工作区变化事件，当新工作区添加时进行检查
+	info('注册工作区变化监听器');
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeWorkspaceFolders(async event => {
-			// 当新工作区添加时检查
+			// 如果自动检查已禁用，则不处理
 			if (!enableAutoCheck) {
 				return;
 			}
 			
+			// 为新添加的每个工作区检查Cursor Rules
+			// event.added示例：[{name: "new-project", uri: {...}}]
 			for (const workspaceFolder of event.added) {
-				// 检查是否应该显示提示
-				if (!shouldShowPrompt(context, workspaceFolder)) {
-					continue;
-				}
-				
-				// 检查是否存在Cursor Rules
-				const checkResult = await checkCursorRules(workspaceFolder);
-				if (checkResult.exists) {
-					continue;
-				}
-				
-				// 显示提示
-				const choice = await showCursorRulesPrompt(workspaceFolder);
-				await handleCursorRulesChoice(choice, context, workspaceFolder);
+				await checkSingleWorkspace(context, workspaceFolder);
 			}
 		})
 	);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+/**
+ * 扩展激活函数
+ * 
+ * 当扩展首次被激活时（例如VSCode启动或执行扩展命令时）由VSCode调用。
+ * 负责初始化扩展所需的各种资源、注册命令和事件监听器，以及设置工作环境。
+ * 
+ * @param context - VSCode提供的扩展上下文对象，包含扩展的运行环境信息
+ *                  例如：context.subscriptions数组用于注册需要在扩展停用时释放的资源
+ *                  context.extensionPath包含扩展安装路径
+ *                  context.globalState用于存储全局持久化数据
+ * 
+ * @example
+ * // VSCode自动调用此函数，无需手动调用
+ * // 扩展激活示例流程：
+ * // 1. 初始化日志系统
+ * // 2. 初始化规则加载器
+ * // 3. 确保规则目录结构
+ * // 4. 检查版本并显示欢迎信息
+ * // 5. 注册配置面板
+ * // 6. 注册命令
+ * // 7. 预加载规则
+ * // 8. 检查工作区规则
+ * 
+ * @returns 无显式返回值。隐式返回一个Promise，表示激活过程的完成
+ */
+export async function activate(context: vscode.ExtensionContext) {
+	// 获取插件配置
+	const config = vscode.workspace.getConfiguration('cursor-rules-assistant');
+	const logLevel = config.get<string>('logLevel', 'info');
+	
+	// 1. 初始化日志系统
+	initializeLogging(logLevel);
+	
+	// 3. 检查扩展版本并处理欢迎信息
+	await checkExtensionVersion(context);
+	
+	// 4. 注册UI组件
+	registerUIComponents(context);
+	
+	// 5. 注册扩展命令
+	registerCommands(context);
+	
+	// 获取更多插件配置
+	const enableAutoCheck = config.get<boolean>('enableAutoCheck', true);
+	const preloadRules = config.get<boolean>('preloadAllRules', true);
+	
+	// 6. 设置规则预加载
+	setupRulePreloading(preloadRules);
+	
+	// 7. 检查工作区规则
+	await checkWorkspaceRules(context, enableAutoCheck);
+	
+	// 8. 注册工作区变化监听器
+	registerWorkspaceChangeListener(context, enableAutoCheck);
+	
+	// 记录扩展激活完成
+	info('扩展激活完成');
+}
+
+/**
+ * 扩展停用函数
+ * 
+ * 当扩展被停用时（例如VSCode关闭或扩展被明确禁用时）由VSCode调用。
+ * 用于执行清理操作，释放资源，保存状态等。
+ * 
+ * 注意：大部分资源的释放是通过context.subscriptions自动处理的，
+ * 因此此函数通常只需处理特殊的清理工作。
+ * 
+ * @example
+ * // VSCode自动调用此函数，无需手动调用
+ * // 目前只记录日志，未执行其他操作
+ * 
+ * @returns void - 无返回值
+ */
+export function deactivate() {
+	// 记录扩展停用日志
+	info('Cursor Rules Assistant 已停用');
+}

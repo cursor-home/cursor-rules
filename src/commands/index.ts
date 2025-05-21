@@ -1,5 +1,13 @@
 import { generateCodeCommand, streamConversationCommand, advancedConversationCommand } from './aiCommands';
-import { openConfigCommand, openWelcomePageCommand, createCursorRulesCommand, detectTechStackCommand } from './ruleCommands';
+import { 
+  openConfigCommand, 
+  openWelcomePageCommand, 
+  createCursorRulesCommand, 
+  detectTechStackCommand,
+  browseRulesCommand,
+  recommendRulesCommand
+} from './ruleCommands';
+import { utilCommands } from './utilCommands';
 
 /**
  * AI相关命令
@@ -17,7 +25,9 @@ export const ruleCommands = [
     openConfigCommand,
     openWelcomePageCommand,
     createCursorRulesCommand,
-    detectTechStackCommand
+    detectTechStackCommand,
+    browseRulesCommand,
+    recommendRulesCommand
 ];
 
 /**
@@ -25,5 +35,6 @@ export const ruleCommands = [
  */
 export const allCommands = [
     ...ruleCommands,
-    ...aiCommands
+    ...aiCommands,
+    ...utilCommands
 ]; 
