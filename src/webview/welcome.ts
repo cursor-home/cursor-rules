@@ -487,17 +487,19 @@ export function getWelcomePageContent(): string {
             </div>
         </div>
         
-        <div class="feature-box">
+        <div class="feature-box upcoming-feature">
             <div class="feature-title">
                 <span class="emoji">🤖</span>
                 <span>AI 辅助功能</span>
+                <span style="margin-left: 8px; font-size: 0.75em; background-color: rgba(255, 193, 7, 0.2); color: #ff9800; padding: 2px 8px; border-radius: 10px; font-weight: normal;">研发中</span>
             </div>
             <div class="feature-content">
                 <p>使用集成的 AI 功能生成代码、解答问题或进行编程对话。<strong>基于项目上下文的智能理解能力不断增强</strong>。</p>
+                <p style="font-style: italic; opacity: 0.8; margin-top: 10px;">该功能目前正在研发中，即将推出，敬请期待！</p>
             </div>
             <div class="feature-actions">
-                <button class="action-button" onclick="executeCommand('cursor-rules-assistant.generateCode')">生成代码</button>
-                <button class="action-button" onclick="executeCommand('cursor-rules-assistant.streamConversation')">AI 对话</button>
+                <button class="action-button" style="opacity: 0.6; cursor: not-allowed;" disabled title="功能即将推出">生成代码</button>
+                <button class="action-button" style="opacity: 0.6; cursor: not-allowed;" disabled title="功能即将推出">AI 对话</button>
             </div>
         </div>
         
@@ -536,7 +538,8 @@ export function getWelcomePageContent(): string {
             <div class="command-name">检测技术栈</div>
             <span class="command">Cursor Rules Assistant: 检测项目技术栈</span>
         </div>
-        <div class="command-item">
+        <div class="command-item" style="opacity: 0.7; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 5px; right: 5px; font-size: 0.65em; background-color: rgba(255, 193, 7, 0.2); color: #ff9800; padding: 2px 8px; border-radius: 10px;">研发中</div>
             <div class="command-name">AI生成代码</div>
             <span class="command">Cursor Rules Assistant: 使用Cursor AI生成代码</span>
         </div>
