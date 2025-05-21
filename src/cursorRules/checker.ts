@@ -82,7 +82,11 @@ import { debug, info, warn, error } from '../logger/logger';
 export async function checkCursorRules(workspaceFolder: vscode.WorkspaceFolder): Promise<CursorRulesCheckResult> {
 	const result: CursorRulesCheckResult = {
 		exists: false,
-		paths: []
+		paths: [],
+		details: {
+			newFormat: false,
+			legacyFormat: false
+		}
 	};
 	
 	if (!workspaceFolder) {
@@ -99,6 +103,8 @@ export async function checkCursorRules(workspaceFolder: vscode.WorkspaceFolder):
 		debug(`检测到规则目录: ${rulesDir}`);
 		result.exists = true;
 		result.paths.push(rulesDir);
+		result.details!.newFormat = true;
+		result.details!.newFormatPath = rulesDir;
 	}
 	
 	// 检查 .cursorrules 文件（旧版本格式）
@@ -107,10 +113,21 @@ export async function checkCursorRules(workspaceFolder: vscode.WorkspaceFolder):
 		debug(`检测到旧版本规则文件: ${legacyRulesFile}`);
 		result.exists = true;
 		result.paths.push(legacyRulesFile);
+		result.details!.legacyFormat = true;
+		result.details!.legacyFormatPath = legacyRulesFile;
+	}
+	
+	// 设置版本信息
+	if (result.details!.newFormat && result.details!.legacyFormat) {
+		result.version = 'both';
+	} else if (result.details!.newFormat) {
+		result.version = 'new';
+	} else if (result.details!.legacyFormat) {
+		result.version = 'legacy';
 	}
 	
 	if (result.exists) {
-		info(`工作区 ${workspaceFolder.name} 存在Cursor Rules: ${result.paths.join(', ')}`);
+		info(`工作区 ${workspaceFolder.name} 存在Cursor Rules: ${result.paths.join(', ')} (版本: ${result.version})`);
 	} else {
 		info(`工作区 ${workspaceFolder.name} 不存在Cursor Rules`);
 	}
@@ -288,8 +305,8 @@ export function saveNeverAskAgain(context: vscode.ExtensionContext, workspaceFol
  * ```
  * 
  * 显示给用户的选项：
- * 1. "自动配置" - 自动创建基础Cursor Rules配置
- * 2. "手动配置" - 打开手动配置向导
+ * 1. "自动配置" - 自动创建Cursor Rules配置 (新版格式)
+ * 2. "手动配置" - 打开手动配置向导 (推荐新版格式)
  * 3. "暂不配置" - 本次跳过，下次仍提示
  * 4. "此项目不再提示" - 记住用户选择，不再为此项目显示提示
  */
@@ -299,8 +316,8 @@ export async function showCursorRulesPrompt(workspaceFolder: vscode.WorkspaceFol
 	info(`显示Cursor Rules配置提示: ${workspaceFolder.name}`);
 	
 	const options: vscode.QuickPickItem[] = [
-		{ label: CursorRulesPromptChoice.AutoConfigure, description: '自动创建基础Cursor Rules配置' },
-		{ label: CursorRulesPromptChoice.ManualConfigure, description: '打开手动配置向导' },
+		{ label: CursorRulesPromptChoice.AutoConfigure, description: '自动创建Cursor Rules配置 (新版格式)' },
+		{ label: CursorRulesPromptChoice.ManualConfigure, description: '打开手动配置向导 (推荐新版格式)' },
 		{ label: CursorRulesPromptChoice.SkipNow, description: '本次跳过，下次仍提示' },
 		{ label: CursorRulesPromptChoice.NeverAskAgain, description: '此项目不再提示' }
 	];

@@ -37,6 +37,8 @@ export function createEmptyTechStackInfo(): TechStackInfo {
  * 
  * @property exists - 是否存在Cursor Rules
  * @property paths - 找到的Cursor Rules文件/目录路径列表
+ * @property version - 版本信息
+ * @property details - 详细信息
  * 
  * @example
  * ```typescript
@@ -46,7 +48,14 @@ export function createEmptyTechStackInfo(): TechStackInfo {
  *   paths: [
  *     '/path/to/project/.cursor/rules',
  *     '/path/to/project/.cursorrules'
- *   ]
+ *   ],
+ *   version: 'both',
+ *   details: {
+ *     newFormat: true,
+ *     newFormatPath: '/path/to/project/.cursor/rules',
+ *     legacyFormat: true,
+ *     legacyFormatPath: '/path/to/project/.cursorrules'
+ *   }
  * };
  * 
  * if (result.exists) {
@@ -59,6 +68,13 @@ export function createEmptyTechStackInfo(): TechStackInfo {
 export interface CursorRulesCheckResult {
 	exists: boolean;
 	paths: string[];
+	version?: 'new' | 'legacy' | 'both';  // new: 新版目录格式 (.cursor/rules), legacy: 旧版文件格式 (.cursorrules), both: 两种格式都存在
+	details?: {
+		newFormat?: boolean;  // 是否存在新格式
+		newFormatPath?: string;  // 新格式路径
+		legacyFormat?: boolean;  // 是否存在旧格式
+		legacyFormatPath?: string;  // 旧格式路径
+	};
 }
 
 /**

@@ -370,79 +370,69 @@ export async function openManualConfiguration(): Promise<void> {
 }
 
 /**
- * 处理用户选择
+ * 处理用户对Cursor Rules提示的选择
  * 
- * 根据用户对Cursor Rules配置提示的选择，执行相应的操作。
- * 包括自动配置、手动配置、跳过和不再提示等选项的处理。
- * 
- * 选项处理逻辑：
- * - AutoConfigure：调用自动配置流程
- * - ManualConfigure：打开手动配置面板
- * - NeverAskAgain：保存用户偏好，不再为此工作区显示提示
- * - SkipNow：本次跳过，不做任何操作
- * 
- * @param {string | undefined} choice - 用户选择的选项，来自CursorRulesPromptChoice枚举
- *                                    ("自动配置", "手动配置", "暂不配置", "此项目不再提示")
- * @param {vscode.ExtensionContext} context - 扩展上下文对象，用于访问全局状态
- * @param {vscode.WorkspaceFolder} workspaceFolder - 相关的工作区文件夹对象
+ * @param {string|undefined} choice - 用户选择的操作
+ * @param {vscode.ExtensionContext} context - 扩展上下文
+ * @param {vscode.WorkspaceFolder} workspaceFolder - 工作区文件夹
  * @returns {Promise<void>} 无返回值的Promise
- * 
- * @example
- * ```typescript
- * // 显示提示并处理用户选择
- * const choice = await showCursorRulesPrompt(workspaceFolder);
- * 
- * if (choice) {
- *   // 处理用户选择
- *   await handleCursorRulesChoice(choice, context, workspaceFolder);
- *   
- *   // 根据不同选择可能会有不同的后续操作
- *   console.log(`用户选择了: ${choice}`);
- * } else {
- *   console.log('用户取消了操作');
- * }
- * ```
- * 
- * 用户选择数据样例：
- * ```typescript
- * // 用户可能的选择值
- * const choices = {
- *   autoConfigure: "自动配置",
- *   manualConfigure: "手动配置",
- *   skipNow: "暂不配置", 
- *   neverAskAgain: "此项目不再提示"
- * };
- * ```
  */
 export async function handleCursorRulesChoice(
 	choice: string | undefined,
 	context: vscode.ExtensionContext,
 	workspaceFolder: vscode.WorkspaceFolder
 ): Promise<void> {
-	// 动态导入CursorRulesPromptChoice枚举，确保类型安全
-	const { CursorRulesPromptChoice } = await import('../types');
-    
-	// 根据用户选择执行不同操作
-	switch (choice) {
-		case CursorRulesPromptChoice.AutoConfigure:
-			// 用户选择自动配置，启动自动检测技术栈和规则匹配流程
-			await autoConfigureCursorRules(workspaceFolder);
-			break;
+	// 如果用户选择自动配置
+	if (choice === '自动配置') {
+		try {
+			// 执行自动配置逻辑并显示进度提示
+			await vscode.window.withProgress({
+				location: vscode.ProgressLocation.Notification,
+				title: "正在配置Cursor Rules...",
+				cancellable: false
+			}, async () => {
+				// 调用自动配置函数，它已经包含所有必要的提示和逻辑
+				await autoConfigureCursorRules(workspaceFolder);
+			});
 			
-		case CursorRulesPromptChoice.ManualConfigure:
-			// 用户选择手动配置，打开配置面板让用户自行选择规则
-			await openManualConfiguration();
-			break;
-			
-		case CursorRulesPromptChoice.NeverAskAgain:
-			// 用户选择不再提示，将此工作区ID保存到"不再询问"列表
-			await saveNeverAskAgain(context, workspaceFolder);
-			break;
-			
-		case CursorRulesPromptChoice.SkipNow:
-		default:
-			// 用户选择暂不配置或其他情况，不执行任何操作
-			// 下次打开工作区时仍会显示提示
-			break;
+			// 显示成功消息，明确说明使用的是新版格式
+			vscode.window.showInformationMessage(
+				`已为工作区 ${workspaceFolder.name} 自动配置Cursor Rules (新版格式)`
+			);
+		} catch (err) {
+			// 处理错误
+			const errorMsg = err instanceof Error ? err.message : String(err);
+			error(`自动配置Cursor Rules失败: ${errorMsg}`);
+			vscode.window.showErrorMessage(
+				`无法为工作区 ${workspaceFolder.name} 自动配置Cursor Rules: ${errorMsg}`
+			);
+		}
+	}
+	// 如果用户选择手动配置
+	else if (choice === '手动配置') {
+		// 打开配置向导
+		vscode.window.showInformationMessage(
+			`请按照向导为工作区 ${workspaceFolder.name} 手动配置Cursor Rules (推荐新版格式)`
+		);
+		
+		// 打开配置面板或执行命令
+		vscode.commands.executeCommand('cursor-rules-assistant.createCursorRules');
+	}
+	// 如果用户选择不再提示
+	else if (choice === '不再提示') {
+		// 将此工作区记录为不再提示
+		// 获取当前禁用提示的工作区列表
+		const disabledPrompts = context.globalState.get<string[]>('disabledPrompts', []);
+		// 添加当前工作区ID
+		disabledPrompts.push(workspaceFolder.uri.toString());
+		// 保存更新后的列表
+		await context.globalState.update('disabledPrompts', disabledPrompts);
+		
+		info(`已将工作区 ${workspaceFolder.name} 添加到禁用提示列表`);
+	}
+	// 如果用户选择跳过
+	else {
+		// 本次跳过，不记录，下次仍提示
+		info(`用户选择跳过工作区 ${workspaceFolder.name} 的Cursor Rules配置`);
 	}
 } 
