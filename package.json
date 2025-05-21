@@ -17,7 +17,8 @@
     "commands": [
       {
         "command": "cursor-rules-assistant.openConfig",
-        "title": "打开配置面板"
+        "title": "打开配置面板",
+        "icon": "$(gear)"
       },
       {
         "command": "cursor-rules-assistant.createCursorRules",
@@ -29,7 +30,8 @@
       },
       {
         "command": "cursor-rules-assistant.openWelcomePage",
-        "title": "查看Cursor Rules助手入门指南"
+        "title": "查看Cursor Rules助手入门指南",
+        "icon": "$(book)"
       },
       {
         "command": "cursor-rules-assistant.browseRules",
@@ -107,6 +109,22 @@
         {
           "command": "cursor-rules-assistant.setLogLevel",
           "group": "Cursor 日志"
+        }
+      ],
+      "menuBar/edit": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "group": "navigation"
+        },
+        {
+          "command": "cursor-rules-assistant.openWelcomePage",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "group": "navigation"
         }
       ]
     },
