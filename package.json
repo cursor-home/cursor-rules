@@ -4,7 +4,7 @@
   "description": "自动检查和配置Cursor Rules的VSCode插件",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.96.0"
   },
   "categories": [
     "Other"
@@ -32,6 +32,14 @@
         "title": "查看Cursor Rules助手入门指南"
       },
       {
+        "command": "cursor-rules-assistant.browseRules",
+        "title": "浏览可用规则"
+      },
+      {
+        "command": "cursor-rules-assistant.recommendRules",
+        "title": "根据技术栈推荐规则"
+      },
+      {
         "command": "cursor-rules-assistant.generateCode",
         "title": "使用Cursor AI生成代码"
       },
@@ -42,39 +50,21 @@
       {
         "command": "cursor-rules-assistant.advancedConversation",
         "title": "使用Cursor AI进行高级对话"
+      },
+      {
+        "command": "cursor-rules-assistant.showLogs",
+        "title": "显示日志面板"
+      },
+      {
+        "command": "cursor-rules-assistant.clearLogs",
+        "title": "清空日志"
+      },
+      {
+        "command": "cursor-rules-assistant.setLogLevel",
+        "title": "设置日志级别"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "cursor-rules-assistant-view",
-          "title": "Cursor Rules助手",
-          "icon": "media/icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "cursor-rules-assistant-view": [
-        {
-          "type": "webview",
-          "id": "cursor-rules-assistant.configView",
-          "name": "配置面板"
-        }
-      ]
-    },
     "menus": {
-      "view/title": [
-        {
-          "command": "cursor-rules-assistant.openConfig",
-          "when": "view == cursor-rules-assistant.configView",
-          "group": "navigation"
-        },
-        {
-          "command": "cursor-rules-assistant.detectTechStack",
-          "when": "view == cursor-rules-assistant.configView",
-          "group": "navigation"
-        }
-      ],
       "explorer/context": [
         {
           "command": "cursor-rules-assistant.detectTechStack",
@@ -82,6 +72,14 @@
         },
         {
           "command": "cursor-rules-assistant.createCursorRules",
+          "group": "2_workspace"
+        },
+        {
+          "command": "cursor-rules-assistant.browseRules",
+          "group": "2_workspace"
+        },
+        {
+          "command": "cursor-rules-assistant.recommendRules",
           "group": "2_workspace"
         }
       ],
@@ -97,6 +95,18 @@
         {
           "command": "cursor-rules-assistant.advancedConversation",
           "group": "Cursor AI"
+        },
+        {
+          "command": "cursor-rules-assistant.showLogs",
+          "group": "Cursor 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.clearLogs",
+          "group": "Cursor 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.setLogLevel",
+          "group": "Cursor 日志"
         }
       ]
     },
@@ -122,6 +132,22 @@
           "type": "boolean",
           "default": true,
           "description": "启用技术栈检测以选择合适的模板"
+        },
+        "cursor-rules-assistant.preloadAllRules": {
+          "type": "boolean",
+          "default": true,
+          "description": "启动时预加载所有规则以提高响应速度"
+        },
+        "cursor-rules-assistant.logLevel": {
+          "type": "string",
+          "default": "info",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "description": "日志级别：debug (调试), info (信息), warn (警告), error (错误)"
         }
       }
     }
@@ -140,7 +166,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
-    "@types/vscode": "^1.100.0",
+    "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
     "@vscode/test-cli": "^0.0.10",
@@ -158,6 +184,12 @@
     "@types/react-dom": "^19.1.5",
     "axios": "^1.9.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  }
+    "react-dom": "^19.1.0",
+    "vscode-cache": "^0.3.0"
+  },
+  "files": [
+    "dist/**/*",
+    "resources/**/*",
+    "media/**/*"
+  ]
 }
