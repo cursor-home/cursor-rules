@@ -38,7 +38,7 @@ import {
 async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<void> {
 	try {
 		// 获取当前扩展
-		const extension = vscode.extensions.getExtension('cursor-rules-assistant');
+		const extension = vscode.extensions.getExtension('CC11001100.cursor-rules-assistant');
 		
 		// 如果找不到扩展，记录错误并返回
 		if (!extension) {
