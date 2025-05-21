@@ -37,14 +37,44 @@ import {
  */
 async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<void> {
 	try {
+		const extensionId = 'CC11001100.cursor-rules-assistant';
+		info(`尝试获取扩展信息，扩展ID: ${extensionId}`);
+		
 		// 获取当前扩展
-		const extension = vscode.extensions.getExtension('CC11001100.cursor-rules-assistant');
+		const extension = vscode.extensions.getExtension(extensionId);
 		
 		// 如果找不到扩展，记录错误并返回
 		if (!extension) {
-			error('无法获取扩展信息，跳过欢迎信息检查');
+			error(`无法获取扩展信息，跳过欢迎信息检查。尝试的扩展ID: ${extensionId}`);
+			
+			// 记录所有可用的扩展列表以便排查
+			const allExtensions = vscode.extensions.all;
+			info(`当前已安装的扩展总数: ${allExtensions.length}`);
+			info(`尝试查找ID包含 'cursor-rules' 的扩展...`);
+			
+			const cursorRulesExtensions = allExtensions.filter(ext => 
+				ext.id.toLowerCase().includes('cursor-rules')
+			);
+			
+			if (cursorRulesExtensions.length > 0) {
+				info(`找到与 'cursor-rules' 相关的扩展:`);
+				cursorRulesExtensions.forEach(ext => {
+					info(`- 扩展ID: ${ext.id}, 扩展路径: ${ext.extensionPath}`);
+				});
+			} else {
+				warn(`未找到任何与 'cursor-rules' 相关的扩展`);
+			}
+			
+			// 输出前10个扩展ID用于参考
+			info(`已安装扩展ID示例(最多显示10个):`);
+			allExtensions.slice(0, 10).forEach(ext => {
+				info(`- ${ext.id}`);
+			});
+			
 			return;
 		}
+		
+		info(`成功获取扩展信息，扩展ID: ${extension.id}, 扩展路径: ${extension.extensionPath}`);
 		
 		// 获取当前版本
 		const extensionVersion = extension.packageJSON.version;
@@ -101,8 +131,38 @@ async function checkExtensionVersion(context: vscode.ExtensionContext): Promise<
 			context.globalState.update('extensionVersion', extensionVersion);
 		}
 	} catch (err) {
-		// 捕获并记录任何错误
-		error(`检查扩展版本时出错: ${err instanceof Error ? err.message : String(err)}`);
+		// 捕获并记录任何错误，提供详细的错误信息和堆栈跟踪
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		const errorStack = err instanceof Error && err.stack ? err.stack : 'No stack trace available';
+		
+		error(`检查扩展版本时出错: ${errorMessage}`);
+		error(`错误详情: ${errorStack}`);
+		
+		// 记录当前环境信息以辅助调试
+		info(`VSCode版本: ${vscode.version}`);
+		info(`扩展运行环境: ${process.platform}-${process.arch}`);
+		
+		try {
+			// 尝试列出当前目录结构，可能有助于排查路径问题
+			const fs = require('fs');
+			const path = require('path');
+			const extensionPath = context.extensionPath;
+			info(`扩展路径: ${extensionPath}`);
+			
+			if (fs.existsSync(extensionPath)) {
+				const packageJsonPath = path.join(extensionPath, 'package.json');
+				if (fs.existsSync(packageJsonPath)) {
+					const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+					info(`package.json 信息: 名称=${packageJson.name}, 版本=${packageJson.version}, 发布者=${packageJson.publisher || '未设置'}`);
+				} else {
+					warn(`package.json 文件不存在: ${packageJsonPath}`);
+				}
+			} else {
+				warn(`扩展路径不存在: ${extensionPath}`);
+			}
+		} catch (fsErr) {
+			warn(`尝试读取文件系统信息时出错: ${fsErr instanceof Error ? fsErr.message : String(fsErr)}`);
+		}
 	}
 }
 
