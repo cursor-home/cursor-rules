@@ -1,17 +1,57 @@
-import { RuleTemplate } from './types';
+/**
+ * templates.ts
+ * 
+ * 规则模板定义模块，包含各种预定义的规则模板，用于快速创建Cursor Rules
+ * 
+ * 主要功能：
+ * 1. 定义不同类型项目的规则模板
+ * 2. 为模板提供ID、名称、描述和内容
+ * 3. 支持按技术栈类型筛选模板
+ */
+import { RuleTemplate } from '../types';
 
 /**
- * 预定义的规则模板
+ * 预定义规则模板集合
+ * 
+ * 包含基础模板、TypeScript模板和React模板
+ * 每个模板包含ID、名称、描述和内容
+ * 
+ * 使用方式：
+ * ```typescript
+ * // 获取基础模板
+ * const basicTemplate = ruleTemplates.find(t => t.id === 'basic');
+ * 
+ * // 应用模板
+ * if (basicTemplate) {
+ *   createRuleFromTemplate(workspaceFolder, basicTemplate);
+ * }
+ * ```
  */
 export const ruleTemplates: RuleTemplate[] = [
+	/**
+	 * 基础规则模板
+	 * 
+	 * 提供通用的编码规范，适用于任何类型的项目
+	 * 不包含特定语言或框架的规则
+	 * 
+	 * 特点：
+	 * - 提供基本的代码风格指南
+	 * - 包含基础的安全规则
+	 * - 留有项目特定规则的空间
+	 * 
+	 * 使用时机：
+	 * - 无法确定项目的技术栈
+	 * - 作为多语言混合项目的基础
+	 * - 快速初始化规则时使用
+	 */
 	{
 		id: 'basic',
 		name: '基础规则',
-		description: '包含基本代码风格和安全规则',
+		description: '适用于所有项目的通用规则',
 		content: `---
-description: 基本项目规则
+description: 通用项目规则
 ---
-# 项目规范
+# 通用编码规范
 
 ## 代码风格
 - 使用一致的缩进和格式
@@ -28,6 +68,26 @@ description: 基本项目规则
 - 在此添加项目特有的规则和惯例
 `
 	},
+	
+	/**
+	 * TypeScript规则模板
+	 * 
+	 * 专为TypeScript项目设计的规则，包含类型声明、函数规范和项目组织规则
+	 * 设置了globs属性以匹配所有.ts和.tsx文件
+	 * 
+	 * 特点：
+	 * - 专注于TypeScript的类型系统最佳实践
+	 * - 包含清晰的函数签名规范
+	 * - 提供项目组织结构建议
+	 * 
+	 * 使用时机：
+	 * - 检测到项目使用TypeScript
+	 * - 纯TypeScript项目或TypeScript与JavaScript混合项目
+	 * - Node.js后端或前端非React项目
+	 * 
+	 * globs属性：
+	 * "** /*.ts,** /*.tsx" - 匹配所有.ts和.tsx文件，使规则仅应用于这些文件
+	 */
 	{
 		id: 'typescript',
 		name: 'TypeScript规则',
@@ -55,6 +115,26 @@ globs: "**/*.ts,**/*.tsx"
 - 使用index.ts统一导出API
 `
 	},
+	
+	/**
+	 * React规则模板
+	 * 
+	 * 专为React项目设计的规则，包含组件设计、状态管理和性能优化规则
+	 * 设置了globs属性以匹配所有.tsx和.jsx文件
+	 * 
+	 * 特点：
+	 * - 专注于React函数组件和Hooks的最佳实践
+	 * - 提供状态管理策略和组件设计原则
+	 * - 包含性能优化建议
+	 * 
+	 * 使用时机：
+	 * - 检测到项目使用React框架
+	 * - React与TypeScript结合的项目最适合
+	 * - 也适用于React与JavaScript的项目
+	 * 
+	 * globs属性：
+	 * "** /*.tsx,** /*.jsx" - 匹配所有.tsx和.jsx文件，使规则仅应用于React组件文件
+	 */
 	{
 		id: 'react',
 		name: 'React规则',

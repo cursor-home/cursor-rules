@@ -1,23 +1,6 @@
 /**
- * 技术栈信息接口
+ * 技术栈信息类型定义
+ * 
+ * 重新导出来自全局类型定义的 TechStackInfo 接口和相关函数
  */
-export interface TechStackInfo {
-  languages: string[];  // 编程语言
-  frameworks: string[]; // 框架
-  libraries: string[];  // 库
-  tools: string[];      // 工具
-  confidence: number;   // 检测置信度 (0-1)
-}
-
-/**
- * 创建一个空的技术栈信息对象
- */
-export function createEmptyTechStackInfo(): TechStackInfo {
-  return {
-    languages: [],
-    frameworks: [],
-    libraries: [],
-    tools: [],
-    confidence: 0
-  };
-} 
+export { TechStackInfo, createEmptyTechStackInfo } from '../types'; 
