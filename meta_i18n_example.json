@@ -1,0 +1,194 @@
+{
+  "rules": [
+    {
+      "id": "typescript-basic",
+      "path": "typescript/basic.mdc",
+      "name": {
+        "zh": "TypeScript基础规则",
+        "en": "TypeScript Basic Rules"
+      },
+      "description": {
+        "zh": "TypeScript项目基础规范和最佳实践",
+        "en": "TypeScript project basic standards and best practices"
+      },
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["typescript", "基础"]
+    },
+    {
+      "id": "react-typescript",
+      "path": "react/typescript.mdc",
+      "name": {
+        "zh": "React+TypeScript规则",
+        "en": "React+TypeScript Rules"
+      },
+      "description": {
+        "zh": "React与TypeScript结合使用的规范和最佳实践",
+        "en": "Standards and best practices for using React with TypeScript"
+      },
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["react", "typescript", "frontend"]
+    },
+    {
+      "id": "typescript-react",
+      "path": "awesome-cursorrules/rules/typescript-react-cursorrules-prompt-file",
+      "name": {
+        "zh": "TypeScript React 规则集",
+        "en": "TypeScript React Rule Set"
+      },
+      "description": {
+        "zh": "包含5个规则文件的TypeScript+React技术栈规则集",
+        "en": "Rule set containing 5 rule files for TypeScript+React technology stack"
+      },
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["typescript", "react", "frontend"],
+      "files": [
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---best-practices.mdc",
+          "description": {
+            "zh": "强制执行与使用React.FC、钩子、接口和优化技术相关的TypeScript React最佳实践",
+            "en": "Enforces TypeScript React best practices related to using React.FC, hooks, interfaces, and optimization techniques"
+          }
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---folder-structure.mdc",
+          "description": {
+            "zh": "TypeScript React项目标准目录结构",
+            "en": "TypeScript React project standard directory structure"
+          }
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---general-preferences.mdc",
+          "description": {
+            "zh": "TypeScript React通用偏好设置",
+            "en": "TypeScript React general preference settings"
+          }
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---additional-instructions.mdc",
+          "description": {
+            "zh": "TypeScript React项目的补充指导",
+            "en": "Additional guidance for TypeScript React projects"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-fastapi",
+      "path": "awesome-cursorrules/rules/python-fastapi-cursorrules-prompt-file",
+      "name": {
+        "zh": "Python FastAPI 规则集",
+        "en": "Python FastAPI Rule Set"
+      },
+      "description": {
+        "zh": "包含5个规则文件的Python FastAPI后端开发规则集",
+        "en": "Backend development rule set containing 5 rule files for Python FastAPI"
+      },
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "backend", "api"],
+      "files": [
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-best-practices.mdc",
+          "description": {
+            "zh": "强制执行'app'目录中的FastAPI应用程序代码的最佳实践，包括数据验证、依赖项注入和异步操作",
+            "en": "Enforces FastAPI best practices for application code within the 'app' directory, including data validation, dependency injection, and asynchronous operations"
+          }
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-folder-structure.mdc",
+          "description": {
+            "zh": "FastAPI项目标准目录结构",
+            "en": "FastAPI project standard directory structure"
+          }
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-main-application-file.mdc",
+          "description": {
+            "zh": "FastAPI主应用文件配置规范",
+            "en": "FastAPI main application file configuration standards"
+          }
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/pydantic-models.mdc",
+          "description": {
+            "zh": "Pydantic模型定义最佳实践",
+            "en": "Best practices for Pydantic model definitions"
+          }
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/python-general-coding-standards.mdc",
+          "description": {
+            "zh": "Python通用编码标准",
+            "en": "Python general coding standards"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nextjs-typescript",
+      "path": "awesome-cursorrules/rules/nextjs-typescript-cursorrules-prompt-file",
+      "name": {
+        "zh": "Next.js TypeScript 规则集",
+        "en": "Next.js TypeScript Rule Set"
+      },
+      "description": {
+        "zh": "包含多个规则文件的Next.js TypeScript全栈开发规则集",
+        "en": "Full-stack development rule set containing multiple rule files for Next.js with TypeScript"
+      },
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind", "Shadcn"]
+      },
+      "tags": ["typescript", "nextjs", "react", "tailwind", "frontend", "fullstack"],
+      "files": [
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/frontend-stack-rules.mdc",
+          "description": {
+            "zh": "指定包括React、TypeScript、Shadcn/UI、Tailwind CSS和Lucide React的前端技术栈，适用于所有前端文件",
+            "en": "Specifies the frontend technology stack including React, TypeScript, Shadcn/UI, Tailwind CSS, and Lucide React, applying to all frontend files"
+          }
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/backend-stack-rules.mdc",
+          "description": {
+            "zh": "Next.js API路由和后端集成规范",
+            "en": "Next.js API routes and backend integration standards"
+          }
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/coding-style-rules.mdc",
+          "description": {
+            "zh": "Next.js TypeScript项目的编码风格规范",
+            "en": "Coding style standards for Next.js TypeScript projects"
+          }
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/coding-process-rules.mdc",
+          "description": {
+            "zh": "Next.js应用开发流程指南",
+            "en": "Next.js application development process guide"
+          }
+        }
+      ]
+    }
+  ],
+  "supportedLanguages": ["zh", "en"],
+  "version": "1.0.0",
+  "lastUpdated": "2024-06-22"
+} 

@@ -1,0 +1,1344 @@
+{
+  "rules": [
+    {
+      "id": "typescript-basic",
+      "path": "typescript/basic.mdc",
+      "name": "TypeScript基础规则",
+      "description": "TypeScript项目基础规范和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["typescript", "基础"]
+    },
+    {
+      "id": "react-typescript",
+      "path": "react/typescript.mdc",
+      "name": "React+TypeScript规则",
+      "description": "React与TypeScript结合使用的规范和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["react", "typescript", "frontend"]
+    },
+    {
+      "id": "typescript-react",
+      "path": "awesome-cursorrules/rules/typescript-react-cursorrules-prompt-file",
+      "name": "TypeScript React 规则集",
+      "description": "包含5个规则文件的TypeScript+React技术栈规则集",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["typescript", "react", "frontend"],
+      "files": [
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---best-practices.mdc",
+          "description": "Enforces TypeScript React best practices related to using React.FC, hooks, interfaces, and optimization techniques."
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---folder-structure.mdc",
+          "description": "TypeScript React项目标准目录结构"
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---general-preferences.mdc",
+          "description": "TypeScript React通用偏好设置"
+        },
+        {
+          "path": "typescript-react-cursorrules-prompt-file/typescript-react---additional-instructions.mdc",
+          "description": "TypeScript React项目的补充指导"
+        }
+      ]
+    },
+    {
+      "id": "python-fastapi",
+      "path": "awesome-cursorrules/rules/python-fastapi-cursorrules-prompt-file",
+      "name": "Python FastAPI 规则集",
+      "description": "包含5个规则文件的Python FastAPI后端开发规则集",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "backend", "api"],
+      "files": [
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-best-practices.mdc",
+          "description": "Enforces FastAPI best practices for application code within the 'app' directory, including data validation, dependency injection, and asynchronous operations."
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-folder-structure.mdc",
+          "description": "FastAPI项目标准目录结构"
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/fastapi-main-application-file.mdc",
+          "description": "FastAPI主应用文件配置规范"
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/pydantic-models.mdc",
+          "description": "Pydantic模型定义最佳实践"
+        },
+        {
+          "path": "python-fastapi-cursorrules-prompt-file/python-general-coding-standards.mdc",
+          "description": "Python通用编码标准"
+        }
+      ]
+    },
+    {
+      "id": "nextjs-typescript",
+      "path": "awesome-cursorrules/rules/nextjs-typescript-cursorrules-prompt-file",
+      "name": "Next.js TypeScript 规则集",
+      "description": "包含10个规则文件的Next.js TypeScript全栈开发规则集",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind", "Shadcn"]
+      },
+      "tags": ["typescript", "nextjs", "react", "tailwind", "frontend", "fullstack"],
+      "files": [
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/frontend-stack-rules.mdc",
+          "description": "Specifies the frontend technology stack including React, TypeScript, Shadcn/UI, Tailwind CSS, and Lucide React, applying to all frontend files."
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/backend-stack-rules.mdc",
+          "description": "Next.js API路由和后端集成规范"
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/coding-style-rules.mdc",
+          "description": "Next.js TypeScript项目的编码风格规范"
+        },
+        {
+          "path": "nextjs-typescript-cursorrules-prompt-file/coding-process-rules.mdc",
+          "description": "Next.js应用开发流程指南"
+        }
+      ]
+    },
+    {
+      "id": "typescript-standards",
+      "path": "typescript.mdc",
+      "name": "TypeScript编码标准",
+      "description": "TypeScript现代Web开发编码标准和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["typescript", "standards", "best-practices"]
+    },
+    {
+      "id": "react-standards",
+      "path": "react.mdc",
+      "name": "React最佳实践",
+      "description": "React现代Web应用开发的最佳实践和模式",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["react", "frontend", "best-practices"]
+    },
+    {
+      "id": "nextjs-standards",
+      "path": "nextjs.mdc",
+      "name": "Next.js开发指南",
+      "description": "使用TypeScript和Tailwind UI的Next.js最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["nextjs", "react", "typescript", "tailwind", "frontend"]
+    },
+    {
+      "id": "vue-standards",
+      "path": "vue.mdc",
+      "name": "Vue开发指南",
+      "description": "Vue现代Web应用开发的最佳实践和模式",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Vue"],
+        "tools": []
+      },
+      "tags": ["vue", "frontend", "best-practices"]
+    },
+    {
+      "id": "python-standards",
+      "path": "python.mdc",
+      "name": "Python编码标准",
+      "description": "Python应用开发的最佳实践和代码规范",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["python", "standards", "best-practices"]
+    },
+    {
+      "id": "fastapi-standards",
+      "path": "fastapi.mdc",
+      "name": "FastAPI开发指南",
+      "description": "FastAPI后端应用开发的最佳实践和模式",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "backend", "api"]
+    },
+    {
+      "id": "tailwind-standards",
+      "path": "tailwind.mdc",
+      "name": "Tailwind CSS指南",
+      "description": "Tailwind CSS项目开发和样式设计的最佳实践",
+      "techStack": {
+        "languages": ["CSS"],
+        "frameworks": [],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["tailwind", "css", "frontend", "styling"]
+    },
+    {
+      "id": "svelte-standards",
+      "path": "svelte.mdc",
+      "name": "Svelte开发指南",
+      "description": "Svelte应用开发的最佳实践和模式",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Svelte"],
+        "tools": []
+      },
+      "tags": ["svelte", "frontend", "best-practices"]
+    },
+    {
+      "id": "node-express-standards",
+      "path": "node-express.mdc",
+      "name": "Node.js Express指南",
+      "description": "Node.js Express后端应用开发的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Express", "Node.js"],
+        "tools": []
+      },
+      "tags": ["nodejs", "express", "backend", "api"]
+    },
+    {
+      "id": "gitflow-standards",
+      "path": "gitflow.mdc",
+      "name": "Git Flow工作流指南",
+      "description": "Git Flow分支管理和版本控制的最佳实践",
+      "techStack": {
+        "languages": [],
+        "frameworks": [],
+        "tools": ["Git"]
+      },
+      "tags": ["git", "workflow", "version-control"]
+    },
+    {
+      "id": "database-standards",
+      "path": "database.mdc",
+      "name": "数据库设计指南",
+      "description": "数据库设计、查询优化和性能调优的最佳实践",
+      "techStack": {
+        "languages": ["SQL"],
+        "frameworks": [],
+        "tools": ["Database"]
+      },
+      "tags": ["database", "sql", "optimization", "design"]
+    },
+    {
+      "id": "cpp-standards",
+      "path": "cpp.mdc",
+      "name": "C++编码标准",
+      "description": "C++应用开发的最佳实践和代码规范",
+      "techStack": {
+        "languages": ["C++"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["cpp", "standards", "best-practices"]
+    },
+    {
+      "id": "code-quality-standards",
+      "path": "codequality.mdc",
+      "name": "代码质量指南",
+      "description": "提高代码质量、可维护性和性能的通用最佳实践",
+      "techStack": {
+        "languages": [],
+        "frameworks": [],
+        "tools": ["Linting", "Testing"]
+      },
+      "tags": ["code-quality", "best-practices", "standards"]
+    },
+    {
+      "id": "clean-code-standards",
+      "path": "clean-code.mdc",
+      "name": "整洁代码指南",
+      "description": "编写简洁、可读、可维护代码的最佳实践",
+      "techStack": {
+        "languages": [],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["clean-code", "best-practices", "readability"]
+    },
+    {
+      "id": "python-fastapi-best-practices",
+      "path": "python-fastapi-best-practices-cursorrules-prompt-f",
+      "name": "Python FastAPI 最佳实践",
+      "description": "Python FastAPI应用开发的综合最佳实践和规范",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "backend", "api", "best-practices"],
+      "files": [
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/fastapi-application-structure.mdc",
+          "description": "Defines the preferred file structure and component usage for FastAPI applications."
+        },
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/fastapi-performance-optimization.mdc",
+          "description": "FastAPI性能优化策略和技巧"
+        },
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/fastapi-database-interaction.mdc",
+          "description": "FastAPI与数据库交互的最佳实践"
+        },
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/fastapi-error-handling.mdc",
+          "description": "FastAPI错误处理和异常管理策略"
+        },
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/fastapi-documentation.mdc",
+          "description": "FastAPI API文档生成和维护指南"
+        },
+        {
+          "path": "python-fastapi-best-practices-cursorrules-prompt-f/python-general-coding-style.mdc",
+          "description": "Python通用编码风格规范"
+        }
+      ]
+    },
+    {
+      "id": "vue-3-nuxt-3-typescript",
+      "path": "vue-3-nuxt-3-typescript-cursorrules-prompt-file",
+      "name": "Vue 3 Nuxt 3 TypeScript 规则集",
+      "description": "基于Vue 3、Nuxt 3和TypeScript的现代Web应用开发规范",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Vue", "Nuxt"],
+        "tools": ["Vite", "Tailwind"]
+      },
+      "tags": ["vue", "nuxt", "typescript", "frontend", "ssr"]
+    },
+    {
+      "id": "react-native-expo",
+      "path": "react-native-expo-cursorrules-prompt-file",
+      "name": "React Native Expo 规则集",
+      "description": "React Native和Expo移动应用开发的最佳实践和架构指南",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React Native", "Expo"],
+        "tools": []
+      },
+      "tags": ["react-native", "expo", "mobile", "cross-platform"]
+    },
+    {
+      "id": "python-django-best-practices",
+      "path": "python-django-best-practices-cursorrules-prompt-fi",
+      "name": "Python Django 最佳实践",
+      "description": "Django Web应用开发的全面最佳实践指南",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["Django", "Django REST Framework"],
+        "tools": []
+      },
+      "tags": ["python", "django", "backend", "web"],
+      "files": [
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/django-models.mdc",
+          "description": "Rules for Django models, emphasizing ORM usage, database interactions, and data validation."
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/django-views.mdc",
+          "description": "Django视图和控制器设计最佳实践"
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/django-urls.mdc",
+          "description": "Django URL路由配置指南"
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/django-forms.mdc",
+          "description": "Django表单设计和验证最佳实践"
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/django-rest-framework.mdc",
+          "description": "Django REST Framework API开发指南"
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/performance-optimization.mdc",
+          "description": "Django应用性能优化策略"
+        },
+        {
+          "path": "python-django-best-practices-cursorrules-prompt-fi/security.mdc",
+          "description": "Django应用安全最佳实践"
+        }
+      ]
+    },
+    {
+      "id": "solidity-foundry",
+      "path": "solidity-foundry-cursorrules-prompt-file",
+      "name": "Solidity Foundry 规则集",
+      "description": "使用Foundry工具链的Solidity智能合约开发最佳实践",
+      "techStack": {
+        "languages": ["Solidity"],
+        "frameworks": ["Foundry"],
+        "tools": ["OpenZeppelin", "Solady"]
+      },
+      "tags": ["blockchain", "ethereum", "solidity", "smart-contracts", "foundry"]
+    },
+    {
+      "id": "nextjs-typescript-tailwind",
+      "path": "nextjs-typescript-tailwind-cursorrules-prompt-file",
+      "name": "Next.js TypeScript Tailwind 规则集",
+      "description": "Next.js、TypeScript和Tailwind CSS的全栈应用开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["nextjs", "typescript", "tailwind", "frontend", "fullstack"]
+    },
+    {
+      "id": "qwik-basic",
+      "path": "qwik-basic-cursorrules-prompt-file",
+      "name": "Qwik 基础规则集",
+      "description": "Qwik框架的基础开发规范和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Qwik"],
+        "tools": []
+      },
+      "tags": ["qwik", "frontend", "web"]
+    },
+    {
+      "id": "qwik-tailwind",
+      "path": "qwik-tailwind-cursorrules-prompt-file",
+      "name": "Qwik Tailwind 规则集",
+      "description": "Qwik框架与Tailwind CSS结合使用的开发规范",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Qwik"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["qwik", "tailwind", "frontend", "styling"]
+    },
+    {
+      "id": "python-developer",
+      "path": "python-developer-cursorrules-prompt-file",
+      "name": "Python 开发者规则集",
+      "description": "Python专业开发者的编码规范和最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["python", "development", "best-practices"]
+    },
+    {
+      "id": "python-fastapi-scalable-api",
+      "path": "python-fastapi-scalable-api-cursorrules-prompt-fil",
+      "name": "Python FastAPI 可扩展API规则集",
+      "description": "构建可扩展FastAPI应用的架构和最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "scalable", "api", "backend"]
+    },
+    {
+      "id": "python-flask-json",
+      "path": "python-flask-json-guide-cursorrules-prompt-file",
+      "name": "Python Flask JSON指南",
+      "description": "Flask框架处理JSON数据的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["Flask"],
+        "tools": []
+      },
+      "tags": ["python", "flask", "json", "api", "backend"]
+    },
+    {
+      "id": "python-github-setup",
+      "path": "python-github-setup-cursorrules-prompt-file",
+      "name": "Python GitHub设置指南",
+      "description": "Python项目的GitHub仓库设置和CI/CD配置最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["GitHub", "CI/CD"]
+      },
+      "tags": ["python", "github", "ci-cd", "devops"]
+    },
+    {
+      "id": "python-llm-ml",
+      "path": "python-llm-ml-workflow-cursorrules-prompt-file",
+      "name": "Python LLM与ML工作流规则集",
+      "description": "Python LLM和机器学习工作流的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["ML", "LLM"]
+      },
+      "tags": ["python", "ml", "llm", "ai", "machine-learning"]
+    },
+    {
+      "id": "python-projects-guide",
+      "path": "python-projects-guide-cursorrules-prompt-file",
+      "name": "Python项目指南",
+      "description": "Python项目结构和开发流程的综合指南",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["python", "project-structure", "development"]
+    },
+    {
+      "id": "pytorch-scikit-learn",
+      "path": "pytorch-scikit-learn-cursorrules-prompt-file",
+      "name": "PyTorch Scikit-Learn规则集",
+      "description": "PyTorch和Scikit-Learn的机器学习开发规范",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["PyTorch", "Scikit-Learn"]
+      },
+      "tags": ["python", "pytorch", "scikit-learn", "ml", "machine-learning"]
+    },
+    {
+      "id": "typescript-llm-tech-stack",
+      "path": "typescript-llm-tech-stack-cursorrules-prompt-file",
+      "name": "TypeScript LLM技术栈规则集",
+      "description": "TypeScript LLM应用开发的技术栈和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": ["LLM", "AI"]
+      },
+      "tags": ["typescript", "llm", "ai", "development"]
+    },
+    {
+      "id": "react-components-creation",
+      "path": "react-components-creation-cursorrules-prompt-file",
+      "name": "React组件创建规则集",
+      "description": "React组件创建和组织的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": []
+      },
+      "tags": ["react", "components", "frontend"]
+    },
+    {
+      "id": "sveltekit-typescript",
+      "path": "sveltekit-typescript-guide-cursorrules-prompt-file",
+      "name": "SvelteKit TypeScript指南",
+      "description": "SvelteKit与TypeScript结合使用的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Svelte", "SvelteKit"],
+        "tools": []
+      },
+      "tags": ["svelte", "sveltekit", "typescript", "frontend"]
+    },
+    {
+      "id": "swiftui-guidelines",
+      "path": "swiftui-guidelines-cursorrules-prompt-file",
+      "name": "SwiftUI指南",
+      "description": "SwiftUI iOS应用开发的最佳实践和设计原则",
+      "techStack": {
+        "languages": ["Swift"],
+        "frameworks": ["SwiftUI"],
+        "tools": []
+      },
+      "tags": ["swift", "swiftui", "ios", "mobile"]
+    },
+    {
+      "id": "tailwind-css-nextjs",
+      "path": "tailwind-css-nextjs-guide-cursorrules-prompt-file",
+      "name": "Tailwind CSS与Next.js指南",
+      "description": "Tailwind CSS与Next.js结合使用的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["tailwind", "nextjs", "css", "frontend"]
+    },
+    {
+      "id": "typescript-code-convention",
+      "path": "typescript-code-convention-cursorrules-prompt-file",
+      "name": "TypeScript代码规范",
+      "description": "TypeScript代码风格和编码约定的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["typescript", "code-style", "conventions"]
+    },
+    {
+      "id": "typescript-shadcn-ui-nextjs",
+      "path": "typescript-shadcn-ui-nextjs-cursorrules-prompt-fil",
+      "name": "TypeScript Shadcn/UI Next.js规则集",
+      "description": "TypeScript、Shadcn/UI和Next.js结合的前端开发规范",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Shadcn/UI", "Tailwind"]
+      },
+      "tags": ["typescript", "nextjs", "shadcn", "ui", "frontend"]
+    },
+    {
+      "id": "unity-cursor-ai-c-sharp",
+      "path": "unity-cursor-ai-c-cursorrules-prompt-file",
+      "name": "Unity C#开发规则集",
+      "description": "Unity游戏开发的C#编码规范和最佳实践",
+      "techStack": {
+        "languages": ["C#"],
+        "frameworks": ["Unity"],
+        "tools": []
+      },
+      "tags": ["unity", "c-sharp", "game-development"]
+    },
+    {
+      "id": "vue-3-nuxt-3-development",
+      "path": "vue-3-nuxt-3-development-cursorrules-prompt-file",
+      "name": "Vue 3 Nuxt 3开发规则集",
+      "description": "Vue 3与Nuxt 3全栈开发的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Vue", "Nuxt"],
+        "tools": []
+      },
+      "tags": ["vue", "nuxt", "frontend", "fullstack"]
+    },
+    {
+      "id": "solidjs-basic",
+      "path": "solidjs-basic-cursorrules-prompt-file",
+      "name": "SolidJS基础规则集",
+      "description": "SolidJS框架的基础开发规范和最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["SolidJS"],
+        "tools": []
+      },
+      "tags": ["solidjs", "frontend", "reactivity"]
+    },
+    {
+      "id": "solidjs-tailwind",
+      "path": "solidjs-tailwind-cursorrules-prompt-file",
+      "name": "SolidJS Tailwind规则集",
+      "description": "SolidJS与Tailwind CSS结合使用的开发规范",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["SolidJS"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["solidjs", "tailwind", "frontend", "styling"]
+    },
+    {
+      "id": "solidjs-typescript",
+      "path": "solidjs-typescript-cursorrules-prompt-file",
+      "name": "SolidJS TypeScript规则集",
+      "description": "SolidJS与TypeScript结合使用的开发规范",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["SolidJS"],
+        "tools": []
+      },
+      "tags": ["solidjs", "typescript", "frontend"]
+    },
+    {
+      "id": "python-312-fastapi",
+      "path": "python-312-fastapi-best-practices-cursorrules-prom",
+      "name": "Python 3.12 FastAPI规则集",
+      "description": "Python 3.12与FastAPI结合使用的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "python3.12", "fastapi", "backend", "api"]
+    },
+    {
+      "id": "python-containerization",
+      "path": "python-containerization-cursorrules-prompt-file",
+      "name": "Python容器化规则集",
+      "description": "Python应用容器化的最佳实践和规范",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["Docker", "Kubernetes", "Containerization"]
+      },
+      "tags": ["python", "docker", "kubernetes", "containers", "devops"]
+    },
+    {
+      "id": "pandas-scikit-learn",
+      "path": "pandas-scikit-learn-guide-cursorrules-prompt-file",
+      "name": "Pandas Scikit-Learn指南",
+      "description": "Pandas和Scikit-Learn数据分析与机器学习的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["Pandas", "Scikit-Learn"]
+      },
+      "tags": ["python", "pandas", "scikit-learn", "data-analysis", "ml"]
+    },
+    {
+      "id": "optimize-dry-solid",
+      "path": "optimize-dry-solid-principles-cursorrules-prompt-f",
+      "name": "DRY和SOLID原则优化指南",
+      "description": "基于DRY和SOLID原则优化代码的最佳实践",
+      "techStack": {
+        "languages": [],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["dry", "solid", "code-quality", "principles", "optimization"]
+    },
+    {
+      "id": "optimize-rell-blockchain",
+      "path": "optimize-rell-blockchain-code-cursorrules-prompt-f",
+      "name": "Rell区块链代码优化指南",
+      "description": "Rell区块链代码的优化策略和最佳实践",
+      "techStack": {
+        "languages": ["Rell"],
+        "frameworks": [],
+        "tools": ["Blockchain"]
+      },
+      "tags": ["rell", "blockchain", "optimization", "smart-contracts"]
+    },
+    {
+      "id": "nodejs-mongodb-express-react",
+      "path": "nodejs-mongodb-jwt-express-react-cursorrules-promp",
+      "name": "Node.js MongoDB Express React规则集",
+      "description": "Node.js、MongoDB、Express和React全栈开发的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Express", "React", "Node.js"],
+        "tools": ["MongoDB", "JWT"]
+      },
+      "tags": ["nodejs", "mongodb", "express", "react", "jwt", "fullstack"]
+    },
+    {
+      "id": "nodejs-mongodb-tutorial",
+      "path": "nodejs-mongodb-cursorrules-prompt-file-tutorial",
+      "name": "Node.js MongoDB教程规则集",
+      "description": "Node.js与MongoDB结合使用的教程和最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Node.js"],
+        "tools": ["MongoDB"]
+      },
+      "tags": ["nodejs", "mongodb", "database", "backend", "tutorial"]
+    },
+    {
+      "id": "nextjs15-react19-vercelai",
+      "path": "nextjs15-react19-vercelai-tailwind-cursorrules-prompt-file",
+      "name": "Next.js 15 React 19 Vercel AI规则集",
+      "description": "Next.js 15、React 19和Vercel AI集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Vercel AI", "Tailwind"]
+      },
+      "tags": ["nextjs", "react", "vercel", "ai", "frontend"]
+    },
+    {
+      "id": "react-graphql-apollo",
+      "path": "react-graphql-apollo-client-cursorrules-prompt-file",
+      "name": "React GraphQL Apollo客户端规则集",
+      "description": "React与GraphQL和Apollo客户端集成的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["GraphQL", "Apollo Client"]
+      },
+      "tags": ["react", "graphql", "apollo", "frontend", "api"]
+    },
+    {
+      "id": "react-native-expo-router",
+      "path": "react-native-expo-router-typescript-windows-cursorrules-prompt-file",
+      "name": "React Native Expo Router TypeScript Windows规则集",
+      "description": "React Native、Expo Router和TypeScript在Windows环境下的开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React Native", "Expo"],
+        "tools": ["Expo Router", "Windows"]
+      },
+      "tags": ["react-native", "expo", "typescript", "windows", "mobile"]
+    },
+    {
+      "id": "typescript-zod-tailwind-nextjs",
+      "path": "typescript-zod-tailwind-nextjs-cursorrules-prompt-",
+      "name": "TypeScript Zod Tailwind Next.js规则集",
+      "description": "基于TypeScript、Zod、Tailwind和Next.js的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Zod", "Tailwind"]
+      },
+      "tags": ["typescript", "zod", "tailwind", "nextjs", "fullstack"]
+    },
+    {
+      "id": "web-app-optimization",
+      "path": "web-app-optimization-cursorrules-prompt-file",
+      "name": "Web应用优化规则集",
+      "description": "Web应用性能优化和速度提升的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript", "HTML", "CSS"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["web", "optimization", "performance", "frontend"]
+    },
+    {
+      "id": "webassembly-z80",
+      "path": "webassembly-z80-cellular-automata-cursorrules-prom",
+      "name": "WebAssembly Z80规则集",
+      "description": "WebAssembly和Z80架构的细胞自动机实现最佳实践",
+      "techStack": {
+        "languages": ["WebAssembly", "C++"],
+        "frameworks": [],
+        "tools": ["Z80"]
+      },
+      "tags": ["webassembly", "z80", "cellular-automata", "emulation"]
+    },
+    {
+      "id": "wordpress-php-guzzle",
+      "path": "wordpress-php-guzzle-gutenberg-cursorrules-prompt-",
+      "name": "WordPress PHP Guzzle规则集",
+      "description": "WordPress、PHP、Guzzle和Gutenberg集成的开发规范",
+      "techStack": {
+        "languages": ["PHP"],
+        "frameworks": ["WordPress"],
+        "tools": ["Guzzle", "Gutenberg"]
+      },
+      "tags": ["wordpress", "php", "guzzle", "gutenberg", "cms"]
+    },
+    {
+      "id": "react-mobx",
+      "path": "react-mobx-cursorrules-prompt-file",
+      "name": "React MobX规则集",
+      "description": "React与MobX状态管理的集成最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["MobX"]
+      },
+      "tags": ["react", "mobx", "state-management", "frontend"]
+    },
+    {
+      "id": "react-chakra-ui",
+      "path": "react-chakra-ui-cursorrules-prompt-file",
+      "name": "React Chakra UI规则集",
+      "description": "React与Chakra UI组件库集成的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["Chakra UI"]
+      },
+      "tags": ["react", "chakra-ui", "ui-library", "frontend"]
+    },
+    {
+      "id": "react-styled-components",
+      "path": "react-styled-components-cursorrules-prompt-file",
+      "name": "React Styled Components规则集",
+      "description": "React与Styled Components样式方案的最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["Styled Components"]
+      },
+      "tags": ["react", "styled-components", "css-in-js", "styling", "frontend"]
+    },
+    {
+      "id": "tailwind-shadcn-ui",
+      "path": "tailwind-shadcn-ui-integration-cursorrules-prompt-",
+      "name": "Tailwind Shadcn UI集成规则集",
+      "description": "Tailwind CSS与Shadcn UI组件库集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": ["Tailwind", "Shadcn UI"]
+      },
+      "tags": ["tailwind", "shadcn", "ui-components", "styling", "frontend"]
+    },
+    {
+      "id": "tailwind-react-firebase",
+      "path": "tailwind-react-firebase-cursorrules-prompt-file",
+      "name": "Tailwind React Firebase规则集",
+      "description": "Tailwind CSS、React和Firebase集成的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["Tailwind", "Firebase"]
+      },
+      "tags": ["tailwind", "react", "firebase", "fullstack"]
+    },
+    {
+      "id": "solidity-react-blockchain",
+      "path": "solidity-react-blockchain-apps-cursorrules-prompt-",
+      "name": "Solidity React区块链规则集",
+      "description": "Solidity智能合约与React前端集成的区块链应用开发最佳实践",
+      "techStack": {
+        "languages": ["Solidity", "TypeScript", "JavaScript"],
+        "frameworks": ["React"],
+        "tools": ["Blockchain", "Web3.js", "Ethers.js"]
+      },
+      "tags": ["solidity", "react", "blockchain", "ethereum", "dapp"]
+    },
+    {
+      "id": "solidity-hardhat",
+      "path": "solidity-hardhat-cursorrules-prompt-file",
+      "name": "Solidity Hardhat规则集",
+      "description": "使用Hardhat开发框架的Solidity智能合约开发最佳实践",
+      "techStack": {
+        "languages": ["Solidity"],
+        "frameworks": [],
+        "tools": ["Hardhat", "Ethereum"]
+      },
+      "tags": ["solidity", "hardhat", "ethereum", "blockchain", "smart-contracts"]
+    },
+    {
+      "id": "py-fast-api",
+      "path": "py-fast-api",
+      "name": "Python FastAPI简易规则集",
+      "description": "Python FastAPI开发的简易规则集和快速入门指南",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["FastAPI"],
+        "tools": []
+      },
+      "tags": ["python", "fastapi", "api", "backend"]
+    },
+    {
+      "id": "typescript-nextjs-nodejs-ai",
+      "path": "typescript-nodejs-nextjs-ai-cursorrules-prompt-fil",
+      "name": "TypeScript Next.js Node.js AI规则集",
+      "description": "TypeScript、Next.js、Node.js和AI集成的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "Node.js"],
+        "tools": ["AI"]
+      },
+      "tags": ["typescript", "nextjs", "nodejs", "ai", "fullstack"]
+    },
+    {
+      "id": "temporal-python",
+      "path": "temporal-python-cursorrules",
+      "name": "Temporal Python规则集",
+      "description": "Temporal工作流引擎与Python集成的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": ["Temporal"]
+      },
+      "tags": ["temporal", "python", "workflow", "distributed-systems"]
+    },
+    {
+      "id": "react-redux-typescript",
+      "path": "react-redux-typescript-cursorrules-prompt-file",
+      "name": "React Redux TypeScript规则集",
+      "description": "React、Redux与TypeScript结合使用的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["Redux"]
+      },
+      "tags": ["react", "redux", "typescript", "state-management", "frontend"]
+    },
+    {
+      "id": "react-query",
+      "path": "react-query-cursorrules-prompt-file",
+      "name": "React Query规则集",
+      "description": "React Query数据获取库的使用规范和最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["React Query"]
+      },
+      "tags": ["react", "react-query", "data-fetching", "frontend"]
+    },
+    {
+      "id": "plasticode-telegram-api",
+      "path": "plasticode-telegram-api-cursorrules-prompt-file",
+      "name": "Plasticode Telegram API规则集",
+      "description": "Plasticode框架与Telegram API集成的最佳实践",
+      "techStack": {
+        "languages": [],
+        "frameworks": ["Plasticode"],
+        "tools": ["Telegram API"]
+      },
+      "tags": ["plasticode", "telegram", "api", "bot"]
+    },
+    {
+      "id": "pyqt6-eeg-processing",
+      "path": "pyqt6-eeg-processing-cursorrules-prompt-file",
+      "name": "PyQt6 EEG处理规则集",
+      "description": "使用PyQt6开发EEG信号处理应用的最佳实践",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": ["PyQt6"],
+        "tools": ["EEG"]
+      },
+      "tags": ["python", "pyqt6", "eeg", "signal-processing", "gui"]
+    },
+    {
+      "id": "python-typescript",
+      "path": "python--typescript-guide-cursorrules-prompt-file",
+      "name": "Python与TypeScript指南",
+      "description": "Python与TypeScript混合开发的最佳实践",
+      "techStack": {
+        "languages": ["Python", "TypeScript"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["python", "typescript", "fullstack", "hybrid"]
+    },
+    {
+      "id": "react-nextjs-ui",
+      "path": "react-nextjs-ui-development-cursorrules-prompt-fil",
+      "name": "React Next.js UI开发规则集",
+      "description": "React和Next.js框架下的UI开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["React", "Next.js"],
+        "tools": []
+      },
+      "tags": ["react", "nextjs", "ui", "frontend"]
+    },
+    {
+      "id": "react-typescript-nextjs-nodejs",
+      "path": "react-typescript-nextjs-nodejs-cursorrules-prompt-",
+      "name": "React TypeScript Next.js Node.js规则集",
+      "description": "React、TypeScript、Next.js和Node.js全栈开发的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React", "Next.js", "Node.js"],
+        "tools": []
+      },
+      "tags": ["react", "typescript", "nextjs", "nodejs", "fullstack"]
+    },
+    {
+      "id": "react-typescript-symfony",
+      "path": "react-typescript-symfony-cursorrules-prompt-file",
+      "name": "React TypeScript Symfony规则集",
+      "description": "React、TypeScript前端与Symfony后端集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "PHP"],
+        "frameworks": ["React", "Symfony"],
+        "tools": []
+      },
+      "tags": ["react", "typescript", "symfony", "php", "fullstack"]
+    },
+    {
+      "id": "sveltekit-restful-api-tailwind",
+      "path": "sveltekit-restful-api-tailwind-css-cursorrules-pro",
+      "name": "SvelteKit RESTful API Tailwind规则集",
+      "description": "SvelteKit、RESTful API和Tailwind CSS的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["SvelteKit", "Svelte"],
+        "tools": ["Tailwind", "RESTful API"]
+      },
+      "tags": ["sveltekit", "restful", "tailwind", "fullstack"]
+    },
+    {
+      "id": "sveltekit-tailwindcss-typescript",
+      "path": "sveltekit-tailwindcss-typescript-cursorrules-promp",
+      "name": "SvelteKit Tailwind TypeScript规则集",
+      "description": "SvelteKit、Tailwind CSS和TypeScript集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["SvelteKit", "Svelte"],
+        "tools": ["Tailwind"]
+      },
+      "tags": ["sveltekit", "tailwind", "typescript", "frontend"]
+    },
+    {
+      "id": "svelte-5-vs-4",
+      "path": "svelte-5-vs-svelte-4-cursorrules-prompt-file",
+      "name": "Svelte 5与Svelte 4对比规则集",
+      "description": "Svelte 5与Svelte 4的差异和迁移最佳实践",
+      "techStack": {
+        "languages": ["JavaScript", "TypeScript"],
+        "frameworks": ["Svelte"],
+        "tools": []
+      },
+      "tags": ["svelte", "svelte5", "migration", "frontend"]
+    },
+    {
+      "id": "tauri-svelte-typescript",
+      "path": "tauri-svelte-typescript-guide-cursorrules-prompt-f",
+      "name": "Tauri Svelte TypeScript指南",
+      "description": "Tauri、Svelte和TypeScript桌面应用开发的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "Rust"],
+        "frameworks": ["Svelte", "Tauri"],
+        "tools": []
+      },
+      "tags": ["tauri", "svelte", "typescript", "desktop", "cross-platform"]
+    },
+    {
+      "id": "typescript-axios",
+      "path": "typescript-axios-cursorrules-prompt-file",
+      "name": "TypeScript Axios规则集",
+      "description": "TypeScript与Axios HTTP客户端集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": ["Axios"]
+      },
+      "tags": ["typescript", "axios", "http", "api", "frontend"]
+    },
+    {
+      "id": "typescript-clasp",
+      "path": "typescript-clasp-cursorrules-prompt-file",
+      "name": "TypeScript Clasp规则集",
+      "description": "TypeScript与Google Apps Script的Clasp工具集成的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": ["Clasp", "Google Apps Script"]
+      },
+      "tags": ["typescript", "clasp", "google-apps-script", "automation"]
+    },
+    {
+      "id": "typescript-expo-jest-detox",
+      "path": "typescript-expo-jest-detox-cursorrules-prompt-file",
+      "name": "TypeScript Expo Jest Detox规则集",
+      "description": "TypeScript、Expo、Jest和Detox移动应用开发与测试的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React Native", "Expo"],
+        "tools": ["Jest", "Detox"]
+      },
+      "tags": ["typescript", "expo", "jest", "detox", "testing", "mobile"]
+    },
+    {
+      "id": "uikit-guidelines",
+      "path": "uikit-guidelines-cursorrules-prompt-file",
+      "name": "UIKit指南",
+      "description": "iOS UIKit开发的最佳实践和设计原则",
+      "techStack": {
+        "languages": ["Swift", "Objective-C"],
+        "frameworks": ["UIKit"],
+        "tools": []
+      },
+      "tags": ["ios", "uikit", "swift", "mobile"]
+    },
+    {
+      "id": "nextjs-vercel-typescript",
+      "path": "nextjs-vercel-typescript-cursorrules-prompt-file",
+      "name": "Next.js Vercel TypeScript规则集",
+      "description": "Next.js、Vercel和TypeScript集成的部署和开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Vercel"]
+      },
+      "tags": ["nextjs", "vercel", "typescript", "deployment", "frontend"]
+    },
+    {
+      "id": "nextjs-vercel-supabase",
+      "path": "nextjs-vercel-supabase-cursorrules-prompt-file",
+      "name": "Next.js Vercel Supabase规则集",
+      "description": "Next.js、Vercel和Supabase集成的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Vercel", "Supabase"]
+      },
+      "tags": ["nextjs", "vercel", "supabase", "fullstack"]
+    },
+    {
+      "id": "typescript-vuejs",
+      "path": "typescript-vuejs-cursorrules-prompt-file",
+      "name": "TypeScript Vue.js规则集",
+      "description": "TypeScript与Vue.js结合使用的最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Vue"],
+        "tools": []
+      },
+      "tags": ["typescript", "vue", "frontend"]
+    },
+    {
+      "id": "typescript-vite-tailwind",
+      "path": "typescript-vite-tailwind-cursorrules-prompt-file",
+      "name": "TypeScript Vite Tailwind规则集",
+      "description": "TypeScript、Vite与Tailwind CSS结合的前端开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "tools": ["Vite", "Tailwind"]
+      },
+      "tags": ["typescript", "vite", "tailwind", "frontend"]
+    },
+    {
+      "id": "typescript-react-nextui-supabase",
+      "path": "typescript-react-nextui-supabase-cursorrules-promp",
+      "name": "TypeScript React NextUI Supabase规则集",
+      "description": "TypeScript、React、NextUI和Supabase的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React"],
+        "tools": ["NextUI", "Supabase"]
+      },
+      "tags": ["typescript", "react", "nextui", "supabase", "fullstack"]
+    },
+    {
+      "id": "typescript-react-nextjs-cloudflare",
+      "path": "typescript-react-nextjs-cloudflare-cursorrules-pro",
+      "name": "TypeScript React Next.js Cloudflare规则集",
+      "description": "TypeScript、React、Next.js与Cloudflare集成的开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React", "Next.js"],
+        "tools": ["Cloudflare"]
+      },
+      "tags": ["typescript", "react", "nextjs", "cloudflare", "fullstack"]
+    },
+    {
+      "id": "typescript-nodejs-react-vite",
+      "path": "typescript-nodejs-react-vite-cursorrules-prompt-fi",
+      "name": "TypeScript Node.js React Vite规则集",
+      "description": "TypeScript、Node.js、React与Vite构建工具的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["React", "Node.js"],
+        "tools": ["Vite"]
+      },
+      "tags": ["typescript", "nodejs", "react", "vite", "fullstack"]
+    },
+    {
+      "id": "typescript-nodejs-nextjs-react-ui-css",
+      "path": "typescript-nodejs-nextjs-react-ui-css-cursorrules-",
+      "name": "TypeScript Node.js Next.js React UI CSS规则集",
+      "description": "TypeScript、Node.js、Next.js、React与UI/CSS的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript", "CSS"],
+        "frameworks": ["Next.js", "React", "Node.js"],
+        "tools": []
+      },
+      "tags": ["typescript", "nodejs", "nextjs", "react", "ui", "css", "fullstack"]
+    },
+    {
+      "id": "typescript-nodejs-nextjs-app",
+      "path": "typescript-nodejs-nextjs-app-cursorrules-prompt-fi",
+      "name": "TypeScript Node.js Next.js App规则集",
+      "description": "基于TypeScript、Node.js和Next.js App Router的应用开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "Node.js"],
+        "tools": ["App Router"]
+      },
+      "tags": ["typescript", "nodejs", "nextjs", "app-router", "fullstack"]
+    },
+    {
+      "id": "typescript-nextjs-supabase",
+      "path": "typescript-nextjs-supabase-cursorrules-prompt-file",
+      "name": "TypeScript Next.js Supabase规则集",
+      "description": "TypeScript、Next.js与Supabase后端的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Supabase"]
+      },
+      "tags": ["typescript", "nextjs", "supabase", "fullstack"]
+    },
+    {
+      "id": "typescript-nextjs-react-tailwind-supabase",
+      "path": "typescript-nextjs-react-tailwind-supabase-cursorru",
+      "name": "TypeScript Next.js React Tailwind Supabase规则集",
+      "description": "TypeScript、Next.js、React、Tailwind与Supabase的全栈开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": ["Tailwind", "Supabase"]
+      },
+      "tags": ["typescript", "nextjs", "react", "tailwind", "supabase", "fullstack"]
+    },
+    {
+      "id": "typescript-nextjs-react",
+      "path": "typescript-nextjs-react-cursorrules-prompt-file",
+      "name": "TypeScript Next.js React规则集",
+      "description": "TypeScript、Next.js与React的前端开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js", "React"],
+        "tools": []
+      },
+      "tags": ["typescript", "nextjs", "react", "frontend"]
+    },
+    {
+      "id": "typescript-nextjs",
+      "path": "typescript-nextjs-cursorrules-prompt-file",
+      "name": "TypeScript Next.js规则集",
+      "description": "TypeScript与Next.js的开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Next.js"],
+        "tools": []
+      },
+      "tags": ["typescript", "nextjs", "frontend"]
+    },
+    {
+      "id": "typescript-nestjs-best-practices",
+      "path": "typescript-nestjs-best-practices-cursorrules-promp",
+      "name": "TypeScript NestJS最佳实践规则集",
+      "description": "TypeScript与NestJS后端框架的开发最佳实践",
+      "techStack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["NestJS", "Node.js"],
+        "tools": []
+      },
+      "tags": ["typescript", "nestjs", "backend", "api"]
+    },
+    {
+      "id": "vue3-composition-api",
+      "path": "vue3-composition-api-cursorrules-prompt-file",
+      "name": "Vue 3 Composition API规则集",
+      "description": "Vue 3 Composition API的最佳实践和使用规范",
+      "techStack": {
+        "languages": ["TypeScript", "JavaScript"],
+        "frameworks": ["Vue"],
+        "tools": ["Composition API"]
+      },
+      "tags": ["vue3", "composition-api", "frontend"]
+    },
+    {
+      "id": "python-cursorrules-best-practices",
+      "path": "python-cursorrules-prompt-file-best-practices",
+      "name": "Python最佳实践规则集",
+      "description": "Python项目开发的综合最佳实践和编码规范",
+      "techStack": {
+        "languages": ["Python"],
+        "frameworks": [],
+        "tools": []
+      },
+      "tags": ["python", "best-practices", "coding-standards"]
+    }
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2024-06-18"
+} 

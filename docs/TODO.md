@@ -14,17 +14,11 @@
 
 
 
-# 增加cursor-rules
-- 根据项目的不同
-
-
-# 自定义cursor-rules
 
 
 
 
 
-增加一个日志模块，
 
 
 
