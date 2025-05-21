@@ -3,6 +3,7 @@
   "displayName": "Cursor Rules Assistant",
   "description": "自动检查和配置Cursor Rules的VSCode插件",
   "version": "0.0.1",
+  "publisher": "CC11001100",
   "engines": {
     "vscode": "^1.96.0"
   },
