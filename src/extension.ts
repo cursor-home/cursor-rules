@@ -168,23 +168,6 @@ function registerCommands(context: vscode.ExtensionContext): void {
 }
 
 /**
- * 设置规则预加载
- * 
- * 根据用户配置决定是否预加载所有规则
- * 
- * @param {boolean} preloadRules - 是否预加载规则的配置选项
- * @returns {void} 无返回值
- */
-function setupRulePreloading(preloadRules: boolean): void {
-	// TODO: 规则预加载功能尚未实现
-	if (preloadRules) {
-		info('规则预加载功能正在开发中...');
-	} else {
-		info('规则预加载已禁用');
-	}
-}
-
-/**
  * 检查工作区规则
  * 
  * 为所有打开的工作区检查Cursor Rules状态，并根据需要显示配置提示
@@ -306,8 +289,7 @@ function registerWorkspaceChangeListener(
  * // 4. 检查版本并显示欢迎信息
  * // 5. 注册配置面板
  * // 6. 注册命令
- * // 7. 预加载规则
- * // 8. 检查工作区规则
+ * // 7. 检查工作区规则
  * 
  * @returns 无显式返回值。隐式返回一个Promise，表示激活过程的完成
  */
@@ -330,10 +312,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	
 	// 获取更多插件配置
 	const enableAutoCheck = config.get<boolean>('enableAutoCheck', true);
-	const preloadRules = config.get<boolean>('preloadAllRules', true);
-	
-	// 6. 设置规则预加载
-	setupRulePreloading(preloadRules);
 	
 	// 7. 检查工作区规则
 	await checkWorkspaceRules(context, enableAutoCheck);

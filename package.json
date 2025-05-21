@@ -159,11 +159,6 @@
           "default": true,
           "description": "启用技术栈检测以选择合适的模板"
         },
-        "cursor-rules-assistant.preloadAllRules": {
-          "type": "boolean",
-          "default": true,
-          "description": "启动时预加载所有规则以提高响应速度"
-        },
         "cursor-rules-assistant.logLevel": {
           "type": "string",
           "default": "info",
