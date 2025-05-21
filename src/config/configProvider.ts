@@ -1,13 +1,21 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigItem } from './types';
 import { defaultConfig } from './defaults';
 import { createRuleFromTemplate } from '../cursorRules/manager';
 import { detectProjectTechStack } from '../techStack';
-import { RuleTemplate } from '../types';
+import { Rule, WorkspaceState } from '../types';
 
-// 定义规则模板，与ConfigPanel.tsx中的相同
-const ruleTemplates: RuleTemplate[] = [
+/**
+ * 配置提供者模块，负责管理与Cursor Rules相关的配置
+ * 包括规则模板、状态管理等
+ */
+
+/**
+ * 预定义规则模板集合
+ */
+export const ruleTemplates: Rule[] = [
 	{
 		id: 'basic',
 		name: '基础规则',
@@ -32,6 +40,7 @@ description: 通用项目规则
 - 在此添加项目特有的规则和惯例
 `
 	},
+	
 	{
 		id: 'typescript',
 		name: 'TypeScript规则',
@@ -59,6 +68,7 @@ globs: "**/*.ts,**/*.tsx"
 - 使用index.ts统一导出API
 `
 	},
+	
 	{
 		id: 'react',
 		name: 'React规则',
@@ -88,6 +98,94 @@ globs: "**/*.tsx,**/*.jsx"
 `
 	}
 ];
+
+// 工作区状态配置
+const defaultWorkspaceState: WorkspaceState = {
+	// 是否已经配置过Cursor Rules
+	configured: false,
+	
+	// 是否已启用Cursor Rules
+	enabled: false,
+	
+	// 最后检查时间
+	lastCheck: null,
+	
+	// 关联的规则文件
+	rules: [],
+	
+	// 技术栈信息
+	techStack: {
+		languages: [],
+		frameworks: [],
+		libraries: [],
+		tools: [],
+		confidence: 0
+	},
+	
+	// 忽略的文件或目录
+	ignorePatterns: ['node_modules/**', 'dist/**', 'build/**', '.git/**'],
+	
+	// 其他设置
+	settings: {
+		applyOnSave: false,
+		showNotifications: true,
+		debugMode: false
+	}
+};
+
+/**
+ * 获取工作区状态
+ * 
+ * @param workspace 工作区文件夹
+ * @returns 工作区状态对象
+ */
+export function getWorkspaceState(workspace: vscode.WorkspaceFolder): WorkspaceState {
+	try {
+		const statePath = path.join(workspace.uri.fsPath, '.cursor', 'state.json');
+		if (fs.existsSync(statePath)) {
+			const stateData = fs.readFileSync(statePath, { encoding: 'utf8' });
+			return JSON.parse(stateData) as WorkspaceState;
+		}
+	} catch (err) {
+		console.error('读取工作区状态失败', err);
+	}
+	
+	return { ...defaultWorkspaceState };
+}
+
+/**
+ * 保存工作区状态
+ * 
+ * @param workspace 工作区文件夹
+ * @param state 工作区状态对象
+ */
+export function saveWorkspaceState(workspace: vscode.WorkspaceFolder, state: WorkspaceState): void {
+	try {
+		const cursorDir = path.join(workspace.uri.fsPath, '.cursor');
+		if (!fs.existsSync(cursorDir)) {
+			fs.mkdirSync(cursorDir);
+		}
+		
+		const statePath = path.join(cursorDir, 'state.json');
+		fs.writeFileSync(statePath, JSON.stringify(state, null, 2), { encoding: 'utf8' });
+	} catch (err) {
+		console.error('保存工作区状态失败', err);
+		vscode.window.showErrorMessage(`无法保存工作区状态: ${err}`);
+	}
+}
+
+/**
+ * 更新工作区配置状态
+ * 
+ * @param workspace 工作区文件夹
+ * @param configured 是否已配置
+ */
+export function updateConfiguredState(workspace: vscode.WorkspaceFolder, configured: boolean): void {
+	const state = getWorkspaceState(workspace);
+	state.configured = configured;
+	state.lastCheck = new Date().toISOString();
+	saveWorkspaceState(workspace, state);
+}
 
 /**
  * 配置面板类

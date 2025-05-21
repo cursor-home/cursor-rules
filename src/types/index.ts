@@ -110,45 +110,6 @@ export enum CursorRulesPromptChoice {
 }
 
 /**
- * 规则模板接口
- * 
- * 定义规则模板的结构，用于创建不同类型的规则文件
- * 
- * @property id - 模板的唯一标识符，用于查找和引用特定模板
- * @property name - 模板的显示名称，用于UI展示
- * @property description - 模板的简短描述，说明其用途
- * @property content - 模板的实际内容，即规则文件的文本内容
- * 
- * @example
- * ```typescript
- * // 创建模板示例
- * const typescriptTemplate: RuleTemplate = {
- *   id: 'typescript',
- *   name: 'TypeScript规则',
- *   description: '适用于TypeScript项目的规则',
- *   content: `---
- * description: TypeScript项目规则
- * ---
- * # TypeScript项目规范
- * 
- * ## 类型声明
- * - 总是显式声明类型，尽量避免any
- * ...其他规则内容...
- * `
- * };
- * 
- * console.log(`模板名称: ${typescriptTemplate.name}`);
- * console.log(`模板描述: ${typescriptTemplate.description}`);
- * ```
- */
-export interface RuleTemplate {
-	id: string;
-	name: string;
-	description: string;
-	content: string;
-}
-
-/**
  * 技术栈匹配标准
  * 
  * 定义规则适用的技术栈条件，用于规则匹配算法
@@ -206,22 +167,28 @@ export interface RuleMetadata {
   id: string;
   name: string;
   description: string;
-  techStack: TechStackCriteria;
+  techStack?: TechStackCriteria;
   filePath?: string;  // 本地文件路径
 }
 
 /**
  * 完整规则内容
  * 
- * 继承自RuleMetadata，添加了规则的实际内容和额外属性
+ * 包含规则元数据和实际内容，可作为模板使用
  * 
+ * @property id - 规则的唯一标识符
+ * @property name - 规则的显示名称
+ * @property description - 规则的简短描述
  * @property content - 规则的实际内容文本
- * @property isBuiltIn - 表示规则是否为内置规则
+ * @property techStack - 可选项，规则适用的技术栈匹配条件
+ * @property isBuiltIn - 可选项，表示规则是否为内置规则
  * @property lastUpdated - 可选项，规则上次更新的时间戳
  * @property source - 可选项，规则的来源
+ * @property filePath - 可选项，规则文件的实际文件系统路径
  * 
  * @example
  * ```typescript
+ * // 作为规则使用
  * const rule: Rule = {
  *   id: "typescript-nextjs",
  *   name: "TypeScript Next.js 开发规则",
@@ -235,11 +202,27 @@ export interface RuleMetadata {
  *   lastUpdated: 1632468123457,
  *   source: RuleSource.BuiltIn
  * };
+ * 
+ * // 作为模板使用
+ * const template: Rule = {
+ *   id: 'typescript',
+ *   name: 'TypeScript规则',
+ *   description: '适用于TypeScript项目的规则',
+ *   content: `---
+ * description: TypeScript项目规则
+ * ---
+ * # TypeScript项目规范
+ * 
+ * ## 类型声明
+ * - 总是显式声明类型，尽量避免any
+ * ...其他规则内容...
+ * `
+ * };
  * ```
  */
 export interface Rule extends RuleMetadata {
   content: string;
-  isBuiltIn: boolean;
+  isBuiltIn?: boolean;
   lastUpdated?: number;
   source?: RuleSource;
 }
@@ -399,4 +382,67 @@ export interface MetaJsonData {
   rules: MetaRuleMetadata[];
   version: string;
   lastUpdated: string;
+}
+
+/**
+ * 工作区状态接口
+ * 
+ * 定义工作区的Cursor Rules配置状态，用于持久化和状态管理
+ * 
+ * @property configured - 是否已经配置过Cursor Rules
+ * @property enabled - 是否已启用Cursor Rules
+ * @property lastCheck - 最后检查时间的ISO字符串
+ * @property rules - 关联的规则文件列表
+ * @property techStack - 工作区检测到的技术栈信息
+ * @property ignorePatterns - 忽略的文件或目录模式列表
+ * @property settings - 其他配置设置
+ * 
+ * @example
+ * ```typescript
+ * const workspaceState: WorkspaceState = {
+ *   configured: true,
+ *   enabled: true,
+ *   lastCheck: '2023-09-01T12:00:00.000Z',
+ *   rules: ['react.mdc', 'typescript.mdc'],
+ *   techStack: {
+ *     languages: ['TypeScript'],
+ *     frameworks: ['React'],
+ *     libraries: ['Redux'],
+ *     tools: ['Webpack'],
+ *     confidence: 0.85
+ *   },
+ *   ignorePatterns: ['node_modules/**', 'dist/**'],
+ *   settings: {
+ *     applyOnSave: true,
+ *     showNotifications: true,
+ *     debugMode: false
+ *   }
+ * };
+ * ```
+ */
+export interface WorkspaceState {
+	// 是否已经配置过Cursor Rules
+	configured: boolean;
+	
+	// 是否已启用Cursor Rules
+	enabled: boolean;
+	
+	// 最后检查时间
+	lastCheck: string | null;
+	
+	// 关联的规则文件
+	rules: string[];
+	
+	// 技术栈信息
+	techStack: TechStackInfo;
+	
+	// 忽略的文件或目录
+	ignorePatterns: string[];
+	
+	// 其他设置
+	settings: {
+		applyOnSave: boolean;
+		showNotifications: boolean;
+		debugMode: boolean;
+	};
 } 

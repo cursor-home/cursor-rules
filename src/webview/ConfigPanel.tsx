@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import './ConfigPanel.css';
+import { Rule } from '../types';
+import { vscode } from './vscode';
 
 // 定义VSCode API接口
 interface VSCodeAPI {
@@ -22,13 +24,24 @@ interface ConfigItem {
   type: 'string' | 'boolean' | 'number';
 }
 
-// 定义Cursor Rule模板
-interface RuleTemplate {
-  id: string;
-  name: string;
+// 配置项组件接口
+interface ConfigItemProps {
+  title: string;
   description: string;
-  content: string;
+  onSelect: () => void;
+  isActive: boolean;
 }
+
+// 配置项组件
+const ConfigItem: React.FC<ConfigItemProps> = ({ title, description, onSelect, isActive }) => {
+  return (
+    <div className={`config-item ${isActive ? 'active' : ''}`} onClick={onSelect}>
+      <h3>{title}</h3>
+      <p>{description}</p>
+      <button className="select-button">选择</button>
+    </div>
+  );
+};
 
 // 定义技术栈信息接口
 interface TechStackInfo {
@@ -42,7 +55,7 @@ interface TechStackInfo {
 // 预定义的规则模板，这个模板应该和manager.ts中的保持一致
 // 由于webview与扩展主进程运行在不同的上下文中，所以需要在这里重新定义
 // 而不是直接导入，确保两边的模板数据一致
-const ruleTemplates: RuleTemplate[] = [
+const ruleTemplates: Rule[] = [
   {
     id: 'basic',
     name: '基础规则',
@@ -133,10 +146,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   ]);
   
   // 选中的模板
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
+  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState<number | null>(null);
   
   // 模板预览
-  const [templatePreview, setTemplatePreview] = useState<string>('');
+  const [previewContent, setPreviewContent] = useState<string>('');
   
   // 技术栈信息
   const [techStackInfo, setTechStackInfo] = useState<TechStackInfo | null>(null);
@@ -155,7 +168,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
         // 设置默认模板
         const defaultTemplate = message.config.find((item: ConfigItem) => item.id === 'defaultTemplate');
         if (defaultTemplate) {
-          setSelectedTemplate(defaultTemplate.value as string);
+          setSelectedTemplateIndex(ruleTemplates.findIndex(t => t.id === defaultTemplate.value as string));
         }
       } else if (message.type === 'techStackDetected') {
         setTechStackInfo(message.techStackInfo);
@@ -175,11 +188,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   
   // 更新模板预览
   useEffect(() => {
-    const template = ruleTemplates.find(t => t.id === selectedTemplate);
-    if (template) {
-      setTemplatePreview(template.content);
+    if (selectedTemplateIndex !== null) {
+      setPreviewContent(ruleTemplates[selectedTemplateIndex].content);
     }
-  }, [selectedTemplate]);
+  }, [selectedTemplateIndex]);
   
   // 处理配置更改
   const handleConfigChange = (id: string, value: string | boolean | number) => {
@@ -197,7 +209,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
     
     // 如果更改的是默认模板，则更新预览
     if (id === 'defaultTemplate') {
-      setSelectedTemplate(value as string);
+      setSelectedTemplateIndex(ruleTemplates.findIndex(t => t.id === value as string));
     }
   };
   
@@ -205,7 +217,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   const handleCreateTemplate = () => {
     vscode.postMessage({
       type: 'createTemplate',
-      templateId: selectedTemplate
+      templateId: ruleTemplates[selectedTemplateIndex as number].id
     });
   };
   
@@ -223,7 +235,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   // 根据技术栈推荐模板
   const getRecommendedTemplate = (): string => {
     if (!techStackInfo) {
-      return selectedTemplate;
+      return ruleTemplates[selectedTemplateIndex as number].id;
     }
     
     // 如果检测到TypeScript，选用TypeScript模板
@@ -245,7 +257,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   // 应用推荐模板
   const applyRecommendedTemplate = () => {
     const recommendedTemplate = getRecommendedTemplate();
-    setSelectedTemplate(recommendedTemplate);
+    setSelectedTemplateIndex(ruleTemplates.findIndex(t => t.id === recommendedTemplate));
     
     // 更新默认模板配置
     const newConfig = config.map(item => 
@@ -288,7 +300,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
                 value={item.value as string}
                 onChange={e => handleConfigChange(item.id, e.target.value)}
               >
-                {ruleTemplates.map(template => (
+                {ruleTemplates.map((template, index) => (
                   <option key={template.id} value={template.id}>
                     {template.name}
                   </option>
@@ -425,7 +437,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
   };
   
   // 获取当前模板信息
-  const currentTemplate = ruleTemplates.find(t => t.id === selectedTemplate);
+  const currentTemplate = ruleTemplates[selectedTemplateIndex as number];
   
   return (
     <div className="config-panel">
@@ -452,7 +464,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ vscode }) => {
               <h3 className="template-name">{currentTemplate.name}</h3>
               <p className="template-description">{currentTemplate.description}</p>
             </div>
-            <pre className="template-content">{templatePreview}</pre>
+            <pre className="template-content">{previewContent}</pre>
             <div className="template-actions">
               <button 
                 className="config-button"

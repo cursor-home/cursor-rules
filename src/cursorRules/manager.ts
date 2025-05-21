@@ -28,7 +28,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { CursorRulesPromptChoice, RuleTemplate, Rule, TechStackInfo } from '../types';
+import { CursorRulesPromptChoice, Rule, TechStackInfo } from '../types';
 import { detectProjectTechStack, getTechStackDescription } from '../techStack';
 import { saveNeverAskAgain } from './checker';
 import { 
@@ -43,7 +43,7 @@ import { debug, info, warn, error } from '../logger/logger';
  * 包含基础模板、TypeScript模板和React模板
  * 每个模板包含ID、名称、描述和内容
  */
-export const ruleTemplates: RuleTemplate[] = [
+export const ruleTemplates: Rule[] = [
 	/**
 	 * 基础规则模板
 	 * 
@@ -229,7 +229,7 @@ async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.Workspac
  * 完成后打开新创建的规则文件供用户查看和编辑。
  * 
  * @param {vscode.WorkspaceFolder} workspaceFolder - 目标工作区文件夹对象
- * @param {RuleTemplate} template - 要应用的规则模板对象
+ * @param {Rule} template - 要应用的规则模板对象
  *                               (例如: {id: 'typescript', name: 'TypeScript规则', 
  *                                      description: '适用于TypeScript项目', 
  *                                      content: '# TypeScript规则...'})
@@ -256,7 +256,7 @@ async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.Workspac
  * 数据样例：
  * ```typescript
  * // 模板对象样例
- * const templateExample: RuleTemplate = {
+ * const templateExample: Rule = {
  *   id: 'react',
  *   name: 'React项目规则',
  *   description: '适用于React项目的Cursor Rules',
@@ -273,7 +273,7 @@ async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.Workspac
  * };
  * ```
  */
-export async function createRuleFromTemplate(workspaceFolder: vscode.WorkspaceFolder, template: RuleTemplate): Promise<void> {
+export async function createRuleFromTemplate(workspaceFolder: vscode.WorkspaceFolder, template: Rule): Promise<void> {
 	const rootPath = workspaceFolder.uri.fsPath;
 	const rulesDir = path.join(rootPath, '.cursor', 'rules');
 	
