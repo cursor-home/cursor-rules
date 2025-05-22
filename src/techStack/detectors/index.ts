@@ -1,58 +1,63 @@
 import * as vscode from 'vscode';
-import { TechStackInfo } from '../types';
+import { TechStackInfo, createEmptyTechStackInfo } from '../types';
 import { detectViaLanguageServices } from './languageDetector';
 import { checkFrameworkConfigFiles } from './frameworkDetector';
-import { analyzePackageJson } from './packageDetector';
+import { analyzeWorkspacePackages } from './packageDetector';
 import { analyzePythonDependencies } from './pythonDetector';
+import { analyzeCloudTechnologies } from './cloudDetector';
+import { analyzeDatabases } from './databaseDetector';
+
+/**
+ * 增强技术栈信息
+ * 
+ * 这个函数通过多种检测方法来增强技术栈信息，包括：
+ * - 检查框架配置文件
+ * - 分析package.json依赖
+ * - 分析Python依赖
+ * - 分析云技术和容器
+ * - 分析数据库技术
+ * 
+ * @param workspaceFolder 工作区文件夹
+ * @param initialResult 可选的初始技术栈信息
+ * @returns 增强后的技术栈信息
+ */
+export async function enhanceTechStackInfo(
+  workspaceFolder: vscode.WorkspaceFolder,
+  initialResult?: TechStackInfo
+): Promise<TechStackInfo> {
+  try {
+    // 使用提供的初始结果或创建新的空结果
+    const result = initialResult || await detectViaLanguageServices(workspaceFolder);
+    
+    // 1. 检查特定框架配置文件
+    await checkFrameworkConfigFiles(workspaceFolder, result);
+    
+    // 2. 分析package.json中的依赖
+    await analyzeWorkspacePackages(workspaceFolder, result);
+    
+    // 3. 分析Python项目依赖
+    await analyzePythonDependencies(workspaceFolder, result);
+    
+    // 4. 分析云原生和容器相关技术
+    await analyzeCloudTechnologies(workspaceFolder, result);
+    
+    // 5. 分析数据库相关技术
+    await analyzeDatabases(workspaceFolder, result);
+    
+    return result;
+  } catch (error) {
+    console.error('Error enhancing tech stack info:', error);
+    // 出错时返回初始结果或创建新的空结果
+    return initialResult || createEmptyTechStackInfo();
+  }
+}
 
 // 导出所有检测器
 export {
   detectViaLanguageServices,
   checkFrameworkConfigFiles,
-  analyzePackageJson,
-  analyzePythonDependencies
-};
-
-/**
- * 通过分析项目特定配置文件和结构增强技术栈信息
- * @param workspaceFolder 工作区文件夹
- * @param initialInfo 初始技术栈信息
- * @returns 增强后的技术栈信息
- */
-export async function enhanceTechStackInfo(
-  workspaceFolder: vscode.WorkspaceFolder, 
-  initialInfo: TechStackInfo
-): Promise<TechStackInfo> {
-  const result = { ...initialInfo };
-
-  try {
-    // 1. 检查特定框架和库的配置文件
-    await checkFrameworkConfigFiles(workspaceFolder, result);
-    
-    // 2. 如果存在package.json，分析依赖
-    await analyzePackageJson(workspaceFolder, result);
-    
-    // 3. 针对Python项目分析requirements.txt或Pipfile
-    await analyzePythonDependencies(workspaceFolder, result);
-    
-    // 4. 检查其他语言的依赖配置文件（预留扩展点）
-    await checkOtherDependencyFiles(workspaceFolder, result);
-  } catch (error) {
-    console.error('Error enhancing tech stack info:', error);
-  }
-
-  return result;
-}
-
-/**
- * 检查其他语言的依赖文件（预留扩展点）
- * @param workspaceFolder 工作区文件夹
- * @param result 技术栈结果对象
- */
-async function checkOtherDependencyFiles(
-  workspaceFolder: vscode.WorkspaceFolder,
-  result: TechStackInfo
-): Promise<void> {
-  // 可以根据需要添加其他语言的依赖分析
-  // 如Java的pom.xml, Ruby的Gemfile等
-} 
+  analyzeWorkspacePackages,
+  analyzePythonDependencies,
+  analyzeCloudTechnologies,
+  analyzeDatabases
+}; 

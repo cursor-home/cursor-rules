@@ -17,85 +17,121 @@
  * 4. 返回完整的技术栈信息
  */
 import * as vscode from 'vscode';
-import { TechStackInfo, createEmptyTechStackInfo } from '../types';
+import { TechStackInfo, createEmptyTechStackInfo } from './types';
+import { detectViaLanguageServices } from './detectors/languageDetector';
+import { checkFrameworkConfigFiles } from './detectors/frameworkDetector';
+import { analyzeWorkspacePackages } from './detectors/packageDetector';
+import { analyzeCloudTechnologies } from './detectors/cloudDetector';
+import { analyzeDatabases } from './detectors/databaseDetector';
+import { enhanceTechStackInfo } from './detectors';
+import { analyzePythonDependencies } from './detectors/pythonDetector';
 import { calculateConfidence, getTechStackDescription } from './utils';
-import { 
-  detectViaLanguageServices, 
-  enhanceTechStackInfo 
-} from './detectors';
 
 /**
- * 检测项目技术栈
- * 
- * 分析指定工作区的项目技术栈信息，包括使用的编程语言、框架、库和工具等
- * 通过多种检测方法综合判断，并计算结果的置信度
- * 
- * 检测步骤：
- * 1. 首先使用VS Code语言服务API初步检测项目语言
- * 2. 然后使用文件扫描等方法进一步增强检测结果
- * 3. 最后计算检测结果的整体置信度
- * 
- * @param {vscode.WorkspaceFolder} workspaceFolder - 要检测的工作区文件夹对象
- * @returns {Promise<TechStackInfo>} 包含项目技术栈信息的对象
- * 
- * @throws 如果检测过程出错，会捕获异常并返回空的技术栈信息
- * 
- * @example
- * ```typescript
- * // 检测当前打开的项目技术栈
- * const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
- * 
- * if (workspaceFolder) {
- *   try {
- *     const techStack = await detectProjectTechStack(workspaceFolder);
- *     
- *     console.log('Detected tech stack:');
- *     console.log(`语言: ${techStack.languages.join(', ')}`);
- *     console.log(`框架: ${techStack.frameworks.join(', ')}`);
- *     console.log(`库: ${techStack.libraries.join(', ')}`);
- *     console.log(`工具: ${techStack.tools.join(', ')}`);
- *     console.log(`置信度: ${techStack.confidence}`);
- *     
- *     // 获取技术栈描述
- *     const description = getTechStackDescription(techStack);
- *     console.log(`技术栈描述: ${description}`);
- *   } catch (error) {
- *     console.error('Error detecting tech stack:', error);
- *   }
- * }
- * ```
- * 
- * 返回数据样例：
- * ```typescript
- * {
- *   languages: ['TypeScript', 'JavaScript'],
- *   frameworks: ['React', 'Next.js'],
- *   libraries: ['Redux', 'Tailwind CSS'],
- *   tools: ['Webpack', 'ESLint'],
- *   confidence: 0.85
- * }
- * ```
+ * 检测项目的技术栈
+ * @param workspaceFolder 工作区文件夹
+ * @returns 技术栈信息，包括置信度和描述
  */
-export async function detectProjectTechStack(workspaceFolder: vscode.WorkspaceFolder): Promise<TechStackInfo> {
-  // 初始化结果为空的技术栈信息
+export async function detectTechStack(workspaceFolder: vscode.WorkspaceFolder): Promise<TechStackInfo> {
+  // 创建空的技术栈信息对象
   const result = createEmptyTechStackInfo();
-
+  
   try {
-    // 1. 先使用VS Code语言服务方法，基于文件类型初步检测
-    const vscodeResult = await detectViaLanguageServices(workspaceFolder);
+    // 1. 使用VSCode语言服务进行初步检测
+    const languageResult = await detectViaLanguageServices(workspaceFolder);
+    mergeTechStackResults(result, languageResult);
     
-    // 2. 然后使用其他检测器增强检测结果，分析package.json等配置文件
-    const enhancedResult = await enhanceTechStackInfo(workspaceFolder, vscodeResult);
+    // 2. 使用多个专门的检测器增强检测结果
     
-    // 3. 根据检测到的技术栈元素数量和质量，计算并设置置信度
-    enhancedResult.confidence = calculateConfidence(enhancedResult);
+    // 2.1 检查特定框架配置文件
+    await checkFrameworkConfigFiles(workspaceFolder, result);
     
-    return enhancedResult;
+    // 2.2 分析package.json中的依赖
+    await analyzeWorkspacePackages(workspaceFolder, result);
+    
+    // 2.3 分析Python项目依赖
+    await analyzePythonDependencies(workspaceFolder, result);
+    
+    // 2.4 分析云原生和容器相关技术
+    await analyzeCloudTechnologies(workspaceFolder, result);
+    
+    // 2.5 分析数据库相关技术
+    await analyzeDatabases(workspaceFolder, result);
+    
+    // 2.6 检查其他依赖文件
+    await enhanceTechStackInfo(workspaceFolder, result);
+    
+    // 3. 计算置信度
+    result.confidence = calculateConfidence(result);
+    
   } catch (error) {
-    // 如果检测过程出现任何错误，记录日志并返回空结果
     console.error('Error detecting tech stack:', error);
-    return result;
+    // 出错时返回基本信息，但标记低置信度
+    result.confidence = 0; // 使用0作为最低置信度
   }
+  
+  return result;
+}
+
+/**
+ * 合并两个技术栈结果
+ * @param target 目标技术栈
+ * @param source 源技术栈
+ */
+function mergeTechStackResults(target: TechStackInfo, source: TechStackInfo): void {
+  // 合并语言
+  for (const lang of source.languages) {
+    if (!target.languages.includes(lang)) {
+      target.languages.push(lang);
+    }
+  }
+  
+  // 合并框架
+  for (const framework of source.frameworks) {
+    if (!target.frameworks.includes(framework)) {
+      target.frameworks.push(framework);
+    }
+  }
+  
+  // 合并库
+  for (const lib of source.libraries) {
+    if (!target.libraries.includes(lib)) {
+      target.libraries.push(lib);
+    }
+  }
+  
+  // 合并工具
+  for (const tool of source.tools) {
+    if (!target.tools.includes(tool)) {
+      target.tools.push(tool);
+    }
+  }
+}
+
+/**
+ * 示例: 如何使用检测器
+ */
+export async function example(): Promise<void> {
+  // 获取活动工作区文件夹
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders || workspaceFolders.length === 0) {
+    console.log('没有打开的工作区');
+    return;
+  }
+  
+  const folder = workspaceFolders[0];
+  console.log(`正在分析工作区: ${folder.name}`);
+  
+  // 检测技术栈
+  const techStack = await detectTechStack(folder);
+  
+  // 打印结果
+  console.log(`技术栈信息 (置信度: ${techStack.confidence}):`);
+  console.log(`- 语言: ${techStack.languages.join(', ')}`);
+  console.log(`- 框架: ${techStack.frameworks.join(', ')}`);
+  console.log(`- 库: ${techStack.libraries.join(', ')}`);
+  console.log(`- 工具: ${techStack.tools.join(', ')}`);
+  console.log(`- 描述: ${getTechStackDescription(techStack)}`);
 }
 
 // 导出公共API，方便其他模块使用
