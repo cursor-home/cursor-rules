@@ -165,27 +165,61 @@ export class BuiltInRuleManager {
    * 
    * 生成一个读取特定规则内容的函数
    * 这是一个工具方法，用于为规则元数据创建readContent函数
-   * 支持多级目录结构，根据规则的path属性确定文件位置
+   * 支持多级目录结构和多文件规则
    * 
    * @param {MetaRuleMetadata} rule - 规则元数据
    * @param {string} extensionPath - 扩展目录路径
-   * @returns {() => Promise<string | null>} 读取规则内容的函数
+   * @returns {(fileIndex?: number) => Promise<string | null>} 读取规则内容的函数
    */
-  private createReadContentFunction(rule: MetaRuleMetadata, extensionPath: string): () => Promise<string | null> {
-    return async () => {
-      // 优先使用rule.path确定文件路径，支持多级目录结构
-      // path属性应该是相对于resources/rules/的路径
-      const relativePath = rule.path || `${rule.id}.mdc`;
-      
-      const fileUri = vscode.Uri.joinPath(
-        vscode.Uri.file(extensionPath),
-        'resources',
-        'rules',
-        relativePath
-      );
-      
-      debug(`读取规则文件: ${fileUri.fsPath}`);
-      return await readFileContent(fileUri);
+  private createReadContentFunction(rule: MetaRuleMetadata, extensionPath: string): (fileIndex?: number) => Promise<string | null> {
+    return async (fileIndex?: number) => {
+      try {
+        // 处理多文件规则
+        if (rule.files && rule.files.length > 0) {
+          // 如果指定了文件索引，尝试读取指定文件
+          if (fileIndex !== undefined && fileIndex >= 0 && fileIndex < rule.files.length) {
+            const fileInfo = rule.files[fileIndex];
+            const fileUri = vscode.Uri.joinPath(
+              vscode.Uri.file(extensionPath),
+              'resources',
+              'rules',
+              fileInfo.path
+            );
+            
+            debug(`读取规则文件[${fileIndex}]: ${fileUri.fsPath}`);
+            return await readFileContent(fileUri);
+          }
+          
+          // 如果没有指定索引或索引无效，读取第一个文件作为默认文件
+          const defaultFileInfo = rule.files[0];
+          const defaultFileUri = vscode.Uri.joinPath(
+            vscode.Uri.file(extensionPath),
+            'resources',
+            'rules',
+            defaultFileInfo.path
+          );
+          
+          debug(`读取规则默认文件: ${defaultFileUri.fsPath}`);
+          return await readFileContent(defaultFileUri);
+        }
+        
+        // 处理单文件规则
+        // 优先使用rule.path确定文件路径，支持多级目录结构
+        const relativePath = rule.path || `${rule.id}.mdc`;
+        
+        const fileUri = vscode.Uri.joinPath(
+          vscode.Uri.file(extensionPath),
+          'resources',
+          'rules',
+          relativePath
+        );
+        
+        debug(`读取规则文件: ${fileUri.fsPath}`);
+        return await readFileContent(fileUri);
+      } catch (err) {
+        error(`读取规则文件失败: ${rule.id}`, err);
+        return null;
+      }
     };
   }
   
@@ -318,6 +352,7 @@ export class BuiltInRuleManager {
    * 
    * 根据技术栈信息查找匹配的规则并计算匹配分数
    * 选项控制搜索范围、最小匹配分数和结果数量限制
+   * 支持多文件规则
    * 
    * @param {TechStackInfo} techStack - 项目技术栈信息
    * @param {RuleSearchOptions} options - 搜索配置选项
@@ -340,23 +375,70 @@ export class BuiltInRuleManager {
     for (const rule of allRules) {
       const matchScore = this.calculateMatchScore(rule, techStack);
       if (matchScore >= minScore) {
-        const content = await rule.readContent();
-        if (content !== null) {
-          // 将元数据转为规则对象
-          const ruleObj: Rule = {
-            ...rule,
-            content,
-            readContent: rule.readContent
-          };
-          
-          results.push({
-            rule: ruleObj,
-            matchScore,
-            source: RuleSource.BuiltIn
-          });
+        try {
+          // 处理多文件规则
+          if (rule.files && rule.files.length > 0) {
+            debug(`处理多文件规则: ${rule.id}，共${rule.files.length}个文件`);
+            
+            // 读取所有文件内容
+            const contentPromises = Array.from(
+              { length: rule.files.length }, 
+              (_, index) => rule.readContent(index)
+            );
+            
+            const contents = await Promise.all(contentPromises);
+            
+            // 过滤掉null值，确保所有文件都成功读取
+            const validContents = contents.filter((content): content is string => content !== null);
+            
+            // 只有当至少有一个文件成功读取时才创建规则对象
+            if (validContents.length > 0) {
+              // 第一个文件作为主内容
+              const mainContent = validContents[0];
+              
+              // 创建规则对象
+              const ruleObj: Rule = {
+                ...rule,
+                content: mainContent,
+                contents: validContents,
+                source: RuleSource.BuiltIn
+              };
+              
+              results.push({
+                rule: ruleObj,
+                matchScore,
+                source: RuleSource.BuiltIn
+              });
+              
+              debug(`已添加多文件规则: ${rule.id}，有效文件数: ${validContents.length}`);
+            }
+          } else {
+            // 处理单文件规则
+            const content = await rule.readContent();
+            if (content !== null) {
+              // 将元数据转为规则对象
+              const ruleObj: Rule = {
+                ...rule,
+                content,
+                source: RuleSource.BuiltIn
+              };
+              
+              results.push({
+                rule: ruleObj,
+                matchScore,
+                source: RuleSource.BuiltIn
+              });
+              
+              debug(`已添加单文件规则: ${rule.id}`);
+            }
+          }
+        } catch (err) {
+          error(`处理规则失败: ${rule.id}`, err);
         }
       }
     }
+    
+    debug(`共找到${results.length}条匹配的规则`);
     
     // 按匹配分数排序并限制返回数量
     return results

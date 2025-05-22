@@ -148,6 +148,9 @@ export interface TechStackCriteria {
  * @property description - 规则的简短描述，说明其用途
  * @property techStack - 规则适用的技术栈匹配条件
  * @property filePath - 可选项，规则文件的实际文件系统路径
+ * @property files - 可选项，规则包含的多个文件信息
+ * @property readContent - 读取规则内容的方法，只在需要时调用
+ *                        不传参数时读取主文件，传入文件索引时读取指定文件
  * 
  * @example
  * ```typescript
@@ -169,6 +172,8 @@ export interface RuleMetadata {
   description: string;
   techStack?: TechStackCriteria;
   filePath?: string;  // 本地文件路径
+  files?: RuleFile[];  // 规则包含的多个文件
+  readContent(fileIndex?: number): Promise<string | null>;  // 读取规则内容的方法，可指定特定文件
 }
 
 /**
@@ -179,12 +184,14 @@ export interface RuleMetadata {
  * @property id - 规则的唯一标识符
  * @property name - 规则的显示名称
  * @property description - 规则的简短描述
- * @property content - 规则的实际内容文本
+ * @property content - 规则的主要内容文本
+ * @property contents - 可选项，多文件规则的内容数组
  * @property techStack - 可选项，规则适用的技术栈匹配条件
  * @property isBuiltIn - 可选项，表示规则是否为内置规则
  * @property lastUpdated - 可选项，规则上次更新的时间戳
  * @property source - 可选项，规则的来源
  * @property filePath - 可选项，规则文件的实际文件系统路径
+ * @property files - 可选项，规则包含的多个文件信息
  * 
  * @example
  * ```typescript
@@ -221,7 +228,8 @@ export interface RuleMetadata {
  * ```
  */
 export interface Rule extends RuleMetadata {
-  content: string;
+  content: string;  // 主要规则内容
+  contents?: string[];  // 多文件规则的内容数组
   isBuiltIn?: boolean;
   lastUpdated?: number;
   source?: RuleSource;
