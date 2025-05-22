@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { autoConfigureCursorRules } from '../cursorRules/manager';
+import { autoConfigureCursorRules } from '../cursorRules/autoGenerator';
 
 /**
  * Register create Cursor Rules command

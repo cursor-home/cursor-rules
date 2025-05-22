@@ -5,12 +5,12 @@
  */
 
 // 导出所有的规则处理函数
-export { handleGetRuleList } from './getRuleList';
-export { handleCreateRule } from './createRule';
-export { handleGetRuleDetail } from './getRuleDetail';
-export { handleOpenRule } from './openRule';
-export { handleDeleteRule } from './deleteRule';
-export { handleEditRule } from './editRule';
+export { handleGetRuleList } from './handleGetRuleList';
+export { handleCreateRule } from './handleCreateRule';
+export { handleGetRuleDetail } from './handleGetRuleDetail';
+export { handleOpenRule } from './handleOpenRule';
+export { handleDeleteRule } from './handleDeleteRule';
+export { handleEditRule } from './handleEditRule';
 
 // 可选：导出工具函数，以便在需要时使用
 export * as RuleHandlerUtils from './utils'; 

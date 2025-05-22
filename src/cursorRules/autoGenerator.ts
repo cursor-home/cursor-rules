@@ -24,15 +24,11 @@
  */
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
 import { Rule, TechStackInfo, createEmptyTechStackInfo } from '../types';
-import { detectProjectTechStack, getTechStackDescription } from '../techStack';
-import { 
-	getBestRuleForTechStack, 
-	recommendRulesForTechStack,
-	getRuleMetadataById
-} from './metaManager';
+import { detectTechStack, getTechStackDescription } from '../techStack';
+import { builtInRuleManager } from './builtInRuleManager';
 import { debug, info, warn, error } from '../logger/logger';
+import { UserRuleStorageManager } from './userRuleStorageManager';
 
 /**
  * 应用规则到工作区
@@ -41,30 +37,22 @@ import { debug, info, warn, error } from '../logger/logger';
  * 此函数会在工作区的.cursor/rules目录下创建一个以规则ID命名的.mdc文件，
  * 并自动打开该文件供用户查看和编辑。
  * 
- * @param {Rule} rule - 要应用的规则对象，包含规则的ID、名称和内容
- *                     (例如: {id: 'typescript', name: 'TypeScript规则', content: '# TypeScript规则...'})
+ * @param {Rule} rule - 要应用的规则对象
  * @param {vscode.WorkspaceFolder} workspaceFolder - 目标工作区文件夹对象
  * @returns {Promise<boolean>} 应用成功返回true，失败返回false
- * 
- * @throws 可能抛出文件系统相关错误，例如权限不足、磁盘空间不足等
  */
 export async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.WorkspaceFolder): Promise<boolean> {
 	try {
-		const rootPath = workspaceFolder.uri.fsPath;
-		const rulesDir = path.join(rootPath, '.cursor', 'rules');
+		const rootPath = workspaceFolder.uri;
+		const rulesDir = vscode.Uri.joinPath(rootPath, '.cursor', 'rules');
 		
 		// 创建.cursor/rules目录结构（如果不存在）
-		if (!fs.existsSync(path.join(rootPath, '.cursor'))) {
-			fs.mkdirSync(path.join(rootPath, '.cursor'));
-		}
-		
-		if (!fs.existsSync(rulesDir)) {
-			fs.mkdirSync(rulesDir);
-		}
+		await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(rootPath, '.cursor'));
+		await vscode.workspace.fs.createDirectory(rulesDir);
 		
 		// 创建规则文件，使用规则ID作为文件名
-		const rulePath = path.join(rulesDir, `${rule.id}.mdc`);
-		fs.writeFileSync(rulePath, rule.content);
+		const rulePath = vscode.Uri.joinPath(rulesDir, `${rule.id}.mdc`);
+		await vscode.workspace.fs.writeFile(rulePath, Buffer.from(rule.content));
 		
 		// 尝试打开创建的文件以便用户查看和编辑
 		const document = await vscode.workspace.openTextDocument(rulePath);
@@ -92,25 +80,18 @@ export async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.W
  * @param {vscode.WorkspaceFolder} workspaceFolder - 目标工作区文件夹对象
  * @param {Rule} template - 要应用的规则模板对象
  * @returns {Promise<void>} 无返回值的Promise
- * 
- * @throws 可能抛出文件系统错误或VS Code API相关错误
  */
 export async function createRuleFromTemplate(workspaceFolder: vscode.WorkspaceFolder, template: Rule): Promise<void> {
-	const rootPath = workspaceFolder.uri.fsPath;
-	const rulesDir = path.join(rootPath, '.cursor', 'rules');
+	const rootPath = workspaceFolder.uri;
+	const rulesDir = vscode.Uri.joinPath(rootPath, '.cursor', 'rules');
 	
 	// 创建.cursor/rules目录结构（如果不存在）
-	if (!fs.existsSync(path.join(rootPath, '.cursor'))) {
-		fs.mkdirSync(path.join(rootPath, '.cursor'));
-	}
-	
-	if (!fs.existsSync(rulesDir)) {
-		fs.mkdirSync(rulesDir);
-	}
+	await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(rootPath, '.cursor'));
+	await vscode.workspace.fs.createDirectory(rulesDir);
 	
 	// 创建规则文件，使用模板ID作为文件名
-	const rulePath = path.join(rulesDir, `${template.id}.mdc`);
-	fs.writeFileSync(rulePath, template.content);
+	const rulePath = vscode.Uri.joinPath(rulesDir, `${template.id}.mdc`);
+	await vscode.workspace.fs.writeFile(rulePath, Buffer.from(template.content));
 	
 	// 尝试打开创建的文件以便用户查看和编辑
 	const document = await vscode.workspace.openTextDocument(rulePath);
@@ -167,7 +148,7 @@ async function getDefaultRuleForTechStack(techStack: TechStackInfo): Promise<Rul
 	}
 	
 	// 查找匹配的规则
-	const rule = await getBestRuleForTechStack(query, {
+	const rule = await builtInRuleManager.getBestRuleForTechStack(query, {
 		includeBuiltIn: true,
 		minScore: 0.4
 	});
@@ -191,10 +172,9 @@ async function getDefaultRuleForTechStack(techStack: TechStackInfo): Promise<Rul
 async function getBasicRule(): Promise<Rule> {
 	try {
 		// 尝试从元数据中获取id为'basic'的规则
-		const ruleMetadata = await getRuleMetadataById('basic');
+		const ruleMetadata = await builtInRuleManager.getRuleMetadataById('basic');
 		if (ruleMetadata) {
-			// 读取规则内容
-			const content = await readRuleContent(ruleMetadata.filePath);
+			const content = await ruleMetadata.readContent();
 			if (content) {
 				return {
 					...ruleMetadata,
@@ -207,7 +187,7 @@ async function getBasicRule(): Promise<Rule> {
 	}
 	
 	// 回退到硬编码的基础规则
-	return {
+	const basicRule: Rule = {
 		id: 'basic',
 		name: '基础规则',
 		description: '适用于所有项目的通用规则',
@@ -229,30 +209,11 @@ description: 通用项目规则
 
 ## 项目特定规则
 - 在此添加项目特有的规则和惯例
-`
+`,
+		readContent: async () => basicRule.content
 	};
-}
-
-/**
- * 读取规则内容
- * 
- * 从文件系统读取规则文件内容
- * 
- * @param {string} filePath - 规则文件路径
- * @returns {Promise<string|null>} 规则内容，如果读取失败则返回null
- */
-async function readRuleContent(filePath?: string): Promise<string|null> {
-	if (!filePath) return null;
 	
-	try {
-		if (fs.existsSync(filePath)) {
-			return fs.readFileSync(filePath, 'utf8');
-		}
-	} catch (err) {
-		error(`读取规则文件失败: ${filePath}`, err);
-	}
-	
-	return null;
+	return basicRule;
 }
 
 /**
@@ -262,18 +223,8 @@ async function readRuleContent(filePath?: string): Promise<string|null> {
  * 该函数会显示进度通知，并在过程中向用户提供反馈。
  * 如果检测到合适的规则，会询问用户是否使用推荐规则。
  * 
- * 工作流程:
- * 1. 显示进度通知，开始分析项目技术栈
- * 2. 调用detectProjectTechStack检测项目的编程语言、框架等
- * 3. 显示检测结果，如果置信度足够高
- * 4. 搜索匹配的规则，从最高匹配度开始推荐
- * 5. 询问用户是否接受推荐规则
- * 6. 如果没有找到匹配规则或用户拒绝，回退使用基础模板
- * 
  * @param {vscode.WorkspaceFolder} workspaceFolder - 要配置的工作区文件夹对象
  * @returns {Promise<void>} 无返回值的Promise
- * 
- * @throws 可能抛出技术栈检测错误，此时会回退到默认模板
  */
 export async function autoConfigureCursorRules(workspaceFolder: vscode.WorkspaceFolder): Promise<void> {
 	// 使用进度通知显示技术栈分析进度
@@ -284,7 +235,7 @@ export async function autoConfigureCursorRules(workspaceFolder: vscode.Workspace
 	}, async (progress) => {
 		try {
 			// 检测项目技术栈（语言、框架、库、工具等）
-			const techStackInfo = await detectProjectTechStack(workspaceFolder);
+			const techStackInfo = await detectTechStack(workspaceFolder);
 			const techStackDesc = getTechStackDescription(techStackInfo);
 			
 			// 如果检测结果置信度足够高（>0.5），显示检测到的技术栈信息
@@ -296,7 +247,7 @@ export async function autoConfigureCursorRules(workspaceFolder: vscode.Workspace
 			progress.report({ message: "正在搜索匹配的规则..." });
 
 			// 尝试从规则仓库获取最佳匹配的规则，设置0.4的最小匹配分数作为阈值
-			const matchResults = await recommendRulesForTechStack(techStackInfo, {
+			const matchResults = await builtInRuleManager.recommendRulesForTechStack(techStackInfo, {
 				includeBuiltIn: true,   // 包括内置规则
 				includeLocal: true,     // 包括本地规则
 				minScore: 0.4,          // 最小匹配分数
@@ -333,8 +284,8 @@ export async function autoConfigureCursorRules(workspaceFolder: vscode.Workspace
 			await createRuleFromTemplate(workspaceFolder, defaultRule);
 			
 			return techStackInfo; // 返回检测到的技术栈信息
-		} catch (error) {
-			console.error('检测技术栈时出错:', error);
+		} catch (err) {
+			error('检测技术栈时出错:', err);
 			
 			// 出错时回退到基础规则
 			const basicRule = await getBasicRule();

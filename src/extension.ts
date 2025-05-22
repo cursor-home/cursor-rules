@@ -16,9 +16,9 @@ import { allCommands } from './commands';
 // Cursor Rules check-related functions, used to detect if rules exist in the workspace and show prompts
 import { checkCursorRules, shouldShowPrompt, showCursorRulesPrompt } from './cursorRules/checker';
 // Handle user choices regarding Cursor Rules prompts
-import { handleCursorRulesChoice } from './cursorRules/manager';
+import { handleCursorRulesChoice } from './cursorRules/ruleSetupWizard';
 // Import initialization function for meta manager
-import { initializeMetaManager } from './cursorRules/metaManager';
+import { builtInRuleManager } from './cursorRules/builtInRuleManager';
 // Logging functionality imported from logger module
 import { 
 	LogLevel, 
@@ -402,7 +402,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	info('Logging system initialized');
 	
 	// 2. Initialize meta manager for rule metadata
-	initializeMetaManager(context);
+	builtInRuleManager.initialize(context);
 	info('Meta manager initialized for rule metadata');
 	
 	// Log global state information
