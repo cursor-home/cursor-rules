@@ -14,16 +14,4 @@ import { showConfigPanel } from '../webview/configPanel';
 export const openConfigCommand = vscode.commands.registerCommand('cursor-rules-assistant.openConfigPanel', (context: vscode.ExtensionContext) => {
 	info("通过命令打开配置面板");
 	showConfigPanel(context);
-});
-
-/**
- * Generate random nonce value
- */
-export function getNonce(): string {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
-} 
+}); 
