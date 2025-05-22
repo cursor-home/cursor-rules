@@ -46,7 +46,7 @@ export async function analyzePythonDependencies(workspaceFolder: vscode.Workspac
       await analyzePipfile(pipFiles[0].fsPath, result);
     }
   } catch (error) {
-    console.error('分析Python依赖时出错:', error);
+    console.error('Error analyzing Python dependencies:', error);
   }
 }
 
@@ -79,7 +79,7 @@ async function analyzeRequirementsFile(filePath: string, result: TechStackInfo):
       }
     }
   } catch (error) {
-    console.error('分析requirements.txt文件时出错:', error);
+    console.error('Error analyzing requirements.txt file:', error);
   }
 }
 
@@ -120,7 +120,7 @@ async function analyzePipfile(filePath: string, result: TechStackInfo): Promise<
       }
     }
   } catch (error) {
-    console.error('分析Pipfile文件时出错:', error);
+    console.error('Error analyzing Pipfile:', error);
   }
 }
 

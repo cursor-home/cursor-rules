@@ -18,57 +18,49 @@
     "commands": [
       {
         "command": "cursor-rules-assistant.openConfig",
-        "title": "打开配置面板",
+        "title": "Cursor Rules Assistant: 打开配置面板",
         "icon": "$(gear)"
       },
       {
         "command": "cursor-rules-assistant.createCursorRules",
-        "title": "创建Cursor Rules"
+        "title": "Cursor Rules Assistant: 创建Cursor Rules"
       },
       {
         "command": "cursor-rules-assistant.detectTechStack",
-        "title": "检测项目技术栈"
+        "title": "Cursor Rules Assistant: 检测项目技术栈"
       },
       {
         "command": "cursor-rules-assistant.openWelcomePage",
-        "title": "查看Cursor Rules助手入门指南",
+        "title": "Cursor Rules Assistant: 查看入门指南",
         "icon": "$(book)"
       },
       {
         "command": "cursor-rules-assistant.browseRules",
-        "title": "浏览可用规则"
+        "title": "Cursor Rules Assistant: 浏览可用规则"
       },
       {
         "command": "cursor-rules-assistant.recommendRules",
-        "title": "根据技术栈推荐规则"
+        "title": "Cursor Rules Assistant: 根据技术栈推荐规则"
       },
       {
         "command": "cursor-rules-assistant.generateCode",
-        "title": "使用Cursor AI生成代码"
-      },
-      {
-        "command": "cursor-rules-assistant.streamConversation",
-        "title": "使用Cursor AI进行流式对话"
-      },
-      {
-        "command": "cursor-rules-assistant.advancedConversation",
-        "title": "使用Cursor AI进行高级对话"
+        "title": "Cursor Rules Assistant: 生成代码"
       },
       {
         "command": "cursor-rules-assistant.showLogs",
-        "title": "显示日志面板"
+        "title": "Cursor Rules Assistant: 显示日志"
       },
       {
         "command": "cursor-rules-assistant.clearLogs",
-        "title": "清空日志"
+        "title": "Cursor Rules Assistant: 清空日志"
       },
       {
         "command": "cursor-rules-assistant.setLogLevel",
-        "title": "设置日志级别"
+        "title": "Cursor Rules Assistant: 设置日志级别"
       },
       {
         "command": "cursor-rules-assistant.resetExtensionState",
-        "title": "[开发] 重置扩展状态 (模拟首次安装)"
+        "title": "Cursor Rules Assistant: [开发] 重置扩展状态"
       }
     ],
     "menus": {
@@ -90,37 +82,7 @@
           "group": "2_workspace"
         }
       ],
-      "commandPalette": [
-        {
-          "command": "cursor-rules-assistant.generateCode",
-          "group": "Cursor AI"
-        },
-        {
-          "command": "cursor-rules-assistant.streamConversation",
-          "group": "Cursor AI"
-        },
-        {
-          "command": "cursor-rules-assistant.advancedConversation",
-          "group": "Cursor AI"
-        },
-        {
-          "command": "cursor-rules-assistant.showLogs",
-          "group": "Cursor 日志"
-        },
-        {
-          "command": "cursor-rules-assistant.clearLogs",
-          "group": "Cursor 日志"
-        },
-        {
-          "command": "cursor-rules-assistant.setLogLevel",
-          "group": "Cursor 日志"
-        },
-        {
-          "command": "cursor-rules-assistant.resetExtensionState",
-          "group": "Cursor 开发"
-        }
-      ],
-      "menuBar/edit": [
+      "editor/context": [
         {
           "command": "cursor-rules-assistant.openConfig",
           "group": "navigation"
@@ -128,6 +90,74 @@
         {
           "command": "cursor-rules-assistant.openWelcomePage",
           "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.createCursorRules",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.detectTechStack",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.openWelcomePage",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.browseRules",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.recommendRules",
+          "group": "Cursor Rules"
+        },
+        {
+          "command": "cursor-rules-assistant.generateCode",
+          "group": "Cursor AI"
+        },
+        {
+          "command": "cursor-rules-assistant.showLogs",
+          "group": "Cursor Rules: 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.clearLogs",
+          "group": "Cursor Rules: 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.setLogLevel",
+          "group": "Cursor Rules: 日志"
+        },
+        {
+          "command": "cursor-rules-assistant.resetExtensionState",
+          "group": "Cursor Rules: 开发"
+        }
+      ],
+      "menuBar/edit": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "group": "1_modification"
+        },
+        {
+          "command": "cursor-rules-assistant.openWelcomePage",
+          "group": "1_modification"
+        }
+      ],
+      "menu": [
+        {
+          "command": "cursor-rules-assistant.openConfig",
+          "group": "Cursor Rules",
+          "when": "true"
+        },
+        {
+          "command": "cursor-rules-assistant.openWelcomePage",
+          "group": "Cursor Rules",
+          "when": "true"
         }
       ],
       "editor/title": [
@@ -177,6 +207,7 @@
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
+    "compile:quick": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
@@ -202,11 +233,12 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@types/react": "^19.1.4",
-    "@types/react-dom": "^19.1.5",
+    "@types/react": "^18.3.22",
+    "@types/react-dom": "^18.3.7",
     "axios": "^1.9.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "vscode-cache": "^0.3.0"
   },
   "files": [

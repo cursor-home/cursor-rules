@@ -190,6 +190,7 @@ export interface GeneralSettingsPageProps {
  */
 export interface RuleListPageProps {
   vscode: VSCodeAPI;
+  onRuleCardClick?: (ruleId: string) => void;
 }
 
 /**

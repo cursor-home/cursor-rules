@@ -49,7 +49,7 @@ import {
  *   try {
  *     const techStack = await detectProjectTechStack(workspaceFolder);
  *     
- *     console.log('检测到的技术栈:');
+ *     console.log('Detected tech stack:');
  *     console.log(`语言: ${techStack.languages.join(', ')}`);
  *     console.log(`框架: ${techStack.frameworks.join(', ')}`);
  *     console.log(`库: ${techStack.libraries.join(', ')}`);
@@ -60,7 +60,7 @@ import {
  *     const description = getTechStackDescription(techStack);
  *     console.log(`技术栈描述: ${description}`);
  *   } catch (error) {
- *     console.error('检测技术栈时出错:', error);
+ *     console.error('Error detecting tech stack:', error);
  *   }
  * }
  * ```
@@ -93,7 +93,7 @@ export async function detectProjectTechStack(workspaceFolder: vscode.WorkspaceFo
     return enhancedResult;
   } catch (error) {
     // 如果检测过程出现任何错误，记录日志并返回空结果
-    console.error('检测技术栈时出错:', error);
+    console.error('Error detecting tech stack:', error);
     return result;
   }
 }

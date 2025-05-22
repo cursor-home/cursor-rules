@@ -38,7 +38,7 @@ export async function enhanceTechStackInfo(
     // 4. 检查其他语言的依赖配置文件（预留扩展点）
     await checkOtherDependencyFiles(workspaceFolder, result);
   } catch (error) {
-    console.error('增强技术栈信息时出错:', error);
+    console.error('Error enhancing tech stack info:', error);
   }
 
   return result;

@@ -66,7 +66,7 @@ export async function detectViaLanguageServices(workspaceFolder: vscode.Workspac
       }
     }
   } catch (error) {
-    console.error('使用VSCode语言服务检测失败:', error);
+    console.error('Failed to detect using VSCode language services:', error);
   }
 
   return result;

@@ -12,25 +12,33 @@ import '../styles/Pages.css';
 /**
  * Rule card component
  */
-const RuleCard: React.FC<{rule: Rule, vscode: any}> = ({ rule, vscode }) => {
+const RuleCard: React.FC<{rule: Rule, vscode: any, onDirectClick?: (ruleId: string) => void}> = ({ rule, vscode, onDirectClick }) => {
   const handleClick = () => {
     // 使用props传入的vscode实例而非window.vscode
-    console.log('规则卡片点击 - 发送导航消息:', rule.id);
+    console.log('[DEBUG RuleCard] 规则卡片点击 - 发送导航消息:', rule.id);
     
+    // 如果提供了直接点击处理函数，使用它而不是发送消息
+    if (onDirectClick) {
+      console.log('[DEBUG RuleCard] 使用直接点击处理函数');
+      onDirectClick(rule.id);
+      return;
+    }
+    
+    // 否则使用消息机制
     vscode.postMessage({
       type: 'navigateTo',
-      page: 'ruleDetail',
+      pageId: 'ruleDetail',
       ruleId: rule.id
     });
     
-    console.log('消息已发送，rule.id:', rule.id);
+    console.log('[DEBUG RuleCard] 导航消息已发送，格式: {type: navigateTo, pageId: ruleDetail, ruleId:', rule.id, '}');
   };
 
   // 添加打开文件按钮的处理函数
   const handleOpenFile = (e: React.MouseEvent) => {
     e.stopPropagation(); // 阻止事件冒泡到卡片的点击事件
     
-    console.log('打开文件按钮点击 - 文件路径:', rule.filePath);
+    console.log('[DEBUG RuleCard] 打开文件按钮点击 - 文件路径:', rule.filePath);
     
     // 使用props传入的vscode实例而非window.vscode
     if (rule.filePath) {
@@ -85,17 +93,21 @@ const RuleCard: React.FC<{rule: Rule, vscode: any}> = ({ rule, vscode }) => {
 /**
  * Rule list page component
  */
-export const RuleListPage: React.FC<RuleListPageProps> = ({ vscode }) => {
+export const RuleListPage: React.FC<RuleListPageProps> = ({ vscode, onRuleCardClick }) => {
   // Use rule list Hook
   const { rules, loading, error, refreshRules } = useRuleList(vscode);
 
   // Handle add rule button click
   const handleAddRule = () => {
     // 使用props中的vscode实例而非window.vscode
+    console.log('[DEBUG RuleListPage] 添加规则按钮点击 - 发送导航消息: addRule');
+    
     vscode.postMessage({
       type: 'navigateTo',
-      page: 'addRule'
+      pageId: 'addRule'
     });
+    
+    console.log('[DEBUG RuleListPage] 导航消息已发送');
   };
 
   return (
@@ -163,7 +175,12 @@ export const RuleListPage: React.FC<RuleListPageProps> = ({ vscode }) => {
             <div className="rule-count">{rules.length} rules</div>
             <div className="rule-grid">
               {rules.map((rule, index) => (
-                <RuleCard key={`rule-${index}`} rule={rule} vscode={vscode} />
+                <RuleCard 
+                  key={`rule-${index}`} 
+                  rule={rule} 
+                  vscode={vscode} 
+                  onDirectClick={onRuleCardClick} 
+                />
               ))}
             </div>
           </>

@@ -227,18 +227,108 @@
 }
 
 .content-preview-box {
-  padding: 16px;
-  border-radius: 6px;
   background-color: var(--vscode-editor-background);
   border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 16px;
   font-family: var(--vscode-editor-font-family);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--vscode-editor-font-size);
+  white-space: pre;
   overflow-x: auto;
-  max-height: 300px;
+}
+
+.content-preview-box.full-content {
+  max-height: 500px;
   overflow-y: auto;
   white-space: pre-wrap;
-  color: var(--vscode-editor-foreground);
+  font-size: 14px;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* 规则文件选项卡样式 */
+.rule-files-container {
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--vscode-editor-background);
+}
+
+.rule-files-tabs {
+  display: flex;
+  background-color: var(--vscode-tab-inactiveBackground);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  overflow-x: auto;
+}
+
+.rule-file-tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+  color: var(--vscode-tab-inactiveForeground);
+  position: relative;
+}
+
+.rule-file-tab:hover {
+  background-color: var(--vscode-tab-hoverBackground);
+  color: var(--vscode-tab-hoverForeground);
+}
+
+.rule-file-tab.active {
+  background-color: var(--vscode-tab-activeBackground);
+  color: var(--vscode-tab-activeForeground);
+  border-bottom: 2px solid var(--vscode-tab-activeBorder);
+}
+
+.rule-file-content {
+  padding: 0;
+}
+
+.rule-file-content .content-preview-box {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+/* 空内容提示样式 */
+.empty-content-notice {
+  padding: 20px;
+  text-align: center;
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+  border-radius: 4px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.empty-content-notice p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 重试加载按钮样式 */
+.retry-container {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.retry-container p {
+  margin-bottom: 8px;
+  color: var(--vscode-errorForeground);
+}
+
+.retry-button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.retry-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
 }
 
 .rule-detail-actions {
@@ -372,4 +462,199 @@
   font-size: 14px;
   color: var(--vscode-descriptionForeground);
   line-height: 1.5;
+}
+
+/* 调试信息样式 */
+.debug-info {
+  margin-top: 16px;
+  border-top: 1px dashed var(--vscode-panel-border);
+  padding-top: 16px;
+}
+
+.debug-info summary {
+  cursor: pointer;
+  user-select: none;
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+}
+
+.debug-info summary:hover {
+  color: var(--vscode-foreground);
+}
+
+.debug-content {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--vscode-descriptionForeground);
+  background-color: var(--vscode-panel-background);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.debug-file-list {
+  margin: 8px 0 0 0;
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.debug-file-list li {
+  margin-bottom: 6px;
+}
+
+.file-content-preview {
+  margin-top: 4px;
+  font-family: var(--vscode-editor-font-family);
+  color: var(--vscode-textPreformat-foreground);
+}
+
+.loading-status {
+  margin-top: 8px;
+  padding: 4px 8px;
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+  border-radius: 2px;
+}
+
+/* 新增调试面板样式 */
+.debug-panel {
+  margin-top: 20px;
+  border-top: 1px dashed #666;
+  padding-top: 10px;
+}
+
+.debug-panel summary {
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9em;
+  padding: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.debug-panel summary:hover {
+  background-color: #e0e0e0;
+}
+
+.debug-panel .debug-content {
+  padding: 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.debug-panel h4 {
+  margin: 10px 0 5px 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 3px;
+}
+
+.debug-file-list {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+}
+
+.debug-file-list li {
+  padding: 5px;
+  border-left: 3px solid transparent;
+}
+
+.debug-file-list li.selected-file {
+  background-color: #f0f0f0;
+  border-left: 3px solid #0078d4;
+}
+
+.debug-file-list .file-preview {
+  margin-top: 5px;
+  padding: 5px;
+  background-color: #fff;
+  border: 1px solid #eee;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+.debug-file-list pre {
+  margin: 5px 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: #f5f5f5;
+  padding: 5px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.debug-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.debug-actions button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.debug-actions button:hover {
+  background-color: #e0e0e0;
+}
+
+/* 加载和错误状态样式 */
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0078d4;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.loading-status {
+  margin-top: 10px;
+  font-size: 0.85em;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reload-button {
+  margin-top: 8px;
+  padding: 5px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.reload-button:hover {
+  background-color: #e0e0e0;
 } 

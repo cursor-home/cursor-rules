@@ -49,7 +49,7 @@ export async function analyzePackageJson(workspaceFolder: vscode.WorkspaceFolder
       }
     }
   } catch (error) {
-    console.error('分析package.json时出错:', error);
+    console.error('Error analyzing package.json:', error);
   }
 }
 

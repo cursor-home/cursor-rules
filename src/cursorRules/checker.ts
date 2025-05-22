@@ -1,26 +1,26 @@
 /**
  * checker.ts
  * 
- * Cursor Rules检查器模块，负责检查工作区是否存在Cursor Rules配置，
- * 并处理相关的用户提示和选择。
+ * Cursor Rules checker module, responsible for checking if Cursor Rules configuration exists in the workspace,
+ * and handling related user prompts and choices.
  * 
- * 主要功能：
- * 1. 检查工作区是否存在Cursor Rules配置文件或目录
- * 2. 管理用户对Cursor Rules提示的响应选择
- * 3. 保存用户偏好设置，如"不再询问"等选项
- * 4. 显示配置提示对话框
+ * Main functions:
+ * 1. Check if Cursor Rules configuration files or directories exist in the workspace
+ * 2. Manage user responses to Cursor Rules prompts
+ * 3. Save user preferences, such as "don't ask again" options
+ * 4. Display configuration prompt dialogs
  * 
- * 工作流程：
- * 1. 当用户打开项目时，系统会检查该项目是否已配置Cursor Rules
- * 2. 如果未配置，检查用户是否选择了"不再询问"
- * 3. 如果未选择"不再询问"，显示配置提示给用户
- * 4. 根据用户的选择，执行相应的配置操作或记住用户偏好
+ * Workflow:
+ * 1. When a user opens a project, the system checks if Cursor Rules is configured
+ * 2. If not configured, check if the user has selected "don't ask again"
+ * 3. If "don't ask again" is not selected, display configuration prompt to the user
+ * 4. Based on user's choice, perform corresponding configuration operations or remember user preference
  * 
- * 模块依赖：
- * - vscode：访问VS Code API，如对话框、工作区等
- * - path、fs：文件系统操作
- * - types：引用相关的类型定义
- * - logger：记录日志信息
+ * Module dependencies:
+ * - vscode: Access VS Code API, such as dialogs, workspaces, etc.
+ * - path, fs: File system operations
+ * - types: Reference related type definitions
+ * - logger: Record log information
  */
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -29,23 +29,23 @@ import { CursorRulesCheckResult, CursorRulesPromptChoice } from '../types';
 import { debug, info, warn, error } from '../logger/logger';
 
 /**
- * 检查工作区是否存在Cursor Rules
+ * Check if Cursor Rules exists in the workspace
  * 
- * 扫描指定工作区的文件系统，查找Cursor Rules相关的目录或文件
- * 支持检测两种格式：
- * 1. 新格式: .cursor/rules/ 目录
- * 2. 旧格式: .cursorrules 文件
+ * Scan the file system of the specified workspace to find Cursor Rules related directories or files
+ * Supports detection of two formats:
+ * 1. New format: .cursor/rules/ directory
+ * 2. Legacy format: .cursorrules file
  * 
- * 工作原理：
- * 1. 检查工作区根目录是否存在.cursor/rules目录（新格式）
- * 2. 检查工作区根目录是否存在.cursorrules文件（旧格式）
- * 3. 如果找到任意一种格式，则认为存在Cursor Rules
- * 4. 返回检查结果，包括存在状态和找到的路径列表
+ * How it works:
+ * 1. Check if .cursor/rules directory exists in workspace root (new format)
+ * 2. Check if .cursorrules file exists in workspace root (legacy format)
+ * 3. If either format is found, Cursor Rules is considered to exist
+ * 4. Return check result including existence status and list of found paths
  * 
- * @param {vscode.WorkspaceFolder} workspaceFolder - 要检查的工作区文件夹对象
- * @returns {Promise<CursorRulesCheckResult>} 包含检查结果的对象，包括是否存在rules和路径列表
+ * @param {vscode.WorkspaceFolder} workspaceFolder - Workspace folder object to check
+ * @returns {Promise<CursorRulesCheckResult>} Object containing check results, including whether rules exist and path list
  * 
- * @throws 如果文件系统操作失败，可能抛出I/O相关错误
+ * @throws May throw I/O related errors if file system operations fail
  * 
  * @example
  * ```typescript
@@ -54,25 +54,25 @@ import { debug, info, warn, error } from '../logger/logger';
  *   const result = await checkCursorRules(workspaceFolder);
  *   
  *   if (result.exists) {
- *     // 存在Cursor Rules
- *     console.log('找到Cursor Rules，路径：', result.paths);
+ *     // Cursor Rules exists
+ *     console.log('Found Cursor Rules, paths:', result.paths);
  *   } else {
- *     // 不存在Cursor Rules，可以显示提示
+ *     // Cursor Rules doesn't exist, can show prompt
  *     const choice = await showCursorRulesPrompt(workspaceFolder);
- *     // 处理用户选择...
+ *     // Handle user choice...
  *   }
  * }
  * ```
  * 
- * 返回数据样例：
+ * Return data example:
  * ```typescript
- * // 存在规则的情况
+ * // When rules exist
  * {
  *   exists: true,
  *   paths: ['/workspace/.cursor/rules']
  * }
  * 
- * // 不存在规则的情况
+ * // When rules don't exist
  * {
  *   exists: false,
  *   paths: []
@@ -90,34 +90,34 @@ export async function checkCursorRules(workspaceFolder: vscode.WorkspaceFolder):
 	};
 	
 	if (!workspaceFolder) {
-		warn('检查Cursor Rules: 没有提供工作区');
+		warn('Check Cursor Rules: No workspace provided');
 		return result;
 	}
 	
 	const rootPath = workspaceFolder.uri.fsPath;
-	debug(`检查Cursor Rules: 工作区路径 ${rootPath}`);
+	debug(`Check Cursor Rules: Workspace path ${rootPath}`);
 	
-	// 检查 .cursor/rules 目录（新格式）
+	// Check .cursor/rules directory (new format)
 	const rulesDir = path.join(rootPath, '.cursor', 'rules');
 	if (fs.existsSync(rulesDir) && fs.statSync(rulesDir).isDirectory()) {
-		debug(`检测到规则目录: ${rulesDir}`);
+		debug(`Detected rules directory: ${rulesDir}`);
 		result.exists = true;
 		result.paths.push(rulesDir);
 		result.details!.newFormat = true;
 		result.details!.newFormatPath = rulesDir;
 	}
 	
-	// 检查 .cursorrules 文件（旧版本格式）
+	// Check .cursorrules file (legacy format)
 	const legacyRulesFile = path.join(rootPath, '.cursorrules');
 	if (fs.existsSync(legacyRulesFile) && fs.statSync(legacyRulesFile).isFile()) {
-		debug(`检测到旧版本规则文件: ${legacyRulesFile}`);
+		debug(`Detected legacy rules file: ${legacyRulesFile}`);
 		result.exists = true;
 		result.paths.push(legacyRulesFile);
 		result.details!.legacyFormat = true;
 		result.details!.legacyFormatPath = legacyRulesFile;
 	}
 	
-	// 设置版本信息
+	// Set version information
 	if (result.details!.newFormat && result.details!.legacyFormat) {
 		result.version = 'both';
 	} else if (result.details!.newFormat) {
@@ -127,40 +127,40 @@ export async function checkCursorRules(workspaceFolder: vscode.WorkspaceFolder):
 	}
 	
 	if (result.exists) {
-		info(`工作区 ${workspaceFolder.name} 存在Cursor Rules: ${result.paths.join(', ')} (版本: ${result.version})`);
+		info(`Workspace ${workspaceFolder.name} has Cursor Rules: ${result.paths.join(', ')} (version: ${result.version})`);
 	} else {
-		info(`工作区 ${workspaceFolder.name} 不存在Cursor Rules`);
+		info(`Workspace ${workspaceFolder.name} has no Cursor Rules`);
 	}
 	
 	return result;
 }
 
 /**
- * 创建工作区唯一ID
+ * Create workspace unique ID
  * 
- * 基于工作区URI生成唯一标识符，用于在全局状态中跟踪用户对特定工作区的配置选择
+ * Generate a unique identifier based on workspace URI, used to track user configuration choices for specific workspaces in global state
  * 
- * 工作原理：
- * 使用工作区的URI作为唯一标识符，URI包含了工作区的完整路径和协议信息，
- * 确保即使在不同设备或位置打开同一项目，也能识别为同一工作区
+ * How it works:
+ * Uses the workspace URI as a unique identifier. The URI contains complete path and protocol information,
+ * ensuring that the same project is recognized as the same workspace even if opened on different devices or locations
  * 
- * @param {vscode.WorkspaceFolder} workspaceFolder - 工作区文件夹对象
- * @returns {string} 工作区的唯一标识符
+ * @param {vscode.WorkspaceFolder} workspaceFolder - Workspace folder object
+ * @returns {string} Unique identifier for the workspace
  * 
  * @example
  * ```typescript
  * const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
  * if (workspaceFolder) {
- *   // 获取工作区的唯一ID
+ *   // Get workspace unique ID
  *   const workspaceId = getWorkspaceFolderId(workspaceFolder);
- *   console.log(`工作区ID: ${workspaceId}`);
+ *   console.log(`Workspace ID: ${workspaceId}`);
  *   
- *   // 使用这个ID在全局状态中存储或检索数据
+ *   // Use this ID to store or retrieve data in global state
  *   const storedData = context.globalState.get<string[]>(`someData.${workspaceId}`);
  * }
  * ```
  * 
- * 返回数据示例：
+ * Return data example:
  * "file:///c%3A/users/username/projects/myproject"
  */
 export function getWorkspaceFolderId(workspaceFolder: vscode.WorkspaceFolder): string {
@@ -168,40 +168,40 @@ export function getWorkspaceFolderId(workspaceFolder: vscode.WorkspaceFolder): s
 }
 
 /**
- * 检查是否应该为工作区显示提示
+ * Check if prompt should be shown for workspace
  * 
- * 根据用户之前的选择确定是否应该显示Cursor Rules配置提示
- * 如果用户之前选择了"不再提示"，则返回false
+ * Determine if Cursor Rules configuration prompt should be displayed based on user's previous choices
+ * If the user previously chose "don't ask again", returns false
  * 
- * 工作原理：
- * 1. 获取工作区的唯一ID
- * 2. 从扩展全局状态中读取"不再询问"列表
- * 3. 检查工作区ID是否在列表中
- * 4. 如果在列表中，表示用户选择了不再提示，返回false
- * 5. 如果不在列表中，表示应该显示提示，返回true
+ * How it works:
+ * 1. Get the workspace's unique ID
+ * 2. Read the "don't ask again" list from extension global state
+ * 3. Check if workspace ID is in the list
+ * 4. If in the list, user chose not to be prompted again, return false
+ * 5. If not in the list, prompt should be shown, return true
  * 
- * @param {vscode.ExtensionContext} context - 扩展上下文对象，用于访问全局状态
- * @param {vscode.WorkspaceFolder} workspaceFolder - 要检查的工作区文件夹对象
- * @returns {boolean} 是否应该显示配置提示
+ * @param {vscode.ExtensionContext} context - Extension context object, used to access global state
+ * @param {vscode.WorkspaceFolder} workspaceFolder - Workspace folder object to check
+ * @returns {boolean} Whether configuration prompt should be displayed
  * 
  * @example
  * ```typescript
  * const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
  * if (workspaceFolder) {
- *   // 检查是否应该显示提示
+ *   // Check if prompt should be shown
  *   const shouldPrompt = shouldShowPrompt(context, workspaceFolder);
  *   
  *   if (shouldPrompt) {
- *     // 显示配置提示
+ *     // Show configuration prompt
  *     const choice = await showCursorRulesPrompt(workspaceFolder);
- *     // 处理用户选择...
+ *     // Handle user choice...
  *     
  *     if (choice === CursorRulesPromptChoice.NeverAskAgain) {
- *       // 保存"不再提示"的选择
+ *       // Save "don't ask again" choice
  *       saveNeverAskAgain(context, workspaceFolder);
  *     }
  *   } else {
- *     console.log('用户之前选择了不再提示');
+ *     console.log('User previously chose not to be prompted');
  *   }
  * }
  * ```
@@ -211,42 +211,42 @@ export function shouldShowPrompt(context: vscode.ExtensionContext, workspaceFold
 	const neverAskList = context.globalState.get<string[]>('cursorRules.neverAsk', []);
 	const shouldShow = !neverAskList.includes(workspaceId);
 	
-	debug(`工作区 ${workspaceFolder.name} 是否应该显示提示: ${shouldShow}`);
+	debug(`Workspace ${workspaceFolder.name} should show prompt: ${shouldShow}`);
 	return shouldShow;
 }
 
 /**
- * 记住用户选择不再显示提示
+ * Remember user choice not to show prompt
  * 
- * 将工作区ID添加到"不再询问"列表中，保存在扩展的全局状态中
- * 这样未来就不会再为该工作区显示Cursor Rules配置提示
+ * Add workspace ID to "don't ask again" list and save in extension global state
+ * This way, the prompt will not be shown for that workspace in the future
  * 
- * 工作原理：
- * 1. 获取工作区的唯一ID
- * 2. 从扩展全局状态中读取"不再询问"列表
- * 3. 如果工作区ID不在列表中，将其添加到列表
- * 4. 更新扩展全局状态，保存更新后的列表
+ * How it works:
+ * 1. Get the workspace's unique ID
+ * 2. Read the "don't ask again" list from extension global state
+ * 3. If workspace ID is not in the list, add it to the list
+ * 4. Update extension global state, save updated list
  * 
- * @param {vscode.ExtensionContext} context - 扩展上下文对象，用于访问全局状态
- * @param {vscode.WorkspaceFolder} workspaceFolder - 工作区文件夹对象
- * @returns {void} 无返回值
+ * @param {vscode.ExtensionContext} context - Extension context object, used to access global state
+ * @param {vscode.WorkspaceFolder} workspaceFolder - Workspace folder object
+ * @returns {void} No return value
  * 
  * @example
  * ```typescript
  * const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
  * if (workspaceFolder) {
- *   // 用户选择了"不再提示"选项
+ *   // User chose "don't ask again" option
  *   if (userChoice === CursorRulesPromptChoice.NeverAskAgain) {
- *     // 保存这个选择
+ *     // Save this choice
  *     saveNeverAskAgain(context, workspaceFolder);
- *     console.log(`已将工作区 ${workspaceFolder.name} 添加到不再询问列表`);
+ *     console.log(`Workspace ${workspaceFolder.name} added to never ask again list`);
  *   }
  * }
  * ```
  * 
- * 全局状态数据结构：
+ * Global state data structure:
  * ```typescript
- * // context.globalState中的数据示例
+ * // context.globalState data example
  * {
  *   "cursorRules.neverAsk": [
  *     "file:///c%3A/users/username/projects/project1",
@@ -260,7 +260,7 @@ export function saveNeverAskAgain(context: vscode.ExtensionContext, workspaceFol
 	const neverAskList = context.globalState.get<string[]>('cursorRules.neverAsk', []);
 	
 	if (!neverAskList.includes(workspaceId)) {
-		info(`将工作区 ${workspaceFolder.name} 添加到不再询问列表`);
+		info(`Workspace ${workspaceFolder.name} added to never ask again list`);
 		neverAskList.push(workspaceId);
 		context.globalState.update('cursorRules.neverAsk', neverAskList);
 	}
@@ -269,69 +269,42 @@ export function saveNeverAskAgain(context: vscode.ExtensionContext, workspaceFol
 /**
  * 显示Cursor Rules配置提示
  * 
- * 向用户展示一个快速选择对话框，提供Cursor Rules配置的选项
- * 用户可以选择自动配置、手动配置、暂不配置或不再提示
- * 
- * 工作原理：
- * 1. 动态导入CursorRulesPromptChoice枚举类型
- * 2. 创建选项列表，每个选项包括标签和描述
- * 3. 显示QuickPick对话框，让用户选择一个选项
- * 4. 返回用户选择的选项标签，如果用户取消则返回undefined
- * 
- * @param {vscode.WorkspaceFolder} workspaceFolder - 相关的工作区文件夹对象
- * @returns {Promise<string | undefined>} 用户选择的选项文本，如果用户取消则返回undefined
- * 
- * @example
- * ```typescript
- * const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
- * if (workspaceFolder) {
- *   // 检查是否存在Cursor Rules
- *   const checkResult = await checkCursorRules(workspaceFolder);
- *   
- *   if (!checkResult.exists && shouldShowPrompt(context, workspaceFolder)) {
- *     // 显示配置提示
- *     const choice = await showCursorRulesPrompt(workspaceFolder);
- *     
- *     // 处理用户选择
- *     if (choice === CursorRulesPromptChoice.AutoConfigure) {
- *       // 自动配置...
- *       await autoConfigureCursorRules(workspaceFolder);
- *     } else if (choice === CursorRulesPromptChoice.NeverAskAgain) {
- *       // 保存"不再提示"选择
- *       saveNeverAskAgain(context, workspaceFolder);
- *     }
- *   }
- * }
- * ```
- * 
- * 显示给用户的选项：
- * 1. "自动配置" - 自动创建Cursor Rules配置 (新版格式)
- * 2. "手动配置" - 打开手动配置向导 (推荐新版格式)
- * 3. "暂不配置" - 本次跳过，下次仍提示
- * 4. "此项目不再提示" - 记住用户选择，不再为此项目显示提示
+ * @param {vscode.WorkspaceFolder} workspaceFolder - 工作区文件夹
+ * @returns {Promise<string|undefined>} 用户的选择
  */
 export async function showCursorRulesPrompt(workspaceFolder: vscode.WorkspaceFolder): Promise<string | undefined> {
 	const { CursorRulesPromptChoice } = await import('../types');
 	
-	info(`显示Cursor Rules配置提示: ${workspaceFolder.name}`);
+	info(`显示规则配置提示给工作区: ${workspaceFolder.name}`);
 	
-	const options: vscode.QuickPickItem[] = [
-		{ label: CursorRulesPromptChoice.AutoConfigure, description: '自动创建Cursor Rules配置 (新版格式)' },
-		{ label: CursorRulesPromptChoice.ManualConfigure, description: '打开手动配置向导 (推荐新版格式)' },
-		{ label: CursorRulesPromptChoice.SkipNow, description: '本次跳过，下次仍提示' },
-		{ label: CursorRulesPromptChoice.NeverAskAgain, description: '此项目不再提示' }
-	];
-	
-	const selection = await vscode.window.showQuickPick(options, {
-		placeHolder: `${workspaceFolder.name}项目未配置Cursor Rules，是否进行配置？`,
-		ignoreFocusOut: true
-	});
-	
-	if (selection) {
-		debug(`用户选择了: ${selection.label}`);
-	} else {
-		debug('用户取消了选择');
+	// 获取扩展URI
+	const extension = vscode.extensions.getExtension('cursor-rules-assistant');
+	if (!extension) {
+		error('无法获取扩展URI');
+		return undefined;
 	}
 	
-	return selection?.label;
+	// 创建并显示WebView面板
+	const { RulePromptPanel } = await import('../webview/rulePromptPanel');
+	RulePromptPanel.createOrShow(extension.extensionUri);
+	
+	// 返回一个Promise，等待用户选择
+	return new Promise((resolve) => {
+		// 监听来自WebView的消息
+		const disposable = vscode.window.onDidChangeActiveTextEditor(() => {
+			// 当用户切换到其他编辑器时，认为用户选择了"稍后再说"
+			disposable.dispose();
+			resolve(CursorRulesPromptChoice.SkipNow);
+		});
+		
+		// 监听WebView面板的关闭事件
+		const panelDisposable = vscode.window.onDidChangeWindowState(() => {
+			if (!vscode.window.state.focused) {
+				// 当窗口失去焦点时，认为用户选择了"稍后再说"
+				panelDisposable.dispose();
+				disposable.dispose();
+				resolve(CursorRulesPromptChoice.SkipNow);
+			}
+		});
+	});
 } 

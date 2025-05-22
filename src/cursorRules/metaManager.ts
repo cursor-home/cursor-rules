@@ -90,7 +90,7 @@ export function initializeMetaManager(context: vscode.ExtensionContext) {
   // 初始化缓存，使用vscode-cache库
   metaCache = new Cache(context, 'meta-json-cache');
   
-  debug('Meta管理器已初始化，缓存过期时间: ' + CACHE_EXPIRATION_TIME + '秒');
+  debug('Meta manager initialized, cache expiration time: ' + CACHE_EXPIRATION_TIME + ' seconds');
 }
 
 /**
@@ -109,19 +109,19 @@ export function initializeMetaManager(context: vscode.ExtensionContext) {
  * // 内部使用示例
  * try {
  *   const metaJsonPath = getMetaJsonPath();
- *   console.log(`元数据文件路径: ${metaJsonPath}`);
+ *   console.log(`Metadata file path: ${metaJsonPath}`);
  *   
  *   // 检查文件是否存在
  *   const exists = fs.existsSync(metaJsonPath);
  *   console.log(`文件存在: ${exists}`);
  * } catch (err) {
- *   console.error('获取meta.json路径失败:', err);
+ *   console.error('Failed to get meta.json path:', err);
  * }
  * ```
  */
 function getMetaJsonPath(): string {
   if (!extensionContext) {
-    throw new Error('Meta管理器未初始化，请先调用 initializeMetaManager');
+    throw new Error('Meta manager not initialized, please call initializeMetaManager first');
   }
   return path.join(extensionContext.extensionPath, 'resources', 'rules', 'meta.json');
 }
@@ -153,7 +153,7 @@ function getMetaJsonPath(): string {
  *   console.log(`元数据版本: ${metaData.version}`);
  *   console.log(`最后更新日期: ${metaData.lastUpdated}`);
  * } catch (err) {
- *   console.error('加载meta.json失败:', err);
+ *   console.error('Failed to load meta.json from filesystem:', err);
  * }
  * ```
  * 
@@ -185,7 +185,7 @@ async function loadMetaJsonFromFile(): Promise<MetaJsonData> {
     info(`成功从文件系统加载meta.json，共${metaData.rules.length}条规则`);
     return metaData;
   } catch (err) {
-    error('从文件系统加载meta.json失败:', err);
+    error('Failed to load meta.json from filesystem:', err);
     throw err;
   }
 }
@@ -233,7 +233,7 @@ async function loadMetaJsonFromFile(): Promise<MetaJsonData> {
  */
 export async function loadMetaJson(): Promise<MetaJsonData> {
   if (!metaCache) {
-    throw new Error('Meta缓存未初始化，请先调用 initializeMetaManager');
+    throw new Error('Meta cache not initialized, please call initializeMetaManager first');
   }
 
   try {
@@ -252,7 +252,7 @@ export async function loadMetaJson(): Promise<MetaJsonData> {
     
     return metaData;
   } catch (err) {
-    error('加载meta.json失败:', err);
+    error('Failed to load meta.json:', err);
     throw err;
   }
 }
@@ -387,29 +387,26 @@ export async function clearMetaCache(): Promise<void> {
   
   if (metaCache.has('metaData')) {
     await metaCache.forget('metaData');
-    info('已清除meta.json缓存');
+    info('meta.json cache cleared');
   }
 }
 
 /**
- * 根据技术栈查找匹配的规则元数据
+ * Finding rules based on tech stack
  * 
- * 根据项目的技术栈信息查找匹配的规则，按匹配度降序排序
- * 只返回匹配度高于指定阈值的规则
+ * How it works:
+ * 1. Get all rule metadata
+ * 2. Calculate match score between each rule and given tech stack
+ * 3. Filter out rules with match scores below threshold
+ * 4. Sort by match score in descending order and return results
  * 
- * 工作原理：
- * 1. 获取所有规则元数据
- * 2. 对每个规则，计算与给定技术栈的匹配分数
- * 3. 过滤掉匹配分数低于阈值的规则
- * 4. 按匹配分数降序排序并返回结果
- * 
- * @param {TechStackInfo} techStack - 技术栈信息
- * @param {number} minScore - 最小匹配分数 (0.0-1.0)，默认为0.3
- * @returns {Promise<{rule: RuleMetadata, score: number}[]>} 规则元数据和匹配分数的数组
+ * @param {TechStackInfo} techStack - Tech stack information
+ * @param {number} minScore - Minimum match score (0.0-1.0), default is 0.3
+ * @returns {Promise<{rule: RuleMetadata, score: number}[]>} Array of rule metadata and match scores
  * 
  * @example
  * ```typescript
- * // 获取匹配项目技术栈的规则
+ * // Get rules matching project tech stack
  * const techStack: TechStackInfo = {
  *   languages: ['TypeScript', 'JavaScript'],
  *   frameworks: ['React'],
@@ -419,16 +416,16 @@ export async function clearMetaCache(): Promise<void> {
  * };
  * 
  * const matches = await findRulesByTechStack(techStack, 0.5);
- * console.log(`找到 ${matches.length} 条匹配规则`);
+ * console.log(`Found ${matches.length} matching rules`);
  * 
  * matches.forEach(match => {
- *   console.log(`规则: ${match.rule.name}, 匹配度: ${match.score.toFixed(2)}`);
+ *   console.log(`Rule: ${match.rule.name}, Match score: ${match.score.toFixed(2)}`);
  * });
  * 
  * if (matches.length > 0) {
- *   // 获取最佳匹配规则
+ *   // Get best matching rule
  *   const bestMatch = matches[0];
- *   console.log(`最佳匹配规则: ${bestMatch.rule.name} (匹配度: ${bestMatch.score.toFixed(2)})`);
+ *   console.log(`Best matching rule: ${bestMatch.rule.name} (Match score: ${bestMatch.score.toFixed(2)})`);
  * }
  * ```
  */
@@ -446,41 +443,41 @@ export async function findRulesByTechStack(
     }
   }
 
-  // 按匹配分数降序排序
+  // Sort by match score in descending order
   return matches.sort((a, b) => b.score - a.score);
 }
 
 /**
- * 计算规则与技术栈的匹配分数
+ * Calculate match score between rule and tech stack
  * 
- * 内部函数，根据规则元数据和项目技术栈计算匹配度分数
- * 考虑语言、框架和工具三个维度的匹配情况，给予不同权重
+ * Internal function that calculates match score based on rule metadata and project tech stack
+ * Considers languages, frameworks, and tools dimensions with different weights
  * 
- * 匹配算法说明：
- * 1. 语言匹配权重为0.5
- * 2. 框架匹配权重为0.3
- * 3. 工具匹配权重为0.2
- * 4. 在每个维度内，根据匹配项的比例计算得分
- * 5. 最终将各维度得分相加并正规化，得到0-1之间的总分数
+ * Matching algorithm explanation:
+ * 1. Language match weight is 0.5
+ * 2. Framework match weight is 0.3
+ * 3. Tools match weight is 0.2
+ * 4. Within each dimension, score is calculated based on proportion of matches
+ * 5. Final score is normalized sum of dimension scores between 0-1
  * 
- * 匹配计算示例：
- * - 如果规则需要TypeScript，项目使用TypeScript，语言维度得满分
- * - 如果规则需要React和Angular两个框架，但项目只使用React，框架维度得一半分
- * - 最终分数是各维度加权后的总和除以有效权重总和
+ * Match calculation example:
+ * - If rule requires TypeScript and project uses TypeScript, language dimension gets full score
+ * - If rule requires React and Angular, but project only uses React, framework dimension gets half score
+ * - Final score is weighted sum of dimensions divided by total effective weight
  * 
- * @param {RuleMetadata} rule - 规则元数据
- * @param {TechStackInfo} techStack - 技术栈信息
- * @returns {number} 匹配分数 (0.0-1.0)
+ * @param {RuleMetadata} rule - Rule metadata
+ * @param {TechStackInfo} techStack - Tech stack information
+ * @returns {number} Match score (0.0-1.0)
  * 
- * @internal 这是一个内部函数，不应被外部模块直接调用
+ * @internal This is an internal function and should not be called directly by external modules
  * 
  * @example
  * ```typescript
- * // 内部使用示例
+ * // Internal usage example
  * const rule: RuleMetadata = {
  *   id: 'typescript-react',
- *   name: 'TypeScript React规则',
- *   description: '适用于TypeScript React项目的规则',
+ *   name: 'TypeScript React Rule',
+ *   description: 'Rule for TypeScript React projects',
  *   techStack: {
  *     languages: ['TypeScript'],
  *     frameworks: ['React']
@@ -496,7 +493,7 @@ export async function findRulesByTechStack(
  * };
  * 
  * const score = calculateMatchScore(rule, projectStack);
- * console.log(`匹配分数: ${score.toFixed(2)}`); // 可能输出: 1.00
+ * console.log(`Match score: ${score.toFixed(2)}`); // Might output: 1.00
  * ```
  */
 function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): number {
@@ -505,7 +502,7 @@ function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): numb
   let score = 0;
   let maxScore = 0;
   
-  // 语言匹配（权重0.5）
+  // Language match (weight 0.5)
   if (rule.techStack.languages && rule.techStack.languages.length > 0) {
     maxScore += 0.5;
     const languages = rule.techStack.languages.map(lang => lang.toLowerCase());
@@ -517,7 +514,7 @@ function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): numb
     }
   }
   
-  // 框架匹配（权重0.3）
+  // Framework match (weight 0.3)
   if (rule.techStack.frameworks && rule.techStack.frameworks.length > 0) {
     maxScore += 0.3;
     const frameworks = rule.techStack.frameworks.map(framework => framework.toLowerCase());
@@ -529,7 +526,7 @@ function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): numb
     }
   }
   
-  // 工具匹配（权重0.2）
+  // Tools match (weight 0.2)
   if (rule.techStack.tools && rule.techStack.tools.length > 0) {
     maxScore += 0.2;
     const tools = rule.techStack.tools.map(tool => tool.toLowerCase());
@@ -541,37 +538,37 @@ function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): numb
     }
   }
   
-  // 正规化分数（防止除以零）
+  // Normalize score (prevent division by zero)
   return maxScore > 0 ? score / maxScore : 0;
 }
 
 /**
- * 根据技术栈查找匹配的规则
+ * Find matching rules based on tech stack
  * 
- * 根据给定的技术栈信息查找匹配的规则，并计算匹配度分数
- * 可以通过选项控制搜索范围、最小匹配分数和结果数量限制
+ * Find rules matching given tech stack information and calculate match scores
+ * Options control search scope, minimum match score, and result limit
  * 
- * 工作流程：
- * 1. 加载所有规则元数据（内置和本地，根据选项）
- * 2. 计算每个规则与技术栈的匹配度分数
- * 3. 过滤出匹配度高于阈值的规则
- * 4. 按匹配度降序排序
- * 5. 限制返回结果数量
+ * Workflow:
+ * 1. Load all rule metadata (built-in and local, based on options)
+ * 2. Calculate match score for each rule against the tech stack
+ * 3. Filter rules with match scores above threshold
+ * 4. Sort by match score in descending order
+ * 5. Limit returned results
  * 
- * @param {TechStackInfo} techStack - 项目技术栈信息，包含语言、框架、库和工具等
- * @param {RuleSearchOptions} options - 搜索配置选项
- *   - limit: 最大返回结果数量，默认为5
- *   - includeBuiltIn: 是否包含内置规则，默认为true
- *   - includeLocal: 是否包含本地规则，默认为true
- *   - minScore: 最小匹配分数阈值(0.0-1.0)，默认为0.3
- * @returns {Promise<RuleMatchResult[]>} 匹配结果数组，按匹配度降序排序
- *   每个结果包含规则对象、匹配分数和规则来源
+ * @param {TechStackInfo} techStack - Project tech stack information including languages, frameworks, libraries and tools
+ * @param {RuleSearchOptions} options - Search configuration options
+ *   - limit: Maximum number of results to return, default is 5
+ *   - includeBuiltIn: Whether to include built-in rules, default is true
+ *   - includeLocal: Whether to include local rules, default is true
+ *   - minScore: Minimum match score threshold (0.0-1.0), default is 0.3
+ * @returns {Promise<RuleMatchResult[]>} Array of match results sorted by score in descending order
+ *   Each result includes rule object, match score and rule source
  * 
- * @throws 可能在加载规则元数据时抛出错误
+ * @throws May throw errors when loading rule metadata
  * 
  * @example
  * ```typescript
- * // 查找匹配React+TypeScript技术栈的规则
+ * // Find rules matching React+TypeScript tech stack
  * const techStack = {
  *   languages: ['TypeScript', 'JavaScript'],
  *   frameworks: ['React'],
@@ -580,24 +577,24 @@ function calculateMatchScore(rule: RuleMetadata, techStack: TechStackInfo): numb
  *   confidence: 0.9
  * };
  * 
- * // 配置搜索选项
+ * // Configure search options
  * const options = {
- *   limit: 3,                // 最多返回3条结果
- *   includeBuiltIn: true,    // 包含内置规则
- *   includeLocal: false,     // 不包含本地规则
- *   minScore: 0.5            // 最小匹配分数为0.5
+ *   limit: 3,                // Return maximum 3 results
+ *   includeBuiltIn: true,    // Include built-in rules
+ *   includeLocal: false,     // Don't include local rules
+ *   minScore: 0.5            // Minimum match score is 0.5
  * };
  * 
- * // 执行搜索
+ * // Execute search
  * const matches = await findMatchingRules(techStack, options);
  * 
- * // 处理结果
+ * // Process results
  * matches.forEach((match, index) => {
- *   console.log(`匹配项 #${index + 1}:`);
- *   console.log(`- 规则: ${match.rule.name}`);
- *   console.log(`- 描述: ${match.rule.description}`);
- *   console.log(`- 匹配度: ${match.matchScore.toFixed(2)}`);
- *   console.log(`- 来源: ${match.source === RuleSource.BuiltIn ? '内置' : '本地'}`);
+ *   console.log(`Match #${index + 1}:`);
+ *   console.log(`- Rule: ${match.rule.name}`);
+ *   console.log(`- Description: ${match.rule.description}`);
+ *   console.log(`- Match score: ${match.matchScore.toFixed(2)}`);
+ *   console.log(`- Source: ${match.source === RuleSource.BuiltIn ? 'Built-in' : 'Local'}`);
  * });
  * ```
  */

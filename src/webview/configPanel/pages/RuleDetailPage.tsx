@@ -1,26 +1,67 @@
 /**
  * configPanel/pages/RuleDetailPage.tsx
  * 
- * Rule detail page component for displaying and editing specific rule information
+ * Rule detail page component for displaying and editing rule information
  */
 import * as React from 'react';
 import { Rule, RuleSource } from '../../../types';
 import '../styles/RuleDetail.css';
 
+// 添加RuleFile接口定义
+interface RuleFile {
+  path: string;
+  content: string;
+  name: string;
+  description?: string;
+}
+
 export interface RuleDetailPageProps {
   vscode: any;
   ruleId?: string;
+  rule?: Rule | null; // 可选的预加载规则对象
 }
 
-export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }) => {
-  const [rule, setRule] = React.useState<Rule | null>(null);
-  const [loading, setLoading] = React.useState<boolean>(true);
+export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId, rule: initialRule }) => {
+  const [rule, setRule] = React.useState<Rule | null>(initialRule || null);
+  const [loading, setLoading] = React.useState<boolean>(!initialRule);
   const [error, setError] = React.useState<string | null>(null);
+  const [requestSent, setRequestSent] = React.useState<boolean>(false); // 跟踪是否已发送请求
+  
+  // 添加规则文件状态
+  const [ruleFiles, setRuleFiles] = React.useState<RuleFile[]>([]);
+  const [loadingFiles, setLoadingFiles] = React.useState<boolean>(false);
+  const [selectedFileIndex, setSelectedFileIndex] = React.useState<number>(0);
+  // 添加加载时间状态
+  const [loadingTime, setLoadingTime] = React.useState<number>(0);
+  
+  // 辅助函数：获取文件名（替代path.basename）
+  const getFileName = (filePath: string): string => {
+    if (!filePath) return '';
+    const parts = filePath.split('/');
+    return parts[parts.length - 1] || '';
+  };
 
   // 调试组件挂载和props
   React.useEffect(() => {
-    console.log('[DEBUG RuleDetailPage] 组件挂载或更新 - ruleId:', ruleId);
+    console.log('[DEBUG RuleDetailPage] 组件挂载或更新 - ruleId:', ruleId, 'vscode对象存在:', !!vscode);
+    console.log('[DEBUG RuleDetailPage] 初始规则对象:', initialRule);
+    if (vscode) {
+      console.log('[DEBUG RuleDetailPage] vscode对象类型:', typeof vscode, 'postMessage方法存在:', !!vscode.postMessage);
+    }
+    if (initialRule) {
+      console.log('[DEBUG RuleDetailPage] 使用从父组件传入的规则对象，跳过加载');
+    }
   }, []);
+
+  // 如果有initialRule，直接使用
+  React.useEffect(() => {
+    if (initialRule) {
+      console.log('[DEBUG RuleDetailPage] 使用预加载的规则对象:', initialRule.id);
+      setRule(initialRule);
+      setLoading(false);
+      setError(null);
+    }
+  }, [initialRule]);
 
   // 调试ruleId变化
   React.useEffect(() => {
@@ -29,6 +70,12 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
 
   // Fetch rule details when component mounts or ruleId changes
   React.useEffect(() => {
+    // 如果有初始规则数据或已发送请求，则无需再次请求
+    if (initialRule || requestSent) {
+      console.log('[DEBUG RuleDetailPage] 已有规则数据或已发送请求，跳过请求');
+      return;
+    }
+
     if (!ruleId) {
       console.log('[DEBUG RuleDetailPage] 没有提供ruleId');
       setError('No rule ID provided');
@@ -36,38 +83,104 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
       return;
     }
 
-    console.log(`[DEBUG RuleDetailPage] 请求规则详情: ${ruleId}`);
-    
-    setLoading(true);
-    setError(null);
-    
-    vscode.postMessage({
-      type: 'getRuleDetail',
-      ruleId
-    });
-    console.log(`[DEBUG RuleDetailPage] 已发送getRuleDetail消息, ruleId: ${ruleId}`);
-    
-  }, [ruleId, vscode]);
+    if (!vscode) {
+      console.error('[DEBUG RuleDetailPage] vscode对象不存在，无法发送消息');
+      setError('VSCode API not available');
+      setLoading(false);
+      return;
+    }
 
-  // Add message handler for rule detail response - 使用与useRuleList相同的监听方式
+    console.log(`[DEBUG RuleDetailPage] 准备请求规则详情: ${ruleId} - vscode对象类型:`, typeof vscode, '方法:', Object.keys(vscode));
+    
+    try {
+      setLoading(true);
+      setError(null);
+      setRequestSent(true); // 标记请求已发送
+      
+      console.log(`[DEBUG RuleDetailPage] 发送getRuleDetail消息...`);
+      const message = {
+        type: 'getRuleDetail',
+        ruleId
+      };
+      console.log(`[DEBUG RuleDetailPage] 消息内容:`, JSON.stringify(message));
+      
+      // 设置超时，确保请求发送成功
+      setTimeout(() => {
+        vscode.postMessage(message);
+        console.log(`[DEBUG RuleDetailPage] 已发送getRuleDetail消息, ruleId: ${ruleId}`);
+      }, 100);
+    } catch (err) {
+      console.error(`[DEBUG RuleDetailPage] 发送消息时出错:`, err);
+      setError(`Failed to send message: ${err instanceof Error ? err.message : String(err)}`);
+      setLoading(false);
+    }
+    
+  }, [ruleId, vscode, initialRule, requestSent]);
+
+  // Add message handler for rule detail response
   React.useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
-      console.log('[DEBUG RuleDetailPage] 收到消息:', JSON.stringify(message));
+      console.log('[DEBUG RuleDetailPage] 收到消息类型:', message.type, '完整消息:', JSON.stringify(message).substring(0, 200));
       
       // Handle rule detail response
       if (message.type === 'ruleDetail') {
-        console.log('[DEBUG RuleDetailPage] 收到ruleDetail消息:', JSON.stringify(message));
+        console.log('[DEBUG RuleDetailPage] 处理ruleDetail消息: 成功状态=', message.success);
         setLoading(false);
         
         if (message.success) {
-          console.log('[DEBUG RuleDetailPage] 规则详情接收成功:', message.rule?.name);
-          setRule(message.rule);
+          const receivedRule = message.rule;
+          console.log('[DEBUG RuleDetailPage] 规则详情接收成功:', receivedRule?.name);
+          console.log('[DEBUG RuleDetailPage] 规则内容接收成功，长度:', receivedRule?.content?.length || 0);
+          console.log('[DEBUG RuleDetailPage] 规则内容片段:', receivedRule?.content?.substring(0, 100));
+          setRule(receivedRule);
           setError(null);
         } else {
-          console.log('[DEBUG RuleDetailPage] 获取规则详情错误:', message.error);
+          console.error('[DEBUG RuleDetailPage] 获取规则详情错误:', message.error);
           setRule(null);
           setError(message.error || 'Failed to load rule details');
+        }
+      } else if (message.type === 'ruleDeleted') {
+        console.log('[DEBUG RuleDetailPage] 收到规则删除消息:', message);
+        // 规则已删除，返回列表页面
+        handleGoBack();
+      } else if (message.type === 'ruleFiles') {
+        // 处理规则文件响应
+        console.log('[DEBUG RuleDetailPage] 处理ruleFiles消息');
+        console.log('[DEBUG RuleDetailPage] 文件数量:', message.files?.length || 0);
+        
+        // 停止加载状态
+        setLoadingFiles(false);
+        
+        if (message.files && Array.isArray(message.files)) {
+          const receivedFiles = message.files;
+          
+          // 详细日志每个文件信息
+          console.log('[DEBUG RuleDetailPage] 收到规则文件列表:');
+          receivedFiles.forEach((file: RuleFile, index: number) => {
+            console.log(`[DEBUG RuleDetailPage] 文件[${index}]: ${file.name}, 路径: ${file.path}, 内容长度: ${file.content?.length || 0}`);
+            // 如果内容为空，记录警告
+            if (!file.content) {
+              console.warn(`[DEBUG RuleDetailPage] 警告: 文件 ${file.name} 内容为空`);
+            } else if (file.content.length < 10) {
+              console.warn(`[DEBUG RuleDetailPage] 警告: 文件 ${file.name} 内容太短 (${file.content.length}字符): "${file.content}"`);
+            }
+          });
+          
+          if (receivedFiles.length > 0) {
+            console.log('[DEBUG RuleDetailPage] 设置文件内容和选择第一个文件');
+            setRuleFiles(receivedFiles);
+            setSelectedFileIndex(0);
+          } else {
+            console.warn('[DEBUG RuleDetailPage] 警告: 收到的文件列表为空');
+            setRuleFiles([]);
+          }
+        } else if (message.error) {
+          console.error('[DEBUG RuleDetailPage] 获取规则文件错误:', message.error);
+          setError(`获取规则文件失败: ${message.error}`);
+        } else {
+          console.warn('[DEBUG RuleDetailPage] 警告: 收到的ruleFiles消息格式不正确');
+          console.warn('[DEBUG RuleDetailPage] 消息内容:', JSON.stringify(message));
         }
       }
     };
@@ -82,10 +195,61 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
     };
   }, []);
 
+  // 请求规则文件
+  React.useEffect(() => {
+    if (!ruleId || !vscode) return;
+    
+    // 只有在规则加载成功后才请求规则文件
+    if (rule && rule.id) {
+      console.log(`[DEBUG RuleDetailPage] 发送getRuleFiles消息，ruleId: ${ruleId}`);
+      setLoadingFiles(true);
+      setLoadingTime(0); // 重置加载时间
+      
+      try {
+        vscode.postMessage({
+          type: 'getRuleFiles',
+          ruleId: ruleId
+        });
+        console.log(`[DEBUG RuleDetailPage] 已发送getRuleFiles消息`);
+      } catch (err) {
+        console.error(`[DEBUG RuleDetailPage] 发送getRuleFiles消息时出错:`, err);
+        setLoadingFiles(false);
+      }
+    }
+  }, [ruleId, vscode, rule]);
+
+  // 加载时间计时器
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    
+    if (loadingFiles) {
+      // 启动计时器
+      timer = setInterval(() => {
+        setLoadingTime(prevTime => prevTime + 1);
+      }, 1000);
+      
+      console.log('[DEBUG RuleDetailPage] 启动加载计时器');
+    } else if (timer) {
+      // 停止计时器并重置时间
+      clearInterval(timer);
+      setLoadingTime(0);
+      console.log('[DEBUG RuleDetailPage] 停止加载计时器');
+    }
+    
+    // 清理函数
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+        console.log('[DEBUG RuleDetailPage] 清理加载计时器');
+      }
+    };
+  }, [loadingFiles]);
+
   // Handle edit button click
   const handleEdit = () => {
     if (!rule) return;
     
+    console.log('[DEBUG RuleDetailPage] 发送编辑规则消息:', rule.id);
     vscode.postMessage({
       type: 'editRule',
       rule: rule
@@ -97,6 +261,7 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
     if (!rule) return;
     
     if (window.confirm(`确定要删除规则 "${rule.name}" 吗？此操作不可撤销。`)) {
+      console.log('[DEBUG RuleDetailPage] 发送删除规则消息:', rule.id);
       vscode.postMessage({
         type: 'deleteRule',
         ruleId: rule.id
@@ -106,9 +271,11 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
 
   // Handle go back button click
   const handleGoBack = () => {
+    console.log('[DEBUG RuleDetailPage] 返回规则列表页面');
+    console.log('[DEBUG RuleDetailPage] 发送navigateTo消息返回');
     vscode.postMessage({
       type: 'navigateTo',
-      page: 'rules'
+      pageId: 'rules'  // 使用pageId
     });
   };
 
@@ -116,6 +283,7 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
   const handleOpenFile = () => {
     if (!rule?.filePath) return;
     
+    console.log('[DEBUG RuleDetailPage] 发送打开规则文件消息:', rule.filePath);
     vscode.postMessage({
       type: 'openRule',
       path: rule.filePath
@@ -213,14 +381,318 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
 
   // Render content preview
   const renderContentPreview = () => {
-    if (!rule?.content) return null;
+    console.log(`[DEBUG RuleDetailPage] 渲染内容预览，ruleId: ${rule?.id}, 文件数: ${ruleFiles?.length || 0}`);
+    
+    // 添加调试信息
+    let debugInfo = null;
+    const showDebugInfo = true; // 始终显示调试信息，帮助排查问题
+    if (showDebugInfo) {
+        debugInfo = (
+            <div className="debug-info">
+                <details>
+                    <summary>调试信息</summary>
+                    <div className="debug-content">
+                        <div>规则ID: {rule?.id}</div>
+                        <div>文件列表: {ruleFiles?.map((f: any) => f.name).join(', ') || '无文件'}</div>
+                        <div>文件数量: {ruleFiles?.length || 0}</div>
+                        <div>正在加载: {loadingFiles ? '是' : '否'}</div>
+                        {ruleFiles && ruleFiles.length > 0 && selectedFileIndex !== undefined && (
+                            <>
+                                <div>当前文件: {ruleFiles[selectedFileIndex]?.name || '未选择'}</div>
+                                <div>当前文件路径: {ruleFiles[selectedFileIndex]?.path || '未知'}</div>
+                                <div>内容长度: {ruleFiles[selectedFileIndex]?.content?.length || 0} 字符</div>
+                                <div>内容前100字符: <pre>{ruleFiles[selectedFileIndex]?.content?.substring(0, 100) || ''}</pre></div>
+                            </>
+                        )}
+                    </div>
+                </details>
+            </div>
+        );
+    }
+    
+    // 如果没有规则，显示提示信息
+    if (!rule) {
+        return (
+            <>
+                <div className="no-content">
+                    请在左侧选择一条规则查看详情。
+                </div>
+                {debugInfo}
+            </>
+        );
+    }
+    
+    // 如果正在加载文件，显示加载状态
+    if (loadingFiles) {
+        // 重新加载规则文件的函数
+        const reloadRuleFiles = () => {
+            if (rule && vscode) {
+                console.log(`[DEBUG RuleDetailPage] 重新加载规则文件, ruleId: ${rule.id}`);
+                setLoadingFiles(true);
+                setLoadingTime(0);
+                vscode.postMessage({
+                    type: 'getRuleFiles',
+                    ruleId: rule.id,
+                    id: `reload-${Date.now()}` // 添加时间戳避免重复
+                });
+            }
+        };
+        
+        return (
+            <>
+                <div className="loading-content">
+                    <div className="spinner"></div>
+                    <div className="loading-text">正在加载规则内容...</div>
+                    {loadingTime > 3 && (
+                        <div className="loading-status">
+                            已加载 {loadingTime} 秒
+                            {loadingTime > 10 && (
+                                <button 
+                                    className="reload-button" 
+                                    onClick={reloadRuleFiles}
+                                >
+                                    重试
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+                {debugInfo}
+            </>
+        );
+    }
+    
+    // 如果没有文件内容，显示错误信息
+    if (!ruleFiles || ruleFiles.length === 0) {
+        return (
+            <>
+                <div className="no-content">
+                    无法加载规则内容，请检查规则文件是否存在。
+                </div>
+                {debugInfo}
+            </>
+        );
+    }
+    
+    // 如果有多个文件，显示文件选择器
+    let fileSelector = null;
+    if (ruleFiles.length > 1) {
+        fileSelector = (
+            <div className="file-selector">
+                <label>选择文件:</label>
+                <select 
+                    value={selectedFileIndex} 
+                    onChange={(e) => setSelectedFileIndex(parseInt(e.target.value))}
+                >
+                    {ruleFiles.map((file, index) => (
+                        <option key={index} value={index}>
+                            {file.name} {file.content ? `(${file.content.length} 字符)` : ''}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
+    }
+    
+    // 获取当前选中的文件
+    const selectedFile = ruleFiles[selectedFileIndex !== undefined ? selectedFileIndex : 0];
+    
+    // 检查是否有内容
+    if (!selectedFile || !selectedFile.content) {
+        return (
+            <>
+                <div className="no-content">
+                    选中的文件没有内容。
+                </div>
+                {fileSelector}
+                {debugInfo}
+            </>
+        );
+    }
+    
+    // 创建内容类名 - 用于应用样式
+    const contentClassName = selectedFile.content.length > 500 ? "content-preview-box full-content" : "content-preview-box";
+    
+    // 日志一下内容长度
+    console.log(`[DEBUG RuleDetailPage] 渲染内容，长度: ${selectedFile.content.length}`);
     
     return (
+        <>
+            <h3>规则内容</h3>
+            {fileSelector}
+            <div className={contentClassName}>
+                {selectedFile.content}
+            </div>
+            {debugInfo}
+        </>
+    );
+  };
+  
+  // 渲染规则文件选项卡
+  const renderRuleFiles = () => {
+    if (loadingFiles) {
+      // 如果加载时间超过10秒，显示重试按钮
+      const showRetryButton = loadingTime > 10;
+      
+      return (
+        <div className="rule-content-preview">
+          <h3>规则文件</h3>
+          <div className="loading-indicator">
+            <div className="spinner"></div>
+            <div>
+              加载规则文件内容...{loadingTime > 3 ? `(${loadingTime}秒)` : ''}
+              {showRetryButton && (
+                <div className="retry-container">
+                  <p>加载时间过长，可能遇到了问题。</p>
+                  <button 
+                    className="retry-button"
+                    onClick={() => {
+                      console.log('[DEBUG RuleDetailPage] 重新加载规则文件');
+                      setLoadingFiles(true);
+                      setLoadingTime(0); // 重置加载时间
+                      // 重新发送请求
+                      if (vscode && rule && rule.id) {
+                        try {
+                          vscode.postMessage({
+                            type: 'getRuleFiles',
+                            ruleId: ruleId || rule.id
+                          });
+                          console.log(`[DEBUG RuleDetailPage] 已重新发送getRuleFiles消息, ruleId: ${ruleId || rule.id}`);
+                        } catch (err) {
+                          console.error(`[DEBUG RuleDetailPage] 重新发送getRuleFiles消息时出错:`, err);
+                          setLoadingFiles(false);
+                        }
+                      } else {
+                        console.error('[DEBUG RuleDetailPage] 缺少重新发送所需的参数: vscode=', !!vscode, 'rule=', !!rule);
+                        setLoadingFiles(false);
+                      }
+                    }}
+                  >
+                    重试加载
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    if (ruleFiles.length === 0) {
+      // 如果规则文件加载完成但没有内容，且rule.content也不存在，则显示提示
+      if (!rule?.content) {
+        return (
+          <div className="rule-content-preview">
+            <h3>规则内容</h3>
+            <div className="empty-content-notice">
+              <p>此规则没有可显示的内容。</p>
+            </div>
+          </div>
+        );
+      }
+      return null; // 如果有rule.content，则由renderContentPreview处理
+    }
+    
+    console.log('[DEBUG RuleDetailPage] 渲染规则文件选项卡，文件数量:', ruleFiles.length);
+    
+    // 如果只有一个文件，就不显示选项卡，直接显示内容
+    if (ruleFiles.length === 1) {
+      const file = ruleFiles[0];
+      return (
+        <div className="rule-content-preview">
+          <h3>规则内容 - {file.name || getFileName(file.path) || "文件"}</h3>
+          <pre className="content-preview-box full-content">
+            {file.content || '无内容'}
+          </pre>
+        </div>
+      );
+    }
+    
+    // 多文件时显示选项卡
+    return (
       <div className="rule-content-preview">
-        <h3>规则内容预览</h3>
-        <pre className="content-preview-box">{rule.content.substring(0, 500)}
-          {rule.content.length > 500 ? '...' : ''}
-        </pre>
+        <h3>规则文件内容</h3>
+        <div className="rule-files-container">
+          <div className="rule-files-tabs">
+            {ruleFiles.map((file, index) => (
+              <div 
+                key={index} 
+                className={`rule-file-tab ${index === selectedFileIndex ? 'active' : ''}`}
+                onClick={() => setSelectedFileIndex(index)}
+                title={file.description || ''}
+              >
+                {file.name || getFileName(file.path) || `文件 ${index + 1}`}
+              </div>
+            ))}
+          </div>
+          <div className="rule-file-content">
+            <pre className="content-preview-box full-content">
+              {ruleFiles[selectedFileIndex]?.content || '无内容'}
+            </pre>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 添加调试面板，显示组件内部状态
+  const renderDebugPanel = () => {
+    return (
+      <div className="debug-panel">
+        <details>
+          <summary>调试信息</summary>
+          <div className="debug-content">
+            <h4>状态数据</h4>
+            <div>ruleId: {ruleId || '无'}</div>
+            <div>rule?: {rule ? `${rule.id} (${rule.name})` : '无'}</div>
+            <div>loading: {loading ? '是' : '否'}</div>
+            <div>error: {error || '无'}</div>
+            <div>loadingFiles: {loadingFiles ? '是' : '否'}</div>
+            <div>loadingTime: {loadingTime}秒</div>
+            <div>ruleFiles数量: {ruleFiles?.length || 0}</div>
+            <div>selectedFileIndex: {selectedFileIndex}</div>
+            
+            <h4>文件列表</h4>
+            {ruleFiles && ruleFiles.length > 0 ? (
+              <ul className="debug-file-list">
+                {ruleFiles.map((file, idx) => (
+                  <li key={idx} className={idx === selectedFileIndex ? "selected-file" : ""}>
+                    {file.name} ({file.content?.length || 0}字符)
+                    {idx === selectedFileIndex && (
+                      <div className="file-preview">
+                        <div>前100字符: <pre>{file.content?.substring(0, 100) || ''}</pre></div>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div>无文件</div>
+            )}
+            
+            <h4>操作</h4>
+            <div className="debug-actions">
+              <button onClick={() => {
+                if (rule) {
+                  setLoadingFiles(true);
+                  setLoadingTime(0);
+                  vscode.postMessage({
+                    type: 'getRuleFiles',
+                    ruleId: rule.id,
+                    id: `debug-reload-${Date.now()}`
+                  });
+                }
+              }}>重新加载文件</button>
+              
+              <button onClick={() => {
+                // 调整定时器避免消息堆积
+                console.log('清除并重置状态');
+                setLoadingFiles(false);
+                setLoadingTime(0);
+              }}>重置加载状态</button>
+            </div>
+          </div>
+        </details>
       </div>
     );
   };
@@ -293,10 +765,41 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
                   <span className="metadata-value">{formatDate(rule.lastUpdated)}</span>
                 </div>
               )}
+              
+              {/* 调试信息 */}
+              <div className="metadata-item debug-info">
+                <details>
+                  <summary>调试信息</summary>
+                  <div className="debug-content">
+                    <div><strong>规则ID:</strong> {ruleId || rule.id}</div>
+                    {ruleFiles.length > 0 && (
+                      <div>
+                        <strong>已加载文件数:</strong> {ruleFiles.length}
+                        <ul className="debug-file-list">
+                          {ruleFiles.map((file, index) => (
+                            <li key={index}>
+                              <strong>{file.name || getFileName(file.path)}:</strong> {file.path}
+                              <div className="file-content-preview">
+                                内容长度: {file.content?.length || 0} 字符
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {loadingFiles && (
+                      <div className="loading-status">
+                        <strong>加载状态:</strong> 正在加载 ({loadingTime}秒)
+                      </div>
+                    )}
+                  </div>
+                </details>
+              </div>
             </div>
             
             {renderTechStack()}
             {renderContentPreview()}
+            {renderRuleFiles()}
             
             <div className="rule-detail-actions">
               {(rule.source === RuleSource.Custom || rule.source === RuleSource.Local) && (
@@ -350,6 +853,9 @@ export const RuleDetailPage: React.FC<RuleDetailPageProps> = ({ vscode, ruleId }
           </div>
         </div>
       )}
+      
+      {/* 添加调试面板 */}
+      {renderDebugPanel()}
     </div>
   );
 }; 

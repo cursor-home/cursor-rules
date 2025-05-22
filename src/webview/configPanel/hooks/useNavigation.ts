@@ -38,17 +38,28 @@ export const useNavigation = (initialPageId: string = 'general'): UseNavigationR
   // 导航项列表
   const [navItems] = useState<NavItem[]>(DEFAULT_NAV_ITEMS);
   
+  // 初始化日志
+  console.log('[DEBUG useNavigation] 初始化完成，初始页面:', initialPageId);
+  
   // 设置活动页面
   const setActivePage = (pageId: string) => {
-    if (navItems.some(item => item.id === pageId)) {
+    console.log('[DEBUG useNavigation] 尝试设置页面为:', pageId);
+    
+    // 检查页面ID是否在导航项中
+    const validPageIds = ['general', 'rules', 'plugin', 'addRule', 'ruleDetail']; // 包含非导航项的有效页面
+    if (validPageIds.includes(pageId)) {
+      console.log('[DEBUG useNavigation] 页面ID有效，设置activePageId:', pageId);
       setActivePageId(pageId);
       
       // 保存当前页面到状态中，以便在下次打开时恢复
       try {
         localStorage.setItem('cursor-rules-assistant-active-page', pageId);
+        console.log('[DEBUG useNavigation] 页面已保存到localStorage');
       } catch (error) {
-        console.error('Failed to save active page to localStorage:', error);
+        console.error('[DEBUG useNavigation] 无法保存页面到localStorage:', error);
       }
+    } else {
+      console.warn('[DEBUG useNavigation] 无效的页面ID:', pageId, '有效的页面IDs:', validPageIds);
     }
   };
   
@@ -56,13 +67,26 @@ export const useNavigation = (initialPageId: string = 'general'): UseNavigationR
   useEffect(() => {
     try {
       const savedPageId = localStorage.getItem('cursor-rules-assistant-active-page');
-      if (savedPageId && navItems.some(item => item.id === savedPageId)) {
-        setActivePageId(savedPageId);
+      console.log('[DEBUG useNavigation] 从localStorage恢复页面, 保存的页面ID:', savedPageId);
+      
+      if (savedPageId) {
+        const validPageIds = ['general', 'rules', 'plugin', 'addRule', 'ruleDetail'];
+        if (validPageIds.includes(savedPageId)) {
+          console.log('[DEBUG useNavigation] 使用localStorage恢复页面ID:', savedPageId);
+          setActivePageId(savedPageId);
+        } else {
+          console.warn('[DEBUG useNavigation] 已保存的页面ID无效:', savedPageId);
+        }
       }
     } catch (error) {
-      console.error('Failed to restore active page from localStorage:', error);
+      console.error('[DEBUG useNavigation] 从localStorage恢复页面失败:', error);
     }
-  }, [navItems]);
+  }, []);
+  
+  // 状态变化跟踪
+  useEffect(() => {
+    console.log('[DEBUG useNavigation] 活动页面ID已更新:', activePageId);
+  }, [activePageId]);
   
   return {
     activePageId,
