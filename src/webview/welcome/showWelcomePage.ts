@@ -8,6 +8,61 @@ import * as vscode from 'vscode';
 import { info, error } from '../../logger/logger';
 import { generateWelcomeHtml } from './template';
 
+// GitHub stars缓存相关常量
+const GITHUB_STARS_CACHE_KEY = 'github_stars_cache';
+const GITHUB_STARS_CACHE_EXPIRY = 30 * 60 * 1000; // 30分钟的缓存有效期（毫秒）
+
+/**
+ * 获取并缓存GitHub stars数量
+ * @param context 扩展上下文
+ * @returns 缓存的star数量，如果没有缓存则返回null
+ */
+async function getCachedGitHubStars(context: vscode.ExtensionContext): Promise<number | null> {
+    try {
+        // 尝试从扩展全局缓存获取
+        const cachedData = context.globalState.get<{ timestamp: number, stars: number }>(GITHUB_STARS_CACHE_KEY);
+        
+        if (cachedData) {
+            const { timestamp, stars } = cachedData;
+            const now = new Date().getTime();
+            
+            // 如果缓存未过期，使用缓存数据
+            if (now - timestamp < GITHUB_STARS_CACHE_EXPIRY) {
+                info(`使用缓存的GitHub star数量: ${stars}`);
+                return stars;
+            }
+            
+            info('缓存已过期，需要刷新GitHub star数量');
+            // 尽管缓存过期，但仍然返回过期的缓存值作为备选
+            return stars;
+        }
+        
+        info('没有GitHub star数量的缓存');
+        return null;
+    } catch (err) {
+        error(`获取缓存的GitHub star数量出错: ${err instanceof Error ? err.message : String(err)}`);
+        return null;
+    }
+}
+
+/**
+ * 更新GitHub stars数量缓存
+ * @param context 扩展上下文
+ * @param stars star数量
+ */
+async function updateGitHubStarsCache(context: vscode.ExtensionContext, stars: number): Promise<void> {
+    try {
+        const cacheData = {
+            timestamp: new Date().getTime(),
+            stars
+        };
+        await context.globalState.update(GITHUB_STARS_CACHE_KEY, cacheData);
+        info(`已更新GitHub star数量缓存: ${stars}`);
+    } catch (err) {
+        error(`更新GitHub star数量缓存失败: ${err instanceof Error ? err.message : String(err)}`);
+    }
+}
+
 /**
  * 显示欢迎页面
  * @param context 扩展上下文
@@ -40,6 +95,17 @@ export function showWelcomePage(context: vscode.ExtensionContext): vscode.Webvie
         try {
             panel.webview.html = generateWelcomeHtml();
             info('WebView面板HTML内容设置完成');
+            
+            // 尝试获取并更新GitHub stars缓存
+            getCachedGitHubStars(context).then(stars => {
+                if (stars !== null) {
+                    // 将缓存的star数量传递给WebView
+                    panel.webview.postMessage({ 
+                        type: 'cachedGitHubStars', 
+                        stars 
+                    });
+                }
+            });
         } catch (htmlErr) {
             error(`设置WebView HTML内容时出错: ${htmlErr instanceof Error ? htmlErr.message : String(htmlErr)}`);
         }
@@ -56,6 +122,11 @@ export function showWelcomePage(context: vscode.ExtensionContext): vscode.Webvie
                     case 'openLink':
                         info(`WebView请求打开链接: ${message.url}`);
                         vscode.env.openExternal(vscode.Uri.parse(message.url));
+                        return;
+                    case 'updateGitHubStars':
+                        // 更新GitHub stars缓存
+                        info(`WebView请求更新GitHub stars缓存: ${message.stars}`);
+                        updateGitHubStarsCache(context, message.stars);
                         return;
                 }
             },
