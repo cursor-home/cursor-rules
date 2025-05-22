@@ -10,7 +10,7 @@ import {
   browseRulesCommand,
   recommendRulesCommand
 } from './ruleOperationCommands';
-import { utilCommands } from './utilCommands';
+import { loggerCommands } from './loggerCommands';
 
 /**
  * 规则相关命令
@@ -29,5 +29,5 @@ export const ruleCommands = [
  */
 export const allCommands = [
     ...ruleCommands,
-    ...utilCommands
+    ...loggerCommands
 ]; 

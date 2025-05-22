@@ -68,9 +68,9 @@ export const setLogLevelCommand = vscode.commands.registerCommand('cursor-rules-
 });
 
 /**
- * 工具相关命令
+ * 日志相关命令
  */
-export const utilCommands = [
+export const loggerCommands = [
     showLogsCommand,
     clearLogsCommand,
     setLogLevelCommand
