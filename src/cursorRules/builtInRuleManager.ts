@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Rule, RuleMetadata, TechStackInfo, MetaJsonData, RuleMatchResult, RuleSource, RuleSearchOptions } from '../types';
 import { debug, info, warn, error } from '../logger/logger';
+import { fileExists, readFileContent } from '../utils/fsUtils';
 import Cache from 'vscode-cache';
 
 // 单例实例
@@ -27,23 +28,6 @@ let instance: BuiltInRuleManager | null = null;
 
 // 缓存过期时间（秒）
 const CACHE_EXPIRATION_TIME = 60 * 60; // 默认1小时过期
-
-/**
- * 检查文件是否存在
- * 
- * 使用VS Code API检查文件是否存在
- * 
- * @param uri 文件URI
- * @returns 文件是否存在
- */
-async function fileExists(uri: vscode.Uri): Promise<boolean> {
-  try {
-    await vscode.workspace.fs.stat(uri);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * 内置规则管理器类
@@ -128,8 +112,10 @@ export class BuiltInRuleManager {
         throw new Error(`meta.json文件不存在: ${metaJsonUri.fsPath}，无法加载内置规则配置`);
       }
   
-      const fileData = await vscode.workspace.fs.readFile(metaJsonUri);
-      const content = Buffer.from(fileData).toString('utf-8');
+      const content = await readFileContent(metaJsonUri);
+      if (content === null) {
+        throw new Error(`无法读取meta.json文件: ${metaJsonUri.fsPath}`);
+      }
       
       const metaData = JSON.parse(content) as MetaJsonData;
       info(`成功从文件系统加载meta.json，共${metaData.rules.length}条规则`);
@@ -207,17 +193,7 @@ export class BuiltInRuleManager {
           `${id}.mdc`
         );
         
-        try {
-          const exists = await fileExists(fileUri);
-          if (exists) {
-            const fileData = await vscode.workspace.fs.readFile(fileUri);
-            return Buffer.from(fileData).toString('utf-8');
-          }
-          return null;
-        } catch (err) {
-          error(`读取规则${id}内容失败:`, err);
-          return null;
-        }
+        return await readFileContent(fileUri);
       }
     };
   }
@@ -248,17 +224,7 @@ export class BuiltInRuleManager {
           `${rule.id}.mdc`
         );
         
-        try {
-          const exists = await fileExists(fileUri);
-          if (exists) {
-            const fileData = await vscode.workspace.fs.readFile(fileUri);
-            return Buffer.from(fileData).toString('utf-8');
-          }
-          return null;
-        } catch (err) {
-          error(`读取规则${rule.id}内容失败:`, err);
-          return null;
-        }
+        return await readFileContent(fileUri);
       }
     }));
   }

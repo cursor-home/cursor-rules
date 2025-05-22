@@ -29,6 +29,7 @@ import { detectTechStack, getTechStackDescription } from '../techStack';
 import { builtInRuleManager } from './builtInRuleManager';
 import { debug, info, warn, error } from '../logger/logger';
 import { UserRuleStorageManager } from './userRuleStorageManager';
+import { writeFileContent } from '../utils/fsUtils';
 
 /**
  * 应用规则到工作区
@@ -52,7 +53,12 @@ export async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.W
 		
 		// 创建规则文件，使用规则ID作为文件名
 		const rulePath = vscode.Uri.joinPath(rulesDir, `${rule.id}.mdc`);
-		await vscode.workspace.fs.writeFile(rulePath, Buffer.from(rule.content));
+		
+		// 使用工具函数写入文件
+		const writeSuccess = await writeFileContent(rulePath, rule.content);
+		if (!writeSuccess) {
+			throw new Error(`写入规则文件失败: ${rulePath.fsPath}`);
+		}
 		
 		// 尝试打开创建的文件以便用户查看和编辑
 		const document = await vscode.workspace.openTextDocument(rulePath);
@@ -91,7 +97,12 @@ export async function createRuleFromTemplate(workspaceFolder: vscode.WorkspaceFo
 	
 	// 创建规则文件，使用模板ID作为文件名
 	const rulePath = vscode.Uri.joinPath(rulesDir, `${template.id}.mdc`);
-	await vscode.workspace.fs.writeFile(rulePath, Buffer.from(template.content));
+	
+	// 使用工具函数写入文件
+	const writeSuccess = await writeFileContent(rulePath, template.content);
+	if (!writeSuccess) {
+		throw new Error(`创建规则文件失败: ${rulePath.fsPath}`);
+	}
 	
 	// 尝试打开创建的文件以便用户查看和编辑
 	const document = await vscode.workspace.openTextDocument(rulePath);

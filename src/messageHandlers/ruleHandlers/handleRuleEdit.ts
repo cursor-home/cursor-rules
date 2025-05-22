@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { UserRuleStorageManager } from '../../cursorRules/userRuleStorageManager';
+import { writeFileContent } from '../../utils/fsUtils';
 
 /**
  * 处理规则编辑请求
@@ -49,8 +50,11 @@ export async function handleRuleEdit(message: any) {
             path.join(os.tmpdir(), `rule-${ruleId}-${Date.now()}.mdc`)
         );
         
-        // 写入内容
-        await vscode.workspace.fs.writeFile(tmpFile, Buffer.from(content));
+        // 使用工具函数写入内容
+        const writeSuccess = await writeFileContent(tmpFile, content);
+        if (!writeSuccess) {
+            throw new Error(`无法创建临时文件: ${tmpFile.fsPath}`);
+        }
         
         // 打开文件
         const document = await vscode.workspace.openTextDocument(tmpFile);
