@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { showWelcomePage } from '../webview/welcome';
+import { showWelcomePage } from '../webview/welcome/index';
 
 /**
  * Register open welcome page command
