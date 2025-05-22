@@ -161,6 +161,29 @@ export class BuiltInRuleManager {
   }
   
   /**
+   * 创建规则内容读取函数
+   * 
+   * 生成一个读取特定规则内容的函数
+   * 这是一个工具方法，用于为规则元数据创建readContent函数
+   * 
+   * @param {string} ruleId - 规则ID
+   * @param {string} extensionPath - 扩展目录路径
+   * @returns {() => Promise<string | null>} 读取规则内容的函数
+   */
+  private createReadContentFunction(ruleId: string, extensionPath: string): () => Promise<string | null> {
+    return async () => {
+      const fileUri = vscode.Uri.joinPath(
+        vscode.Uri.file(extensionPath),
+        'resources',
+        'rules',
+        `${ruleId}.mdc`
+      );
+      
+      return await readFileContent(fileUri);
+    };
+  }
+  
+  /**
    * 根据ID获取规则元数据
    * 
    * 通过规则ID查找并返回对应的规则元数据
@@ -182,19 +205,10 @@ export class BuiltInRuleManager {
     
     const extensionPath = this.extensionContext.extensionPath;
     
-    // 添加readContent方法
+    // 使用工具方法添加readContent函数
     return {
       ...rule,
-      readContent: async () => {
-        const fileUri = vscode.Uri.joinPath(
-          vscode.Uri.file(extensionPath),
-          'resources',
-          'rules',
-          `${id}.mdc`
-        );
-        
-        return await readFileContent(fileUri);
-      }
+      readContent: this.createReadContentFunction(id, extensionPath)
     };
   }
   
@@ -216,16 +230,7 @@ export class BuiltInRuleManager {
     
     return meta.rules.map(rule => ({
       ...rule,
-      readContent: async () => {
-        const fileUri = vscode.Uri.joinPath(
-          vscode.Uri.file(extensionPath),
-          'resources',
-          'rules',
-          `${rule.id}.mdc`
-        );
-        
-        return await readFileContent(fileUri);
-      }
+      readContent: this.createReadContentFunction(rule.id, extensionPath)
     }));
   }
   
