@@ -190,40 +190,39 @@ export class BuiltInRuleManager {
   }
   
   /**
-   * 创建规则内容读取函数
+   * 增强规则元数据
    * 
-   * 生成一个读取规则内容的函数，支持多文件规则
-   * 这是一个上层工具方法，根据规则的结构决定如何读取文件
+   * 为规则元数据添加readContent方法
+   * readContent方法根据文件索引直接读取对应文件内容
    * 
    * @param {MetaRuleMetadata} rule - 规则元数据
    * @param {string} extensionPath - 扩展目录路径
-   * @returns {(fileIndex?: number) => Promise<string | null>} 读取规则内容的函数
+   * @returns {RuleMetadata} 增强后的规则元数据
    */
-  private createReadContentFunction(rule: MetaRuleMetadata, extensionPath: string): (fileIndex?: number) => Promise<string | null> {
-    return async (fileIndex?: number) => {
-      // 处理多文件规则
-      if (rule.files && rule.files.length > 0) {
-        // 如果指定了文件索引，尝试读取指定文件
-        if (fileIndex !== undefined && fileIndex >= 0 && fileIndex < rule.files.length) {
-          const fileInfo = rule.files[fileIndex];
+  private enhanceRuleMetadata(rule: MetaRuleMetadata, extensionPath: string): RuleMetadata {
+    // 增强规则元数据，添加readContent方法
+    return {
+      ...rule,
+      readContent: async (fileIndex?: number) => {
+        // 处理多文件规则
+        if (rule.files && rule.files.length > 0) {
+          // 获取要读取的文件信息
+          const fileInfo = fileIndex !== undefined && fileIndex >= 0 && fileIndex < rule.files.length
+            ? rule.files[fileIndex]  // 使用指定的文件索引
+            : rule.files[0];         // 默认使用第一个文件
+          
+          // 创建文件读取函数
           const reader = this.createSingleFileReader(fileInfo.path, extensionPath);
-          debug(`请求读取多文件规则[${rule.id}]的第${fileIndex}个文件: ${fileInfo.path}`);
+          debug(`读取文件: ${fileInfo.path} (规则: ${rule.id})`);
           return await reader();
         }
         
-        // 如果没有指定索引或索引无效，读取第一个文件作为默认文件
-        const defaultFileInfo = rule.files[0];
-        const reader = this.createSingleFileReader(defaultFileInfo.path, extensionPath);
-        debug(`请求读取多文件规则[${rule.id}]的默认文件: ${defaultFileInfo.path}`);
+        // 处理单文件规则
+        const relativePath = rule.path || `${rule.id}.mdc`;
+        const reader = this.createSingleFileReader(relativePath, extensionPath);
+        debug(`读取文件: ${relativePath} (规则: ${rule.id})`);
         return await reader();
       }
-      
-      // 处理单文件规则
-      // 优先使用rule.path确定文件路径
-      const relativePath = rule.path || `${rule.id}.mdc`;
-      const reader = this.createSingleFileReader(relativePath, extensionPath);
-      debug(`请求读取单文件规则[${rule.id}]: ${relativePath}`);
-      return await reader();
     };
   }
   
@@ -249,11 +248,8 @@ export class BuiltInRuleManager {
     
     const extensionPath = this.extensionContext.extensionPath;
     
-    // 使用工具方法添加readContent函数
-    return {
-      ...rule,
-      readContent: this.createReadContentFunction(rule, extensionPath)
-    };
+    // 增强规则元数据，添加readContent函数
+    return this.enhanceRuleMetadata(rule, extensionPath);
   }
   
   /**
@@ -272,10 +268,8 @@ export class BuiltInRuleManager {
     const meta = await this.loadMetaJson();
     const extensionPath = this.extensionContext.extensionPath;
     
-    return meta.rules.map(rule => ({
-      ...rule,
-      readContent: this.createReadContentFunction(rule, extensionPath)
-    }));
+    // 增强所有规则元数据，添加readContent函数
+    return meta.rules.map(rule => this.enhanceRuleMetadata(rule, extensionPath));
   }
   
   /**
@@ -352,7 +346,7 @@ export class BuiltInRuleManager {
   }
   
   /**
-   * 加载多文件规则内容
+   * 加载规则内容
    * 
    * 加载规则的所有文件内容，用于规则匹配结果
    * 
@@ -365,12 +359,8 @@ export class BuiltInRuleManager {
       if (rule.files && rule.files.length > 0) {
         debug(`加载多文件规则[${rule.id}]内容，共${rule.files.length}个文件`);
         
-        // 读取所有文件内容
-        const contentPromises = Array.from(
-          { length: rule.files.length }, 
-          (_, index) => rule.readContent(index)
-        );
-        
+        // 为每个文件创建读取任务
+        const contentPromises = rule.files.map((_, index) => rule.readContent(index));
         const contents = await Promise.all(contentPromises);
         
         // 过滤掉null值，确保所有文件都成功读取
@@ -380,26 +370,28 @@ export class BuiltInRuleManager {
         if (validContents.length > 0) {
           // 第一个文件作为主内容
           const mainContent = validContents[0];
+          debug(`成功加载规则[${rule.id}]的${validContents.length}个文件内容`);
           return {
             content: mainContent,
             contents: validContents
           };
         }
         
-        debug(`多文件规则[${rule.id}]没有有效内容`);
+        debug(`规则[${rule.id}]的所有文件均加载失败`);
         return null;
       }
       
       // 处理单文件规则
       const content = await rule.readContent();
       if (content !== null) {
+        debug(`成功加载单文件规则[${rule.id}]内容`);
         return {
           content,
           contents: [content]
         };
       }
       
-      debug(`单文件规则[${rule.id}]没有有效内容`);
+      debug(`单文件规则[${rule.id}]加载失败`);
       return null;
     } catch (err) {
       error(`加载规则内容失败: ${rule.id}`, err);
