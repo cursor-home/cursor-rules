@@ -388,32 +388,10 @@ export class BuiltInRuleManager {
   }
   
   /**
-   * 根据技术栈推荐规则
-   * 
-   * 这是findMatchingRules函数的便捷包装，用于基于技术栈推荐最合适的规则
-   * 主要用于自动配置流程中，为用户推荐最适合其项目的规则
-   * 
-   * @param {TechStackInfo} techStack - 项目技术栈信息
-   * @param {RuleSearchOptions} options - 可选的搜索配置
-   * @returns {Promise<RuleMatchResult[]>} 规则匹配结果数组
-   */
-  public async recommendRulesForTechStack(
-    techStack: TechStackInfo,
-    options: RuleSearchOptions = {}
-  ): Promise<RuleMatchResult[]> {
-    try {
-      return await this.findMatchingRules(techStack, options);
-    } catch (err) {
-      error('推荐规则失败:', err);
-      return [];
-    }
-  }
-  
-  /**
    * 获取适用于技术栈的最佳匹配规则
    * 
    * 查找与给定技术栈匹配度最高的单个规则
-   * 这是recommendRulesForTechStack的简化版，直接返回最佳匹配的规则对象
+   * 这是findMatchingRules的简化版，直接返回最佳匹配的规则对象
    * 
    * @param {TechStackInfo} techStack - 技术栈信息对象
    * @param {RuleSearchOptions} options - 可选的搜索选项

@@ -24,7 +24,7 @@
  */
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { Rule, TechStackInfo, createEmptyTechStackInfo } from '../types';
+import { Rule, TechStackInfo, createEmptyTechStackInfo, RuleMatchResult } from '../types';
 import { detectTechStack, getTechStackDescription } from '../techStack';
 import { builtInRuleManager } from './builtInRuleManager';
 import { debug, info, warn, error } from '../logger/logger';
@@ -247,12 +247,19 @@ export async function autoConfigureCursorRules(workspaceFolder: vscode.Workspace
 			progress.report({ message: "正在搜索匹配的规则..." });
 
 			// 尝试从规则仓库获取最佳匹配的规则，设置0.4的最小匹配分数作为阈值
-			const matchResults = await builtInRuleManager.recommendRulesForTechStack(techStackInfo, {
-				includeBuiltIn: true,   // 包括内置规则
-				includeLocal: true,     // 包括本地规则
-				minScore: 0.4,          // 最小匹配分数
-				limit: 1                // 仅获取最佳匹配
-			});
+			let matchResults: RuleMatchResult[] = [];
+			try {
+				matchResults = await builtInRuleManager.findMatchingRules(techStackInfo, {
+					includeBuiltIn: true,   // 包括内置规则
+					includeLocal: true,     // 包括本地规则
+					minScore: 0.4,          // 最小匹配分数
+					limit: 1                // 仅获取最佳匹配
+				});
+			} catch (err) {
+				error('搜索匹配规则失败:', err);
+				// 错误处理后继续执行，使用空数组
+				matchResults = [];
+			}
 			
 			// 获取最佳匹配的规则（如果有）
 			const bestRule = matchResults.length > 0 ? matchResults[0].rule : null;
