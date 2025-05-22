@@ -29,7 +29,7 @@ import { detectTechStack, getTechStackDescription } from '../techStack';
 import { builtInRuleManager } from './builtInRuleManager';
 import { debug, info, warn, error } from '../logger/logger';
 import { UserRuleStorageManager } from './userRuleStorageManager';
-import { writeFileContent } from '../utils/fsUtils';
+import { writeFileContent, ensureDirectoryStructure } from '../utils/fsUtils';
 
 /**
  * 应用规则到工作区
@@ -45,11 +45,12 @@ import { writeFileContent } from '../utils/fsUtils';
 export async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.WorkspaceFolder): Promise<boolean> {
 	try {
 		const rootPath = workspaceFolder.uri;
-		const rulesDir = vscode.Uri.joinPath(rootPath, '.cursor', 'rules');
 		
 		// 创建.cursor/rules目录结构（如果不存在）
-		await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(rootPath, '.cursor'));
-		await vscode.workspace.fs.createDirectory(rulesDir);
+		const { uri: rulesDir, success } = await ensureDirectoryStructure(rootPath, ['.cursor', 'rules']);
+		if (!success) {
+			throw new Error('创建规则目录结构失败');
+		}
 		
 		// 创建规则文件，使用规则ID作为文件名
 		const rulePath = vscode.Uri.joinPath(rulesDir, `${rule.id}.mdc`);
@@ -89,11 +90,12 @@ export async function applyRuleToWorkspace(rule: Rule, workspaceFolder: vscode.W
  */
 export async function createRuleFromTemplate(workspaceFolder: vscode.WorkspaceFolder, template: Rule): Promise<void> {
 	const rootPath = workspaceFolder.uri;
-	const rulesDir = vscode.Uri.joinPath(rootPath, '.cursor', 'rules');
 	
 	// 创建.cursor/rules目录结构（如果不存在）
-	await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(rootPath, '.cursor'));
-	await vscode.workspace.fs.createDirectory(rulesDir);
+	const { uri: rulesDir, success } = await ensureDirectoryStructure(rootPath, ['.cursor', 'rules']);
+	if (!success) {
+		throw new Error('创建规则目录结构失败');
+	}
 	
 	// 创建规则文件，使用模板ID作为文件名
 	const rulePath = vscode.Uri.joinPath(rulesDir, `${template.id}.mdc`);

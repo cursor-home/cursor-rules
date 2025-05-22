@@ -26,6 +26,25 @@ export async function fileExists(uri: vscode.Uri): Promise<boolean> {
 }
 
 /**
+ * 确保目录存在
+ * 
+ * 使用VS Code API创建目录（如果不存在）
+ * 支持递归创建多级目录
+ * 
+ * @param uri 目录URI
+ * @returns 是否操作成功
+ */
+export async function ensureDirectory(uri: vscode.Uri): Promise<boolean> {
+  try {
+    await vscode.workspace.fs.createDirectory(uri);
+    return true;
+  } catch (err) {
+    error(`创建目录失败 ${uri.fsPath}:`, err);
+    return false;
+  }
+}
+
+/**
  * 安全读取文件内容
  * 
  * 使用VS Code API读取文件内容，处理可能的错误
@@ -66,7 +85,7 @@ export async function writeFileContent(uri: vscode.Uri, content: string): Promis
   try {
     // 确保父目录存在
     const dirUri = vscode.Uri.joinPath(uri, '..');
-    await vscode.workspace.fs.createDirectory(dirUri);
+    await ensureDirectory(dirUri);
     
     // 写入文件内容
     await vscode.workspace.fs.writeFile(uri, Buffer.from(content));
@@ -74,5 +93,34 @@ export async function writeFileContent(uri: vscode.Uri, content: string): Promis
   } catch (err) {
     error(`写入文件失败 ${uri.fsPath}:`, err);
     return false;
+  }
+}
+
+/**
+ * 确保目录结构存在
+ * 
+ * 创建指定的多级目录结构，确保所有层级都存在
+ * 用于快速创建多级目录结构
+ * 
+ * @param baseUri 基础URI
+ * @param paths 要创建的目录路径数组
+ * @returns 最后一级目录的URI和操作是否成功
+ */
+export async function ensureDirectoryStructure(
+  baseUri: vscode.Uri, 
+  paths: string[]
+): Promise<{uri: vscode.Uri, success: boolean}> {
+  try {
+    let currentUri = baseUri;
+    
+    for (const pathSegment of paths) {
+      currentUri = vscode.Uri.joinPath(currentUri, pathSegment);
+      await ensureDirectory(currentUri);
+    }
+    
+    return { uri: currentUri, success: true };
+  } catch (err) {
+    error(`创建目录结构失败:`, err);
+    return { uri: baseUri, success: false };
   }
 } 
