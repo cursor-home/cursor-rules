@@ -5,10 +5,7 @@ import {
   openWelcomePageCommand
 } from './welcomePageCommands';
 import { 
-  createCursorRulesCommand, 
-  detectTechStackCommand,
-  browseRulesCommand,
-  recommendRulesCommand
+  createCursorRulesCommand
 } from './ruleOperationCommands';
 import { loggerCommands } from './loggerCommands';
 
@@ -18,10 +15,7 @@ import { loggerCommands } from './loggerCommands';
 export const ruleCommands = [
     openConfigCommand,
     openWelcomePageCommand,
-    createCursorRulesCommand,
-    detectTechStackCommand,
-    browseRulesCommand,
-    recommendRulesCommand
+    createCursorRulesCommand
 ];
 
 /**
