@@ -29,6 +29,8 @@ import {
 } from './logger/logger';
 // Import RulePromptPanel
 import { RulePromptPanel } from './webview/rulePromptPanel';
+// Import technology stack validation related functions
+import { registerValidationCommand } from './techStack/validation';
 
 
 /**
@@ -482,6 +484,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}, 3000); // Wait 3 seconds to ensure main process has enough time to complete
 	}
+	
+	// Register technology stack validation command
+	registerValidationCommand(context);
 	
 	// Log extension activation completion
 	info('========== Extension activation completed ==========');
