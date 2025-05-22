@@ -14,7 +14,7 @@ import {
     handleOpenRule, 
     handleDeleteRule, 
     handleEditRule 
-} from '../../commands/ruleHandlers';
+} from '../../messageHandlers/ruleHandlers';
 
 // 全局引用，确保同一时间只有一个面板
 // 导出变量，允许其他模块访问配置面板实例
