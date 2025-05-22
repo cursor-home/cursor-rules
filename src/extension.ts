@@ -222,7 +222,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 		}),
 		vscode.commands.registerCommand('cursor-rules-assistant.openWelcomePage', () => {
 			// Pass context parameter when executing open welcome page command
-			vscode.commands.executeCommand('_cursor-rules-assistant.openWelcomePageWithContext', context);
+			vscode.commands.executeCommand('cursor-rules-assistant.openWelcomePageWithContext', context);
 		}),
 		// Add development test command to reset extension state, simulating first installation
 		vscode.commands.registerCommand('cursor-rules-assistant.resetExtensionState', async () => {
