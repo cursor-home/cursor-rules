@@ -99,10 +99,6 @@ export function getWelcomePageContent(): string {
                 <p>使用集成的 AI 功能生成代码、解答问题或进行编程对话。<strong>基于项目上下文的智能理解能力不断增强</strong>。</p>
                 <p style="font-style: italic; opacity: 0.8; margin-top: 10px;">该功能目前正在研发中，即将推出，敬请期待！</p>
             </div>
-            <div class="feature-actions">
-                <button class="action-button" style="opacity: 0.6; cursor: not-allowed;" disabled title="功能即将推出">生成代码</button>
-                <button class="action-button" style="opacity: 0.6; cursor: not-allowed;" disabled title="功能即将推出">AI 对话</button>
-            </div>
         </div>
         
         <div class="feature-box">
