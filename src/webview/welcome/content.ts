@@ -10,144 +10,90 @@
  */
 export function getWelcomePageContent(): string {
     return `
-    <div class="page-header">
-        <div class="ai-badge">AI 驱动</div>
+    <div class="welcome-container">
+      <header class="welcome-header">
+        <div class="welcome-badge">
+          <span class="badge-text">助手</span>
+        </div>
         <h1>欢迎使用 Cursor Rules Assistant</h1>
-        <p>感谢您安装 Cursor Rules Assistant！这个 VSCode 扩展将帮助您快速设置和管理 Cursor Rules，提升您的项目开发体验。</p>
+      </header>
+      
+      <div class="github-badge">
+        <a href="#" id="github-link" class="github-link">
+          <svg height="20" viewBox="0 0 16 16" width="20" class="github-icon">
+            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+          <span id="github-stars">--</span> Stars
+        </a>
+      </div>
+      
+      <div class="feature-box">
+        <span class="feature-tag">即将推出</span>
+        <h3>Cursor AI 赋能</h3>
+        <p>我们正在开发一系列基于 Cursor AI 的智能辅助功能，敬请期待！</p>
+      </div>
+      
+      <section class="welcome-section">
+        <h2>什么是 Cursor Rules？</h2>
+        <p>
+          Cursor Rules 是一种强大的方式，让您可以为 Cursor AI 提供特定上下文和指导，
+          使其更好地理解您的特定项目、代码风格和最佳实践。
+        </p>
+        <p>
+          通过定义规则，您可以显著提高 AI 输出的质量和准确性，使其更符合您的项目需求和期望。
+        </p>
+      </section>
+      
+      <section class="welcome-section">
+        <h2>主要功能</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>自动技术栈检测</h3>
+            <p>智能识别您的项目技术栈，自动应用最适合的规则和配置</p>
+          </div>
+          
+          <div class="feature-card">
+            <h3>智能管理配置</h3>
+            <p>轻松创建、编辑和管理规则，无需手动编辑复杂的JSON配置</p>
+          </div>
+          
+          <div class="feature-card">
+            <h3>AI 辅助功能</h3>
+            <p>集成多种AI辅助能力，自动生成规则建议，提高开发效率（开发中）</p>
+          </div>
+          
+          <div class="feature-card">
+            <h3>持续优化</h3>
+            <p>根据您的使用习惯不断优化和改进，让AI反馈更符合您的需求</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="welcome-section">
+        <h2>快速开始</h2>
+        <p>要开始使用 Cursor Rules Assistant，您可以：</p>
+        <div class="button-container">
+          <button class="action-button" data-command="cursor-rules-assistant.openConfigPanel">
+            打开配置面板
+          </button>
+          <button class="action-button" data-command="cursor-rules-assistant.detectProjectType">
+            检测项目类型
+          </button>
+        </div>
+      </section>
+      
+      <section class="welcome-section">
+        <h2>命令列表</h2>
+        <ul class="commands-list">
+          <li><code>Cursor Rules: 打开配置面板</code> - 打开规则管理界面</li>
+          <li><code>Cursor Rules: 检测项目类型</code> - 智能检测当前项目类型</li>
+          <li><code>Cursor Rules: 打开欢迎页面</code> - 显示此欢迎页面</li>
+        </ul>
+      </section>
+      
+      <footer class="welcome-footer">
+        <p>Cursor Rules Assistant - 让AI更好地理解您的项目</p>
+      </footer>
     </div>
-    
-    <!-- GitHub徽标和star数 -->
-    <div class="github-badge" onclick="openGitHubRepo()">
-        <svg class="github-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
-        </svg>
-        <div class="github-stats">
-            <svg class="github-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z"/>
-            </svg>
-            <span id="star-count">加载中...</span>
-        </div>
-        <span class="github-text">star支持一下</span>
-    </div>
-    
-    <div class="feature-box upcoming-feature">
-        <div class="feature-title">
-            <span class="emoji">🚀</span>
-            <span>新功能即将到来</span>
-        </div>
-        <div class="feature-content">
-            <p>我们不仅帮助您管理 Cursor Rules，<strong>基于 Cursor AI 的自动托管式管理功能正在研发中</strong>！</p>
-            <p>未来功能亮点：</p>
-            <ul>
-                <li>智能托管式管理您的所有 Cursor Rules</li>
-                <li>基于项目上下文自动调整和优化规则</li>
-                <li>AI 辅助规则生成和维护</li>
-                <li>智能策略建议和最佳实践推荐</li>
-            </ul>
-            <p><em>敬请期待，Stay tuned！</em></p>
-        </div>
-    </div>
-    
-    <h2>什么是 Cursor Rules?</h2>
-    <p>Cursor Rules 是一组项目特定的规则和指导，可以帮助 Cursor AI 更好地理解您的代码库和项目需求。通过配置 Cursor Rules，您可以：</p>
-    <ul>
-        <li>提供项目结构和代码惯例的上下文</li>
-        <li>定义项目特定的最佳实践</li>
-        <li>改善 AI 生成代码的质量</li>
-        <li><strong>实现智能化、自动化的代码辅助流程</strong></li>
-        <li><strong>让 AI 更好地适应您的项目风格和要求</strong></li>
-    </ul>
-    
-    <p>而 <strong>Cursor Rules Assistant</strong> 则是您管理这些规则的得力助手，不仅提供简单的规则管理功能，更致力于打造基于 Cursor AI 能力的<strong>智能托管式管理系统</strong>，让规则管理变得更加智能和高效。</p>
-    
-    <h2>主要功能</h2>
-    
-    <div class="feature-container">
-        <div class="feature-box">
-            <div class="feature-title">
-                <span class="emoji">🔍</span>
-                <span>自动检测技术栈</span>
-            </div>
-            <div class="feature-content">
-                <p>插件可以自动分析您的项目，检测使用的编程语言、框架和库，为您推荐最适合的 Cursor Rules 配置。</p>
-            </div>
-            <div class="feature-actions">
-                <button class="action-button" onclick="executeCommand('cursor-rules-assistant.detectTechStack')">检测项目技术栈</button>
-            </div>
-        </div>
-        
-        <div class="feature-box">
-            <div class="feature-title">
-                <span class="emoji">⚙️</span>
-                <span>智能托管配置</span>
-            </div>
-            <div class="feature-content">
-                <p>根据项目类型自动配置 Cursor Rules，或使用预定义模板快速入门。<strong>未来支持全自动托管管理</strong>，使规则始终保持最佳状态。</p>
-            </div>
-            <div class="feature-actions">
-                <button class="action-button" onclick="executeCommand('cursor-rules-assistant.createCursorRules')">创建 Cursor Rules</button>
-            </div>
-        </div>
-        
-        <div class="feature-box upcoming-feature">
-            <div class="feature-title">
-                <span class="emoji">🤖</span>
-                <span>AI 辅助功能</span>
-                <span style="margin-left: 8px; font-size: 0.75em; background-color: rgba(255, 193, 7, 0.2); color: #ff9800; padding: 2px 8px; border-radius: 10px; font-weight: normal;">研发中</span>
-            </div>
-            <div class="feature-content">
-                <p>使用集成的 AI 功能生成代码、解答问题或进行编程对话。<strong>基于项目上下文的智能理解能力不断增强</strong>。</p>
-                <p style="font-style: italic; opacity: 0.8; margin-top: 10px;">该功能目前正在研发中，即将推出，敬请期待！</p>
-            </div>
-        </div>
-        
-        <div class="feature-box">
-            <div class="feature-title">
-                <span class="emoji">📈</span>
-                <span>持续优化</span>
-            </div>
-            <div class="feature-content">
-                <p><strong>自动分析您的项目需求和代码模式，持续优化规则配置</strong>，让 AI 协作效率随着项目进展不断提高。</p>
-            </div>
-        </div>
-    </div>
-    
-    <h2>快速入门</h2>
-    <div class="steps-container">
-        <ol>
-            <li>打开您的项目文件夹</li>
-            <li>点击活动栏中的 Cursor Rules 图标</li>
-            <li>使用"创建 Cursor Rules"命令自动配置项目规则</li>
-            <li>根据需要自定义生成的规则文件</li>
-        </ol>
-    </div>
-    
-    <h2>命令列表</h2>
-    <div class="commands-container">
-        <div class="command-item">
-            <div class="command-name">打开配置面板</div>
-            <span class="command">Cursor Rules Assistant: 打开配置面板</span>
-        </div>
-        <div class="command-item">
-            <div class="command-name">创建规则</div>
-            <span class="command">Cursor Rules Assistant: 创建Cursor Rules</span>
-        </div>
-        <div class="command-item">
-            <div class="command-name">检测技术栈</div>
-            <span class="command">Cursor Rules Assistant: 检测项目技术栈</span>
-        </div>
-        <div class="command-item" style="opacity: 0.7; position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 5px; right: 5px; font-size: 0.65em; background-color: rgba(255, 193, 7, 0.2); color: #ff9800; padding: 2px 8px; border-radius: 10px;">研发中</div>
-            <div class="command-name">AI生成代码</div>
-            <span class="command">Cursor Rules Assistant: 使用Cursor AI生成代码</span>
-        </div>
-    </div>
-    
-    <h2>设置选项</h2>
-    <p>您可以通过 VSCode 设置页面或点击配置面板中的设置图标来自定义插件行为。</p>
-    
-    <div class="footer">
-        <p>Cursor Rules Assistant - 让AI更懂你的项目</p>
-    </div>
-    `
+  `;
 } 
