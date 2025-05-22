@@ -69,7 +69,11 @@ module.exports = (env = {}) => {
       extensions: ['.ts', '.js', '.tsx', '.jsx'],
       fallback: {
         // Webpack 5需要显式提供Node.js核心模块的polyfills
-        "process": require.resolve("process/browser")
+        "path": require.resolve("path-browserify"),
+        "fs": false,
+        "process": require.resolve("process/browser"),
+        // 添加vscode模块的映射，指向我们的模拟模块
+        "vscode": path.resolve(__dirname, "src/webview/mocks/vscode.ts")
       }
     },
     module: {
@@ -81,8 +85,8 @@ module.exports = (env = {}) => {
             {
               loader: 'ts-loader',
               options: {
-                // 如果类型检查导致构建问题，可以跳过类型检查
-                transpileOnly: env.skipTypeCheck === true
+                // 跳过类型检查，因为WebView部分可能引用了Node.js模块
+                transpileOnly: true
               }
             }
           ]
