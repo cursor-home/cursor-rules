@@ -4,7 +4,7 @@ import * as path from 'path';
 import { info, error, warn } from '../logger/logger';
 import { Rule, RuleSource, RuleMetadata } from '../types';
 import { getAllRuleMetadata } from '../cursorRules/metaManager';
-import { configPanel } from './configPanelCommands';
+import { configPanelInstance } from '../webview/configPanel/showConfigPanel';
 
 /**
  * Handle rule list request
@@ -75,8 +75,8 @@ export async function handleGetRuleList(message: any, includeBuiltIn: boolean = 
 			
 			// Send success response back to WebView
 			info(`Sending ${rules.length} rules back to WebView`);
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleListResult',
 					success: true,
 					rules: rules
@@ -85,8 +85,8 @@ export async function handleGetRuleList(message: any, includeBuiltIn: boolean = 
 		} catch (err) {
 			// Send error response
 			error(`Error loading rule list: ${err}`, err);
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleListResult',
 					success: false,
 					error: `Failed to load rule list: ${err}`
@@ -96,8 +96,8 @@ export async function handleGetRuleList(message: any, includeBuiltIn: boolean = 
 	} else {
 		// No workspace error
 		warn('No workspace folder found');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleListResult',
 				success: false,
 				error: 'Please open a workspace folder first'
@@ -116,8 +116,8 @@ export async function handleCreateRule(message: any) {
 	
 	if (!message.rule) {
 		error('No rule data provided');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleCreated',
 				success: false,
 				error: 'No rule data provided'
@@ -131,8 +131,8 @@ export async function handleCreateRule(message: any) {
 	
 	if (!workspaceFolder) {
 		warn('No workspace folder found');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleCreated',
 				success: false,
 				error: 'Please open a workspace folder first'
@@ -209,8 +209,8 @@ export async function handleCreateRule(message: any) {
 		info(`Rule created successfully: ${filePath}`);
 		
 		// Send success response
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleCreated',
 				success: true,
 				rulePath: filePath
@@ -223,8 +223,8 @@ export async function handleCreateRule(message: any) {
 		
 	} catch (err) {
 		error(`Error creating rule: ${err}`, err);
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleCreated',
 				success: false,
 				error: `Failed to create rule: ${err}`
@@ -245,8 +245,8 @@ export async function handleGetRuleDetail(message: any) {
 	if (!message.ruleId) {
 		error('No rule ID provided');
 		console.log('[DEBUG getRuleDetail] 请求中没有提供ruleId');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDetail',
 				success: false,
 				error: 'No rule ID provided'
@@ -264,8 +264,8 @@ export async function handleGetRuleDetail(message: any) {
 	if (!workspaceFolder) {
 		warn('No workspace folder found');
 		console.log('[DEBUG getRuleDetail] 未找到工作区文件夹');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDetail',
 				success: false,
 				error: 'Please open a workspace folder first'
@@ -338,8 +338,8 @@ export async function handleGetRuleDetail(message: any) {
 		if (rule) {
 			info(`Rule found: ${rule.name}`);
 			console.log(`[DEBUG getRuleDetail] 发送成功响应，包含规则: ${rule.name}`);
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleDetail',
 					success: true,
 					rule: rule
@@ -351,8 +351,8 @@ export async function handleGetRuleDetail(message: any) {
 		} else {
 			warn(`Rule not found: ${message.ruleId}`);
 			console.log(`[DEBUG getRuleDetail] 未找到ID为${message.ruleId}的规则`);
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleDetail',
 					success: false,
 					error: `Rule not found: ${message.ruleId}`
@@ -365,8 +365,8 @@ export async function handleGetRuleDetail(message: any) {
 	} catch (err) {
 		error(`Error getting rule detail: ${err}`, err);
 		console.log(`[DEBUG getRuleDetail] 处理过程中出错:`, err);
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDetail',
 				success: false,
 				error: `Failed to get rule detail: ${err}`
@@ -418,8 +418,8 @@ export async function handleDeleteRule(message: any) {
 	
 	if (!message.ruleId) {
 		error('No rule ID provided');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDeleted',
 				success: false,
 				error: 'No rule ID provided'
@@ -433,8 +433,8 @@ export async function handleDeleteRule(message: any) {
 	
 	if (!workspaceFolder) {
 		warn('No workspace folder found');
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDeleted',
 				success: false,
 				error: 'Please open a workspace folder first'
@@ -455,16 +455,16 @@ export async function handleDeleteRule(message: any) {
 			info(`Rule deleted successfully: ${filePath}`);
 			
 			// Send success response
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleDeleted',
 					success: true
 				});
 			}
 			
 			// Navigate back to rules list
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'navigateTo',
 					page: 'rules'
 				});
@@ -473,8 +473,8 @@ export async function handleDeleteRule(message: any) {
 			vscode.window.showInformationMessage(`Rule deleted successfully`);
 		} else {
 			warn(`Rule file not found: ${filePath}`);
-			if (configPanel) {
-				configPanel.webview.postMessage({
+			if (configPanelInstance) {
+				configPanelInstance.webview.postMessage({
 					type: 'ruleDeleted',
 					success: false,
 					error: `Rule file not found: ${filePath}`
@@ -483,8 +483,8 @@ export async function handleDeleteRule(message: any) {
 		}
 	} catch (err) {
 		error(`Error deleting rule: ${err}`, err);
-		if (configPanel) {
-			configPanel.webview.postMessage({
+		if (configPanelInstance) {
+			configPanelInstance.webview.postMessage({
 				type: 'ruleDeleted',
 				success: false,
 				error: `Failed to delete rule: ${err}`

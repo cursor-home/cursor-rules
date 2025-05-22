@@ -17,11 +17,6 @@ export const openConfigCommand = vscode.commands.registerCommand('cursor-rules-a
 });
 
 /**
- * ConfigPanel WebviewPanel instance
- */
-export let configPanel: vscode.WebviewPanel | undefined;
-
-/**
  * Generate random nonce value
  */
 export function getNonce(): string {
