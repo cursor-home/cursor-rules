@@ -18,7 +18,7 @@
  */
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { Rule, RuleMetadata, TechStackInfo, MetaJsonData, RuleMatchResult, RuleSource, RuleSearchOptions } from '../types';
+import { Rule, RuleMetadata, TechStackInfo, MetaJsonData, RuleMatchResult, RuleSource, RuleSearchOptions, MetaRuleMetadata } from '../types';
 import { debug, info, warn, error } from '../logger/logger';
 import { fileExists, readFileContent } from '../utils/fsUtils';
 import Cache from 'vscode-cache';
@@ -165,20 +165,26 @@ export class BuiltInRuleManager {
    * 
    * 生成一个读取特定规则内容的函数
    * 这是一个工具方法，用于为规则元数据创建readContent函数
+   * 支持多级目录结构，根据规则的path属性确定文件位置
    * 
-   * @param {string} ruleId - 规则ID
+   * @param {MetaRuleMetadata} rule - 规则元数据
    * @param {string} extensionPath - 扩展目录路径
    * @returns {() => Promise<string | null>} 读取规则内容的函数
    */
-  private createReadContentFunction(ruleId: string, extensionPath: string): () => Promise<string | null> {
+  private createReadContentFunction(rule: MetaRuleMetadata, extensionPath: string): () => Promise<string | null> {
     return async () => {
+      // 优先使用rule.path确定文件路径，支持多级目录结构
+      // path属性应该是相对于resources/rules/的路径
+      const relativePath = rule.path || `${rule.id}.mdc`;
+      
       const fileUri = vscode.Uri.joinPath(
         vscode.Uri.file(extensionPath),
         'resources',
         'rules',
-        `${ruleId}.mdc`
+        relativePath
       );
       
+      debug(`读取规则文件: ${fileUri.fsPath}`);
       return await readFileContent(fileUri);
     };
   }
@@ -208,7 +214,7 @@ export class BuiltInRuleManager {
     // 使用工具方法添加readContent函数
     return {
       ...rule,
-      readContent: this.createReadContentFunction(id, extensionPath)
+      readContent: this.createReadContentFunction(rule, extensionPath)
     };
   }
   
@@ -230,7 +236,7 @@ export class BuiltInRuleManager {
     
     return meta.rules.map(rule => ({
       ...rule,
-      readContent: this.createReadContentFunction(rule.id, extensionPath)
+      readContent: this.createReadContentFunction(rule, extensionPath)
     }));
   }
   
