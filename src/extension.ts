@@ -218,7 +218,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('cursor-rules-assistant.openConfig', () => {
 			// Pass context parameter when executing open configuration panel command
-			vscode.commands.executeCommand('_cursor-rules-assistant.openConfigWithContext', context);
+			vscode.commands.executeCommand('cursor-rules-assistant.openConfigPanel', context);
 		}),
 		vscode.commands.registerCommand('cursor-rules-assistant.openWelcomePage', () => {
 			// Pass context parameter when executing open welcome page command
